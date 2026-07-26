@@ -1,5 +1,15 @@
 import * as React from 'react';
 import {
+  DndContext,
+  type DragEndEvent,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  useDraggable,
+  useDroppable,
+} from '@dnd-kit/core';
+import { CSS } from '@dnd-kit/utilities';
+import {
   ChevronRight,
   Copy,
   Download,
@@ -45,8 +55,20 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuSeparator,
+  ContextMenuSub,
+  ContextMenuSubContent,
+  ContextMenuSubTrigger,
+  ContextMenuTrigger,
+} from '@/components/ui/context-menu';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { cn } from '@/lib/cn';
 
+/* ---------- helpers ---------- */
 function slug(s: string) {
   return s.toLowerCase().normalize('NFD').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'guia';
 }
@@ -90,7 +112,153 @@ function pathTo(folders: Folder[], id: string | null): Folder[] {
   return chain;
 }
 
-type Item = { kind: 'guide' | 'folder'; id: string; name: string };
+export type Item = { kind: 'guide' | 'folder'; id: string; name: string };
+
+/* Data-driven menu, rendered by both the ⋮ dropdown and the right-click context menu. */
+type MenuNode =
+  | { type: 'item'; label: React.ReactNode; icon?: React.ReactNode; destructive?: boolean; disabled?: boolean; onSelect: () => void }
+  | { type: 'sep' }
+  | { type: 'sub'; label: React.ReactNode; icon?: React.ReactNode; children: MenuNode[] };
+
+function DropdownNodes({ nodes }: { nodes: MenuNode[] }) {
+  return (
+    <>
+      {nodes.map((n, i) =>
+        n.type === 'sep' ? (
+          <DropdownMenuSeparator key={i} />
+        ) : n.type === 'sub' ? (
+          <DropdownMenuSub key={i}>
+            <DropdownMenuSubTrigger>
+              {n.icon}
+              {n.label}
+            </DropdownMenuSubTrigger>
+            <DropdownMenuSubContent>
+              <DropdownNodes nodes={n.children} />
+            </DropdownMenuSubContent>
+          </DropdownMenuSub>
+        ) : (
+          <DropdownMenuItem key={i} destructive={n.destructive} disabled={n.disabled} onSelect={n.onSelect}>
+            {n.icon}
+            {n.label}
+          </DropdownMenuItem>
+        )
+      )}
+    </>
+  );
+}
+function ContextNodes({ nodes }: { nodes: MenuNode[] }) {
+  return (
+    <>
+      {nodes.map((n, i) =>
+        n.type === 'sep' ? (
+          <ContextMenuSeparator key={i} />
+        ) : n.type === 'sub' ? (
+          <ContextMenuSub key={i}>
+            <ContextMenuSubTrigger>
+              {n.icon}
+              {n.label}
+            </ContextMenuSubTrigger>
+            <ContextMenuSubContent>
+              <ContextNodes nodes={n.children} />
+            </ContextMenuSubContent>
+          </ContextMenuSub>
+        ) : (
+          <ContextMenuItem
+            key={i}
+            disabled={n.disabled}
+            onSelect={n.onSelect}
+            className={n.destructive ? 'text-destructive focus:bg-destructive/10 focus:text-destructive' : undefined}
+          >
+            {n.icon}
+            {n.label}
+          </ContextMenuItem>
+        )
+      )}
+    </>
+  );
+}
+
+function Kebab({ nodes }: { nodes: MenuNode[] }) {
+  return (
+    <div className="absolute right-2 top-2" onPointerDown={(e) => e.stopPropagation()}>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="icon-sm" className="opacity-0 transition-opacity group-hover:opacity-100 data-[state=open]:opacity-100">
+            <MoreVertical className="h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownNodes nodes={nodes} />
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+  );
+}
+
+const cardCls = (over: boolean) =>
+  cn('group relative rounded-xl border bg-card p-4', over ? 'border-primary ring-2 ring-primary/40' : 'border-border hover:border-primary/50');
+
+function FolderCard({ f, onOpen, nodes }: { f: Folder; onOpen: () => void; nodes: MenuNode[] }) {
+  const drag = useDraggable({ id: 'drag-' + f.id, data: { kind: 'folder', id: f.id, name: f.name } });
+  const drop = useDroppable({ id: 'drop-' + f.id, data: { folderId: f.id } });
+  const ref = (node: HTMLElement | null) => {
+    drag.setNodeRef(node);
+    drop.setNodeRef(node);
+  };
+  const style = { transform: CSS.Translate.toString(drag.transform), opacity: drag.isDragging ? 0.4 : 1 };
+  return (
+    <ContextMenu>
+      <ContextMenuTrigger asChild>
+        <div ref={ref} style={style} {...drag.attributes} {...drag.listeners} className={cardCls(drop.isOver)}>
+          <button className="flex w-full items-center gap-3 text-left" onClick={onOpen}>
+            <FolderIcon className="h-6 w-6 shrink-0 text-primary" />
+            <span className="truncate pr-6 font-medium">{f.name}</span>
+          </button>
+          <Kebab nodes={nodes} />
+        </div>
+      </ContextMenuTrigger>
+      <ContextMenuContent>
+        <ContextNodes nodes={nodes} />
+      </ContextMenuContent>
+    </ContextMenu>
+  );
+}
+
+function GuideCard({ g, onOpen, nodes }: { g: GuideMeta; onOpen: () => void; nodes: MenuNode[] }) {
+  const drag = useDraggable({ id: 'drag-' + g.id, data: { kind: 'guide', id: g.id, name: g.name } });
+  const style = { transform: CSS.Translate.toString(drag.transform), opacity: drag.isDragging ? 0.4 : 1 };
+  return (
+    <ContextMenu>
+      <ContextMenuTrigger asChild>
+        <div ref={drag.setNodeRef} style={style} {...drag.attributes} {...drag.listeners} className={cardCls(false)}>
+          <button className="block w-full text-left" onClick={onOpen}>
+            <div className="mb-6 flex items-start gap-2 pr-6">
+              <FileText className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground" />
+              <span className="truncate font-semibold">{g.name || '(sin nombre)'}</span>
+            </div>
+            <div className="text-xs text-muted-foreground">
+              {g.sections} secciones · {g.folios} folios
+            </div>
+            <div className="text-xs text-muted-foreground">{fmtDate(g.updatedAt)}</div>
+          </button>
+          <Kebab nodes={nodes} />
+        </div>
+      </ContextMenuTrigger>
+      <ContextMenuContent>
+        <ContextNodes nodes={nodes} />
+      </ContextMenuContent>
+    </ContextMenu>
+  );
+}
+
+function DropZone({ id, folderId, className, children }: { id: string; folderId: string | null; className?: string; children: React.ReactNode }) {
+  const { setNodeRef, isOver } = useDroppable({ id, data: { folderId } });
+  return (
+    <span ref={setNodeRef} className={cn(className, isOver && 'rounded bg-primary/15 text-foreground')}>
+      {children}
+    </span>
+  );
+}
 
 export function Dashboard() {
   const logout = useAuth((s) => s.logout);
@@ -104,6 +272,7 @@ export function Dashboard() {
   const [newFolder, setNewFolder] = React.useState(false);
   const [folderName, setFolderName] = React.useState('');
   const fileRef = React.useRef<HTMLInputElement>(null);
+  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
 
   const reload = React.useCallback(() => {
     Promise.all([listGuides(), listFolders()])
@@ -120,7 +289,7 @@ export function Dashboard() {
 
   React.useEffect(() => reload(), [reload]);
 
-  const subfolders = flatten(folders, cwd, 0).filter(({ f }) => (f.parentId || null) === cwd);
+  const subfolders = folders.filter((f) => (f.parentId || null) === cwd).sort((a, b) => a.name.localeCompare(b.name));
   const items = guides.filter((g) => (g.folderId || null) === cwd);
   const crumbs = pathTo(folders, cwd);
   const allFolders = flatten(folders);
@@ -209,6 +378,11 @@ export function Dashboard() {
     }
   };
   const move = async (item: Item, target: string | null) => {
+    if (item.kind === 'folder' && (target === item.id || descendants(folders, item.id).has(target || ''))) return;
+    if ((item.kind === 'guide' && (guides.find((g) => g.id === item.id)?.folderId || null) === target) ||
+        (item.kind === 'folder' && (folders.find((f) => f.id === item.id)?.parentId || null) === target)) {
+      return; // ya está ahí
+    }
     try {
       if (item.kind === 'guide') await patchGuide(item.id, { folderId: target });
       else await updateFolder(item.id, { parentId: target });
@@ -218,100 +392,103 @@ export function Dashboard() {
     }
   };
 
-  const MoveMenu = ({ item }: { item: Item }) => {
+  const itemNodes = (item: Item): MenuNode[] => {
     const blocked = item.kind === 'folder' ? descendants(folders, item.id) : new Set<string>();
-    return (
-      <DropdownMenuSub>
-        <DropdownMenuSubTrigger>
-          <FolderInput className="h-4 w-4" /> Mover a…
-        </DropdownMenuSubTrigger>
-        <DropdownMenuSubContent>
-          <DropdownMenuItem onSelect={() => move(item, null)}>
-            <Home className="h-4 w-4" /> Inicio (raíz)
-          </DropdownMenuItem>
-          {allFolders.length > 0 && <DropdownMenuSeparator />}
-          {allFolders.map(({ f, depth }) => (
-            <DropdownMenuItem key={f.id} disabled={blocked.has(f.id)} onSelect={() => move(item, f.id)}>
-              <span style={{ paddingLeft: depth * 12 }} className="flex items-center gap-2 truncate">
-                <FolderIcon className="h-4 w-4 opacity-70" /> {f.name}
-              </span>
-            </DropdownMenuItem>
-          ))}
-        </DropdownMenuSubContent>
-      </DropdownMenuSub>
-    );
+    const moveChildren: MenuNode[] = [
+      { type: 'item', label: 'Inicio (raíz)', icon: <Home className="h-4 w-4" />, onSelect: () => move(item, null) },
+      ...(allFolders.length ? [{ type: 'sep' } as MenuNode] : []),
+      ...allFolders.map(
+        ({ f, depth }): MenuNode => ({
+          type: 'item',
+          disabled: blocked.has(f.id),
+          label: (
+            <span style={{ paddingLeft: depth * 12 }} className="flex items-center gap-2 truncate">
+              <FolderIcon className="h-4 w-4 opacity-70" /> {f.name}
+            </span>
+          ),
+          onSelect: () => move(item, f.id),
+        })
+      ),
+    ];
+    return [
+      { type: 'item', label: 'Renombrar', icon: <Pencil className="h-4 w-4" />, onSelect: () => { setRename(item); setRenameVal(item.name); } },
+      ...(item.kind === 'guide'
+        ? ([
+            { type: 'item', label: 'Duplicar', icon: <Copy className="h-4 w-4" />, onSelect: () => onDuplicate(item.id) },
+            { type: 'item', label: 'Exportar JSON', icon: <Download className="h-4 w-4" />, onSelect: () => onExport(item.id) },
+          ] as MenuNode[])
+        : []),
+      { type: 'sub', label: 'Mover a…', icon: <FolderInput className="h-4 w-4" />, children: moveChildren },
+      { type: 'sep' },
+      { type: 'item', label: 'Borrar', icon: <Trash2 className="h-4 w-4" />, destructive: true, onSelect: () => setDel(item) },
+    ];
+  };
+
+  const onDragEnd = (e: DragEndEvent) => {
+    const active = e.active.data.current as Item | undefined;
+    const target = e.over?.data.current as { folderId: string | null } | undefined;
+    if (!active || !target) return;
+    move(active, target.folderId);
   };
 
   return (
-    <div className="flex h-full flex-col">
-      <header className="flex items-center gap-3 border-b border-border px-6 py-3">
-        <img src="/blasco.png" alt="" className="h-7 w-7 object-contain dark:invert" />
-        <span className="font-semibold">misnotas</span>
-        <div className="flex-1" />
-        <input ref={fileRef} type="file" accept="application/json,.json" className="hidden" onChange={onImport} />
-        <Button variant="ghost" size="sm" onClick={() => setNewFolder(true)}>
-          <FolderPlus className="h-4 w-4" /> Carpeta
-        </Button>
-        <Button variant="ghost" size="sm" onClick={() => fileRef.current?.click()}>
-          <Upload className="h-4 w-4" /> Importar
-        </Button>
-        <Button size="sm" onClick={onNewGuide}>
-          <FilePlus2 className="h-4 w-4" /> Nueva guía
-        </Button>
-        <ThemeToggle />
-        <Button variant="ghost" size="icon" title="Salir" onClick={logout}>
-          <LogOut className="h-4 w-4" />
-        </Button>
-      </header>
+    <DndContext sensors={sensors} onDragEnd={onDragEnd}>
+      <div className="flex h-full flex-col">
+        <header className="flex items-center gap-3 border-b border-border px-6 py-3">
+          <img src="/blasco.png" alt="" className="h-7 w-7 object-contain dark:invert" />
+          <span className="font-semibold">misnotas</span>
+          <div className="flex-1" />
+          <input ref={fileRef} type="file" accept="application/json,.json" className="hidden" onChange={onImport} />
+          <Button variant="ghost" size="sm" onClick={() => setNewFolder(true)}>
+            <FolderPlus className="h-4 w-4" /> Carpeta
+          </Button>
+          <Button variant="ghost" size="sm" onClick={() => fileRef.current?.click()}>
+            <Upload className="h-4 w-4" /> Importar
+          </Button>
+          <Button size="sm" onClick={onNewGuide}>
+            <FilePlus2 className="h-4 w-4" /> Nueva guía
+          </Button>
+          <ThemeToggle />
+          <Button variant="ghost" size="icon" title="Salir" onClick={logout}>
+            <LogOut className="h-4 w-4" />
+          </Button>
+        </header>
 
-      {/* Breadcrumb */}
-      <div className="flex items-center gap-1 px-6 py-3 text-sm text-muted-foreground">
-        <button className="flex items-center gap-1 hover:text-foreground" onClick={() => setCwd(null)}>
-          <Home className="h-4 w-4" /> Mis guías
-        </button>
-        {crumbs.map((f) => (
-          <span key={f.id} className="flex items-center gap-1">
-            <ChevronRight className="h-4 w-4 opacity-50" />
-            <button className="hover:text-foreground" onClick={() => setCwd(f.id)}>
-              {f.name}
+        {/* Breadcrumb (también drop targets) */}
+        <div className="flex items-center gap-1 px-6 py-3 text-sm text-muted-foreground">
+          <DropZone id="crumb-root" folderId={null} className="px-1">
+            <button className="flex items-center gap-1 hover:text-foreground" onClick={() => setCwd(null)}>
+              <Home className="h-4 w-4" /> Mis guías
             </button>
-          </span>
-        ))}
-      </div>
+          </DropZone>
+          {crumbs.map((f) => (
+            <span key={f.id} className="flex items-center gap-1">
+              <ChevronRight className="h-4 w-4 opacity-50" />
+              <DropZone id={'crumb-' + f.id} folderId={f.id} className="px-1">
+                <button className="hover:text-foreground" onClick={() => setCwd(f.id)}>
+                  {f.name}
+                </button>
+              </DropZone>
+            </span>
+          ))}
+        </div>
 
-      <div className="min-h-0 flex-1 overflow-y-auto px-6 pb-10">
-        {!loaded ? (
-          <p className="text-muted-foreground">Cargando…</p>
-        ) : subfolders.length === 0 && items.length === 0 ? (
-          <p className="text-muted-foreground">Carpeta vacía. Creá una guía o una carpeta.</p>
-        ) : (
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {subfolders.map(({ f }) => (
-              <div key={f.id} className="group relative rounded-xl border border-border bg-card p-4 hover:border-primary/50">
-                <button className="flex w-full items-center gap-3 text-left" onClick={() => setCwd(f.id)}>
-                  <FolderIcon className="h-6 w-6 shrink-0 text-primary" />
-                  <span className="truncate pr-6 font-medium">{f.name}</span>
-                </button>
-                <ItemMenu item={{ kind: 'folder', id: f.id, name: f.name }} />
-              </div>
-            ))}
-            {items.map((g) => (
-              <div key={g.id} className="group relative rounded-xl border border-border bg-card p-4 hover:border-primary/50">
-                <button className="block w-full text-left" onClick={() => openGuide(g.id)}>
-                  <div className="mb-6 flex items-start gap-2 pr-6">
-                    <FileText className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground" />
-                    <span className="truncate font-semibold">{g.name || '(sin nombre)'}</span>
-                  </div>
-                  <div className="text-xs text-muted-foreground">
-                    {g.sections} secciones · {g.folios} folios
-                  </div>
-                  <div className="text-xs text-muted-foreground">{fmtDate(g.updatedAt)}</div>
-                </button>
-                <ItemMenu item={{ kind: 'guide', id: g.id, name: g.name }} />
-              </div>
-            ))}
-          </div>
-        )}
+        <div className="min-h-0 flex-1 overflow-y-auto px-6 pb-10">
+          {!loaded ? (
+            <p className="text-muted-foreground">Cargando…</p>
+          ) : subfolders.length === 0 && items.length === 0 ? (
+            <p className="text-muted-foreground">Carpeta vacía. Creá una guía o una carpeta.</p>
+          ) : (
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {subfolders.map((f) => (
+                <FolderCard key={f.id} f={f} onOpen={() => setCwd(f.id)} nodes={itemNodes({ kind: 'folder', id: f.id, name: f.name })} />
+              ))}
+              {items.map((g) => (
+                <GuideCard key={g.id} g={g} onOpen={() => openGuide(g.id)} nodes={itemNodes({ kind: 'guide', id: g.id, name: g.name })} />
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Dialogs */}
@@ -357,40 +534,6 @@ export function Dashboard() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+    </DndContext>
   );
-
-  function ItemMenu({ item }: { item: Item }) {
-    return (
-      <div className="absolute right-2 top-2">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon-sm" className="opacity-0 transition-opacity group-hover:opacity-100 data-[state=open]:opacity-100">
-              <MoreVertical className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onSelect={() => { setRename(item); setRenameVal(item.name); }}>
-              <Pencil className="h-4 w-4" /> Renombrar
-            </DropdownMenuItem>
-            {item.kind === 'guide' && (
-              <>
-                <DropdownMenuItem onSelect={() => onDuplicate(item.id)}>
-                  <Copy className="h-4 w-4" /> Duplicar
-                </DropdownMenuItem>
-                <DropdownMenuItem onSelect={() => onExport(item.id)}>
-                  <Download className="h-4 w-4" /> Exportar JSON
-                </DropdownMenuItem>
-              </>
-            )}
-            <MoveMenu item={item} />
-            <DropdownMenuSeparator />
-            <DropdownMenuItem destructive onSelect={() => setDel(item)}>
-              <Trash2 className="h-4 w-4" /> Borrar
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-    );
-  }
 }
