@@ -91,6 +91,20 @@ function fmtDate(iso?: string) {
     return '';
   }
 }
+function fmtDateTime(iso?: string) {
+  if (!iso) return '';
+  try {
+    return new Date(iso).toLocaleString('es', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  } catch {
+    return '';
+  }
+}
 function flatten(folders: Folder[], parentId: string | null = null, depth = 0): { f: Folder; depth: number }[] {
   return folders
     .filter((f) => (f.parentId || null) === parentId)
@@ -634,8 +648,8 @@ export function Dashboard() {
                             /p/{p.slug}
                           </a>
                           <div className="truncate text-xs text-muted-foreground">{p.guideName || '(sin guía)'}</div>
-                          <div className="text-xs text-muted-foreground">Creada: {fmtDate(p.createdAt)}</div>
-                          <div className="text-xs text-muted-foreground">Actualizada: {fmtDate(p.updatedAt)}</div>
+                          <div className="text-xs text-muted-foreground">Creada: {fmtDateTime(p.createdAt)}</div>
+                          <div className="text-xs text-muted-foreground">Actualizada: {fmtDateTime(p.updatedAt)}</div>
                         </div>
                         <Button variant="ghost" size="icon-sm" title="Copiar link" onClick={() => copyPub(p.slug)}>
                           <Copy className="h-4 w-4" />

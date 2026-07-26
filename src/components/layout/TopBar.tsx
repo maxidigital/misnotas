@@ -3,6 +3,7 @@ import { useEditorStore } from '@/store/useEditorStore';
 import { ThemeToggle } from '@/components/layout/ThemeToggle';
 import { SaveIndicator } from '@/components/layout/SaveIndicator';
 import { BuildButton } from '@/features/editor/BuildButton';
+import { PublishButton } from '@/features/editor/PublishButton';
 import { Button } from '@/components/ui/button';
 
 export function TopBar() {
@@ -18,6 +19,7 @@ export function TopBar() {
       <SaveIndicator />
       <div className="mx-1 h-6 w-px bg-border" />
       <BuildButton />
+      <PublishButton />
       <ThemeToggle />
     </header>
   );
