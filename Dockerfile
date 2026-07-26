@@ -1,12 +1,17 @@
-# Build the Vite/React editor, then serve the static dist/ with Caddy on $PORT.
+# Build the Vite/React SPA, then run the Node server that serves it + the guides API.
 FROM node:20-alpine AS build
 WORKDIR /app
-COPY package.json package-lock.json* ./
+COPY package.json package-lock.json ./
 RUN npm ci
 COPY . .
 RUN npm run build
 
-FROM caddy:alpine
-COPY --from=build /app/dist /usr/share/caddy
-COPY Caddyfile /etc/caddy/Caddyfile
-CMD ["caddy", "run", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile"]
+FROM node:20-alpine
+WORKDIR /app
+ENV NODE_ENV=production
+COPY package.json package-lock.json ./
+RUN npm ci --omit=dev
+COPY --from=build /app/dist ./dist
+COPY server ./server
+# DATA_DIR defaults to /data (mount a Railway Volume there). PORT + AUTH_PASSWORD via env.
+CMD ["node", "server/index.mjs"]

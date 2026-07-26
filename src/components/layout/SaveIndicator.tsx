@@ -1,33 +1,26 @@
-import { useEffect, useRef, useState } from 'react';
-import { Check, Loader2 } from 'lucide-react';
-import { useEditorStore } from '@/store/useEditorStore';
+import { AlertCircle, Check, Loader2 } from 'lucide-react';
+import { useSaveStatus } from '@/store/useSaveStatus';
 
-/** Small autosave status: flashes "Guardando…" on edits, otherwise "Guardado". */
+/** Autosave status against the server: Guardando… / Guardado / Error. */
 export function SaveIndicator() {
-  const updatedAt = useEditorStore((s) => s.projects.find((p) => p.id === s.activeProjectId)?.updatedAt);
-  const [saving, setSaving] = useState(false);
-  const first = useRef(true);
+  const status = useSaveStatus((s) => s.status);
 
-  useEffect(() => {
-    if (first.current) {
-      first.current = false;
-      return;
-    }
-    setSaving(true);
-    const t = setTimeout(() => setSaving(false), 600);
-    return () => clearTimeout(t);
-  }, [updatedAt]);
-
-  if (!updatedAt) return null;
-
+  if (status === 'idle') return null;
+  if (status === 'saving')
+    return (
+      <span className="flex items-center gap-1 text-xs text-muted-foreground">
+        <Loader2 className="h-3.5 w-3.5 animate-spin" /> Guardando…
+      </span>
+    );
+  if (status === 'error')
+    return (
+      <span className="flex items-center gap-1 text-xs text-destructive">
+        <AlertCircle className="h-3.5 w-3.5" /> Error al guardar
+      </span>
+    );
   return (
-    <span className="flex items-center gap-1 text-xs text-muted-foreground" title="Se guarda automáticamente en este navegador">
-      {saving ? (
-        <Loader2 className="h-3.5 w-3.5 animate-spin" />
-      ) : (
-        <Check className="h-3.5 w-3.5 text-success" />
-      )}
-      {saving ? 'Guardando…' : 'Guardado'}
+    <span className="flex items-center gap-1 text-xs text-muted-foreground">
+      <Check className="h-3.5 w-3.5 text-success" /> Guardado
     </span>
   );
 }

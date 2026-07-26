@@ -1,7 +1,5 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
 import type { Folio, FolioLink, Project, Section, SectionType, Selection } from '@/types';
-import { seedProject } from '@/data/seed';
 
 const uid = () => (crypto.randomUUID ? crypto.randomUUID() : 'id-' + Math.random().toString(36).slice(2));
 const now = () => new Date().toISOString();
@@ -52,15 +50,16 @@ interface EditorState {
   // selection & tabs
   select: (sel: Selection) => void;
   closeTab: (folioId: string) => void;
+
+  // load a guide (from the server) into the editor
+  loadProject: (project: Project) => void;
 }
 
 function newProject(name: string): Project {
   return { id: uid(), name, createdAt: now(), updatedAt: now(), sections: [] };
 }
 
-export const useEditorStore = create<EditorState>()(
-  persist(
-    (set, get) => {
+export const useEditorStore = create<EditorState>()((set, get) => {
       /** Immutably replace the active project, bumping updatedAt. */
       const mutateActive = (fn: (p: Project) => Project) =>
         set((s) => {
@@ -257,32 +256,8 @@ export const useEditorStore = create<EditorState>()(
             }
             return { openFolioIds, selection };
           }),
+
+        loadProject: (project) =>
+          set({ projects: [project], activeProjectId: project.id, selection: {}, openFolioIds: [] }),
       };
-    },
-    {
-      name: 'guide.editor',
-      partialize: (s) => ({
-        projects: s.projects,
-        activeProjectId: s.activeProjectId,
-        selection: s.selection,
-        openFolioIds: s.openFolioIds,
-      }),
-      onRehydrateStorage: () => (state) => {
-        if (!state) return;
-        // Migrate older persisted data: ensure every folio has a links array.
-        state.projects.forEach((p) =>
-          p.sections.forEach((sec) =>
-            sec.folios.forEach((f) => {
-              if (!Array.isArray(f.links)) f.links = [];
-            })
-          )
-        );
-        // First run: seed with the existing therapy content so the editor isn't empty.
-        if (state.projects.length === 0) {
-          state.projects = [seedProject];
-          state.activeProjectId = seedProject.id;
-        }
-      },
-    }
-  )
-);
+});
