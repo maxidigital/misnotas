@@ -31,6 +31,8 @@ export interface Project {
   name: string;
   createdAt: string;
   updatedAt: string;
+  /** Carpeta contenedora (null = raíz). */
+  folderId?: string | null;
   /** Max line width in characters for the body editor / built folios. 0 or undefined = no limit. */
   maxChars?: number;
   sections: Section[];

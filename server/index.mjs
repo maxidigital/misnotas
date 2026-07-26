@@ -38,8 +38,24 @@ async function writeGuide(id, project) {
   await rename(tmp, fileFor(id)); // escritura atómica
 }
 
+/* ---------- carpetas (registro en _folders.json) ---------- */
+const FOLDERS_FILE = path.join(DATA_DIR, '_folders.json');
+const newFolderId = () => 'f-' + Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
+async function readFolders() {
+  try {
+    return JSON.parse(await readFile(FOLDERS_FILE, 'utf8'));
+  } catch {
+    return [];
+  }
+}
+async function writeFolders(list) {
+  const tmp = FOLDERS_FILE + '.tmp';
+  await writeFile(tmp, JSON.stringify(list, null, 2));
+  await rename(tmp, FOLDERS_FILE);
+}
+
 app.get('/api/guides', requireAuth, async (_req, res) => {
-  const files = (await readdir(DATA_DIR)).filter((f) => f.endsWith('.json'));
+  const files = (await readdir(DATA_DIR)).filter((f) => f.endsWith('.json') && !f.startsWith('_'));
   const list = [];
   for (const f of files) {
     try {
@@ -47,6 +63,7 @@ app.get('/api/guides', requireAuth, async (_req, res) => {
       list.push({
         id: p.id,
         name: p.name,
+        folderId: p.folderId ?? null,
         updatedAt: p.updatedAt,
         sections: (p.sections || []).length,
         folios: (p.sections || []).reduce((a, s) => a + (s.folios || []).length, 0),
@@ -72,9 +89,26 @@ app.post('/api/guides', requireAuth, async (req, res) => {
   const project = req.body || {};
   const id = validId(project.id) ? project.id : newId();
   const now = new Date().toISOString();
-  const toSave = { ...project, id, createdAt: project.createdAt || now, updatedAt: now };
+  const toSave = { ...project, id, folderId: project.folderId ?? null, createdAt: project.createdAt || now, updatedAt: now };
   await writeGuide(id, toSave);
   res.json(toSave);
+});
+
+/* PATCH: cambios de metadatos sin mandar el proyecto entero (renombrar / mover). */
+app.patch('/api/guides/:id', requireAuth, async (req, res) => {
+  if (!validId(req.params.id)) return res.status(400).json({ error: 'bad id' });
+  let p;
+  try {
+    p = await readGuide(req.params.id);
+  } catch {
+    return res.status(404).json({ error: 'not found' });
+  }
+  const b = req.body || {};
+  if (typeof b.name === 'string') p.name = b.name;
+  if ('folderId' in b) p.folderId = b.folderId || null;
+  p.updatedAt = new Date().toISOString();
+  await writeGuide(req.params.id, p);
+  res.json({ id: p.id, name: p.name, folderId: p.folderId ?? null, updatedAt: p.updatedAt });
 });
 
 app.put('/api/guides/:id', requireAuth, async (req, res) => {
@@ -90,6 +124,58 @@ app.delete('/api/guides/:id', requireAuth, async (req, res) => {
     await unlink(fileFor(req.params.id));
   } catch {
     /* ya no existe */
+  }
+  res.json({ ok: true });
+});
+
+/* ---------- carpetas ---------- */
+app.get('/api/folders', requireAuth, async (_req, res) => res.json(await readFolders()));
+
+app.post('/api/folders', requireAuth, async (req, res) => {
+  const folders = await readFolders();
+  const f = {
+    id: newFolderId(),
+    name: String(req.body?.name || 'Carpeta').trim() || 'Carpeta',
+    parentId: req.body?.parentId || null,
+  };
+  folders.push(f);
+  await writeFolders(folders);
+  res.json(f);
+});
+
+app.patch('/api/folders/:id', requireAuth, async (req, res) => {
+  const folders = await readFolders();
+  const f = folders.find((x) => x.id === req.params.id);
+  if (!f) return res.status(404).json({ error: 'not found' });
+  if (typeof req.body?.name === 'string') f.name = req.body.name.trim() || f.name;
+  if ('parentId' in (req.body || {})) f.parentId = req.body.parentId || null;
+  await writeFolders(folders);
+  res.json(f);
+});
+
+app.delete('/api/folders/:id', requireAuth, async (req, res) => {
+  const id = req.params.id;
+  let folders = await readFolders();
+  const target = folders.find((x) => x.id === id);
+  const parent = target ? target.parentId || null : null;
+  // reparent subcarpetas al padre del borrado
+  folders.forEach((x) => {
+    if (x.parentId === id) x.parentId = parent;
+  });
+  folders = folders.filter((x) => x.id !== id);
+  await writeFolders(folders);
+  // reparent guías de esa carpeta al padre
+  const files = (await readdir(DATA_DIR)).filter((f) => f.endsWith('.json') && !f.startsWith('_'));
+  for (const file of files) {
+    try {
+      const p = JSON.parse(await readFile(path.join(DATA_DIR, file), 'utf8'));
+      if ((p.folderId || null) === id) {
+        p.folderId = parent;
+        await writeGuide(p.id, p);
+      }
+    } catch {
+      /* ignorar */
+    }
   }
   res.json({ ok: true });
 });

@@ -27,9 +27,16 @@ async function api(path: string, opts: RequestInit = {}): Promise<any> {
 export interface GuideMeta {
   id: string;
   name: string;
+  folderId: string | null;
   updatedAt: string;
   sections: number;
   folios: number;
+}
+
+export interface Folder {
+  id: string;
+  name: string;
+  parentId: string | null;
 }
 
 export const me = () => api('/me');
@@ -39,7 +46,16 @@ export const createGuide = (project: Partial<Project>): Promise<Project> =>
   api('/guides', { method: 'POST', body: JSON.stringify(project) });
 export const updateGuide = (id: string, project: Project) =>
   api('/guides/' + id, { method: 'PUT', body: JSON.stringify(project) });
+export const patchGuide = (id: string, patch: { name?: string; folderId?: string | null }) =>
+  api('/guides/' + id, { method: 'PATCH', body: JSON.stringify(patch) });
 export const deleteGuide = (id: string) => api('/guides/' + id, { method: 'DELETE' });
+
+export const listFolders = (): Promise<Folder[]> => api('/folders');
+export const createFolder = (name: string, parentId: string | null): Promise<Folder> =>
+  api('/folders', { method: 'POST', body: JSON.stringify({ name, parentId }) });
+export const updateFolder = (id: string, patch: { name?: string; parentId?: string | null }) =>
+  api('/folders/' + id, { method: 'PATCH', body: JSON.stringify(patch) });
+export const deleteFolder = (id: string) => api('/folders/' + id, { method: 'DELETE' });
 
 export async function login(pw: string): Promise<boolean> {
   setPw(pw);
