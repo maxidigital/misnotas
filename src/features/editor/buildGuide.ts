@@ -1,5 +1,6 @@
 import type { Project } from '@/types';
 import { bandColors } from './previewFolio';
+import { LOGO } from '@/logo';
 
 /** Reader runtime (vanilla). All navigation is delegated via data-go / data-kind+data-id. */
 const RUNTIME = `
@@ -23,7 +24,8 @@ function renderMenu(){
   barTitle.textContent = GUIDE.name || 'Guía';
   var main = GUIDE.sections.filter(function(s){ return s.type!=='apendice'; });
   var apx = GUIDE.sections.filter(function(s){ return s.type==='apendice'; });
-  var html = '<div class="grid">' + main.map(function(s){ return scard('#/s/'+s.id, s.name, s.folios.length+' folios', 'band-'+s.id); }).join('') + '</div>';
+  var html = '<div class="menuhead"><img class="menu-logo" src="'+LOGO+'" alt=""><div class="menu-title">'+esc(GUIDE.name||'Guía')+'</div></div>';
+  html += '<div class="grid">' + main.map(function(s){ return scard('#/s/'+s.id, s.name, s.folios.length+' folios', 'band-'+s.id); }).join('') + '</div>';
   if(apx.length) html += '<div class="group">Apéndices</div><div class="grid">' + apx.map(function(s){ return scard('#/s/'+s.id, s.name, s.folios.length+' folios', 'band-'+s.id); }).join('') + '</div>';
   app.innerHTML = html; pagenav.innerHTML = ''; if(scroller) scroller.scrollTop = 0;
 }
@@ -105,6 +107,12 @@ function css(width: string): string {
   @media (prefers-color-scheme: dark) { .topbar { background: #15171c; } }
   .topbar button { cursor: pointer; border: 1px solid rgba(127,127,127,.3); background: transparent; color: inherit; border-radius: 8px; padding: 6px 12px; font-size: 1rem; }
   .topbar .t { flex: 1; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .topbar .brand-logo { height: 26px; width: 26px; object-fit: contain; }
+  @media (prefers-color-scheme: dark) { .topbar .brand-logo { filter: invert(1); } }
+  .menuhead { text-align: center; margin: 8px 0 22px; }
+  .menu-logo { height: 84px; width: 84px; object-fit: contain; }
+  @media (prefers-color-scheme: dark) { .menu-logo { filter: invert(1); } }
+  .menu-title { font-size: 1.5rem; font-weight: 700; margin-top: 6px; }
   .wrap { max-width: ${width}; margin: 0 auto; padding: 28px 32px 48px; min-height: 100%; background: #ffffff; }
   @media (prefers-color-scheme: dark) { .wrap { background: #16181d; } }
   h1.band { font-size: 2.1rem; text-align: center; font-weight: 700; padding: .12em .8em; margin: 0 5% 1em; }
@@ -172,11 +180,12 @@ export function openGuide(project: Project) {
   const html =
     '<!doctype html>\n<html lang="es">\n<head>\n<meta charset="utf-8">\n' +
     '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n' +
+    '<link rel="icon" href="' + LOGO + '">\n' +
     '<title>' + (project.name || 'Guía') + '</title>\n<style>' + css(width) + '\n' + bandCss + '</style>\n</head>\n<body>\n' +
-    '<div class="topbar"><button data-go="#/">⌂ Inicio</button><span class="t" id="barTitle"></span></div>\n' +
+    '<div class="topbar"><img class="brand-logo" src="' + LOGO + '" alt=""><button data-go="#/">⌂ Inicio</button><span class="t" id="barTitle"></span></div>\n' +
     '<div class="scroll"><div class="wrap"><div id="app"></div></div></div>\n' +
     '<div class="pagenav" id="pagenav"></div>\n' +
-    '<script>\nvar GUIDE = ' + json + ';\n' + RUNTIME + '\n</script>\n' +
+    '<script>\nvar GUIDE = ' + json + ';\nvar LOGO = ' + JSON.stringify(LOGO) + ';\n' + RUNTIME + '\n</script>\n' +
     '</body>\n</html>';
 
   const url = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
