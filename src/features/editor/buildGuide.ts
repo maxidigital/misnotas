@@ -98,7 +98,7 @@ function css(width: string): string {
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body { height: 100%; margin: 0; }
   body {
-    display: flex; flex-direction: column; height: 100vh; overflow: hidden;
+    display: flex; flex-direction: column; height: 100vh; height: 100dvh; overflow: hidden;
     background: #ECE3D2; color: #2A2620;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     font-size: 1.5rem; line-height: 1.55;
@@ -199,6 +199,12 @@ function css(width: string): string {
   @media (prefers-color-scheme: dark) { .pagenav button.nav-next { border-color: rgba(255,255,255,.24); } }
   .pagenav button:not(:disabled):hover { border-color: rgba(120,105,80,.55); }
   .pagenav button:disabled { opacity: .38; }
+  /* En pantallas chicas: barra más compacta y sin el botón de sección (ya está en el breadcrumb) */
+  @media (max-width: 560px) {
+    .pagenav { gap: 6px; padding-left: 10px; padding-right: 10px; }
+    .pagenav button { padding: 10px 6px; font-size: .92rem; min-height: 50px; max-width: none; }
+    .pagenav button.nav-side:nth-child(3) { display: none; }
+  }
 `;
 }
 
