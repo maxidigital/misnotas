@@ -143,7 +143,7 @@ viewport.addEventListener('touchend', function(e){
   if(!swipable || !dragging){ dragging=false; return; }
   dragging=false;
   var dx=e.changedTouches[0].clientX-sx;
-  var TH=Math.max(60, W*0.22);
+  var TH=Math.max(90, W*0.45);
   track.classList.add('anim');
   if(dx<=-TH && hasNext){ track.style.transform='translateX('+(-2*W)+'px)'; pendingHash='#/f/'+FLAT[gi0+1].f.id; }
   else if(dx>=TH && hasPrev){ track.style.transform='translateX(0px)'; pendingHash='#/f/'+FLAT[gi0-1].f.id; }
