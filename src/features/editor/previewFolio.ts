@@ -5,15 +5,24 @@ export function esc(s: string) {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
-/** Pastel band colors (light + dark) derived from a base hex. Shared by preview and build. */
+/** Sober band colors (light + dark) derived from a base hex. Shared by preview and build.
+ *  A (near) gray base yields a neutral warm band — no injected hue (fixes the maroon default). */
 export function bandColors(hex: string) {
   const { h, s } = hexToHsl(hex || '#4a4a4a');
-  const sBg = clamp(s, 16, 40);
+  if (s < 12) {
+    return {
+      lightBg: 'hsl(40 12% 89%)',
+      lightText: 'hsl(40 9% 28%)',
+      darkBg: 'hsl(220 8% 25%)',
+      darkText: 'hsl(40 9% 82%)',
+    };
+  }
+  const sBg = clamp(s, 20, 42);
   return {
-    lightBg: `hsl(${h} ${sBg}% 88%)`,
-    lightText: `hsl(${h} ${clamp(s, 38, 78)}% 32%)`,
-    darkBg: `hsl(${h} ${sBg}% 22%)`,
-    darkText: `hsl(${h} ${clamp(s, 34, 74)}% 80%)`,
+    lightBg: `hsl(${h} ${sBg}% 90%)`,
+    lightText: `hsl(${h} ${clamp(s, 40, 70)}% 30%)`,
+    darkBg: `hsl(${h} ${clamp(sBg, 18, 30)}% 24%)`,
+    darkText: `hsl(${h} ${clamp(s, 34, 70)}% 82%)`,
   };
 }
 
@@ -77,20 +86,23 @@ export function openFolioPreview(
   :root { color-scheme: light dark; }
   * { box-sizing: border-box; }
   body {
-    margin: 0; background: #EFE8DA; color: #2A2620;
+    margin: 0; background: #ECE3D2; color: #2A2620;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     font-size: 1.5rem; line-height: 1.55;
   }
-  @media (prefers-color-scheme: dark) { body { background: #17181C; color: #E7E5E0; } }
+  @media (prefers-color-scheme: dark) { body { background: #15161A; color: #E7E5E0; } }
   .wrap {
-    max-width: ${width}; margin: 0 auto; padding: 40px 32px 96px; min-height: 100vh;
-    background: #FFFDFC;
+    max-width: ${width}; margin: 24px auto; padding: 30px 34px 40px;
+    background: #FBF7EE; border: 1px solid rgba(120,105,80,.16); border-radius: 18px;
+    box-shadow: 0 1px 2px rgba(70,55,30,.05), 0 10px 30px rgba(70,55,30,.07);
   }
-  @media (prefers-color-scheme: dark) { .wrap { background: #262930; } }
+  @media (prefers-color-scheme: dark) {
+    .wrap { background: #23262C; border-color: rgba(255,255,255,.06); box-shadow: 0 1px 2px rgba(0,0,0,.3), 0 10px 30px rgba(0,0,0,.28); }
+  }
   h1 {
-    font-size: 2.1rem; text-align: center; font-weight: 700;
+    font-size: 1.95rem; text-align: center; font-weight: 700; line-height: 1.2;
     background: ${band.lightBg}; color: ${band.lightText};
-    padding: .12em .8em; margin: 0 5% 1em;
+    padding: .55em .9em; margin: 0 0 1.1em; border-radius: 16px;
   }
   @media (prefers-color-scheme: dark) {
     h1 { background: ${band.darkBg}; color: ${band.darkText}; }
