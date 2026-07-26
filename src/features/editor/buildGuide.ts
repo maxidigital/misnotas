@@ -94,8 +94,8 @@ function renderFolio(id){
   var prev = gi>0 ? FLAT[gi-1].f : null;
   var next = gi<FLAT.length-1 ? FLAT[gi+1].f : null;
   pagenav.innerHTML = ''
-    + '<button class="nav-side" '+(prev?'data-go="#/f/'+prev.id+'"':'disabled')+'>\\u2039 Ant.</button>'
-    + '<button class="nav-next" '+(next?'data-go="#/f/'+next.id+'"':'disabled')+'>Sig. \\u203a</button>';
+    + '<button class="nav-side" aria-label="Anterior" '+(prev?'data-go="#/f/'+prev.id+'"':'disabled')+'>\\u2190</button>'
+    + '<button class="nav-next" aria-label="Siguiente" '+(next?'data-go="#/f/'+next.id+'"':'disabled')+'>\\u2192</button>';
 }
 function render(){
   var parts = (location.hash||'').replace(/^#/,'').split('/').filter(Boolean);
@@ -266,8 +266,7 @@ function css(width: string): string {
   .pagenav button {
     flex: 1; max-width: calc(${width} / 2); cursor: pointer;
     border: 1px solid rgba(120,105,80,.28); background: #FBF7EE; color: inherit;
-    border-radius: 12px; padding: 12px 8px; font-size: 1rem; min-height: 54px;
-    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    border-radius: 12px; padding: 8px; font-size: 1.6rem; line-height: 1; min-height: 54px;
   }
   @media (prefers-color-scheme: dark) { .pagenav button { background: #2A2D34; border-color: rgba(255,255,255,.10); } }
   .pagenav button.nav-next { font-weight: 700; border-color: rgba(120,105,80,.5); }
@@ -277,7 +276,7 @@ function css(width: string): string {
   /* En pantallas chicas: barra inferior más compacta y a todo el ancho */
   @media (max-width: 560px) {
     .pagenav { gap: 8px; padding-left: 10px; padding-right: 10px; }
-    .pagenav button { padding: 12px 8px; font-size: .95rem; min-height: 52px; max-width: none; }
+    .pagenav button { padding: 8px; font-size: 1.5rem; min-height: 52px; max-width: none; }
   }
 `;
 }
