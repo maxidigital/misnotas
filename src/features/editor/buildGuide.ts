@@ -41,7 +41,7 @@ function renderSection(id){
   var html = '<h1 class="band band-'+s.id+'">'+esc(s.name)+'</h1>';
   html += '<div class="grid">' + s.folios.map(function(f){ return scard('#/f/'+f.id, f.title||'(sin t\\u00edtulo)'); }).join('') + '</div>';
   app.innerHTML = html;
-  pagenav.innerHTML = '<button data-go="#/">\\u2302 Inicio</button>';
+  pagenav.innerHTML = '';
   if(scroller) scroller.scrollTop = 0;
 }
 function renderFolio(id){
@@ -60,8 +60,6 @@ function renderFolio(id){
   app.innerHTML = html;
   pagenav.innerHTML = ''
     + '<button class="nav-side" '+(prev?'data-go="#/f/'+prev.id+'"':'disabled')+'>\\u2039 Ant.</button>'
-    + '<button class="nav-side" data-go="#/">\\u2302 Inicio</button>'
-    + '<button class="nav-side" data-go="#/s/'+s.id+'">'+esc(s.name)+'</button>'
     + '<button class="nav-next" '+(next?'data-go="#/f/'+next.id+'"':'disabled')+'>Sig. \\u203a</button>';
   if(scroller) scroller.scrollTop = 0;
 }
@@ -129,7 +127,7 @@ function css(width: string): string {
 
   /* Reading sheet (card) */
   .wrap {
-    max-width: ${width}; margin: 24px auto; padding: 30px 34px 40px;
+    max-width: ${width}; margin: 0 auto; min-height: 100%; padding: 30px 34px 40px;
     background: #FBF7EE; border: 1px solid rgba(120,105,80,.16); border-radius: 18px;
     box-shadow: 0 1px 2px rgba(70,55,30,.05), 0 10px 30px rgba(70,55,30,.07);
   }
@@ -189,7 +187,7 @@ function css(width: string): string {
   @media (prefers-color-scheme: dark) { .pagenav { background: #1E2026; border-top-color: rgba(255,255,255,.08); } }
   .pagenav:empty { display: none; }
   .pagenav button {
-    flex: 1; max-width: calc(${width} / 3); cursor: pointer;
+    flex: 1; max-width: calc(${width} / 2); cursor: pointer;
     border: 1px solid rgba(120,105,80,.28); background: #FBF7EE; color: inherit;
     border-radius: 12px; padding: 12px 8px; font-size: 1rem; min-height: 54px;
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
@@ -199,11 +197,10 @@ function css(width: string): string {
   @media (prefers-color-scheme: dark) { .pagenav button.nav-next { border-color: rgba(255,255,255,.24); } }
   .pagenav button:not(:disabled):hover { border-color: rgba(120,105,80,.55); }
   .pagenav button:disabled { opacity: .38; }
-  /* En pantallas chicas: barra más compacta y sin el botón de sección (ya está en el breadcrumb) */
+  /* En pantallas chicas: barra inferior más compacta y a todo el ancho */
   @media (max-width: 560px) {
-    .pagenav { gap: 6px; padding-left: 10px; padding-right: 10px; }
-    .pagenav button { padding: 10px 6px; font-size: .92rem; min-height: 50px; max-width: none; }
-    .pagenav button.nav-side:nth-child(3) { display: none; }
+    .pagenav { gap: 8px; padding-left: 10px; padding-right: 10px; }
+    .pagenav button { padding: 12px 8px; font-size: .95rem; min-height: 52px; max-width: none; }
   }
 `;
 }
