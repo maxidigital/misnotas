@@ -292,6 +292,7 @@ export function Dashboard() {
   const [pubGuideId, setPubGuideId] = React.useState('');
   const [pubBusy, setPubBusy] = React.useState(false);
   const [delPub, setDelPub] = React.useState<Publication | null>(null);
+  const [updPub, setUpdPub] = React.useState<Publication | null>(null);
   const fileRef = React.useRef<HTMLInputElement>(null);
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
 
@@ -642,7 +643,7 @@ export function Dashboard() {
                         <Button variant="ghost" size="icon-sm" title="Abrir" onClick={() => window.open(publicUrl(p.slug), '_blank', 'noopener')}>
                           <ExternalLink className="h-4 w-4" />
                         </Button>
-                        <Button variant="ghost" size="icon-sm" title="Actualizar a la versión actual de la guía" onClick={() => onUpdatePub(p)}>
+                        <Button variant="ghost" size="icon-sm" title="Actualizar a la versión actual de la guía" onClick={() => setUpdPub(p)}>
                           <RefreshCw className="h-4 w-4" />
                         </Button>
                         <Button variant="ghost" size="icon-sm" title="Borrar" onClick={() => setDelPub(p)}>
@@ -732,6 +733,29 @@ export function Dashboard() {
           <DialogFooter>
             <Button variant="ghost" onClick={() => setNewPub(false)} disabled={pubBusy}>Cancelar</Button>
             <Button onClick={onCreatePub} disabled={pubBusy}>Crear</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!updPub} onOpenChange={(o) => !o && setUpdPub(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>¿Actualizar /p/{updPub?.slug}?</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">
+            Se reemplaza lo que ven los alumnos por la versión actual de “{updPub?.guideName || 'la guía'}”. El link no cambia.
+          </p>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setUpdPub(null)}>Cancelar</Button>
+            <Button
+              onClick={() => {
+                const p = updPub;
+                setUpdPub(null);
+                if (p) onUpdatePub(p);
+              }}
+            >
+              Actualizar
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

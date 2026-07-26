@@ -93,7 +93,7 @@ export function openFolioPreview(
   @media (prefers-color-scheme: dark) { body { background: #15161A; color: #E7E5E0; } }
   .wrap {
     max-width: ${width}; margin: 24px auto; padding: 30px 34px 40px;
-    background: #FBF7EE; border: 1px solid rgba(120,105,80,.16); border-radius: 18px;
+    background: #FBF7EE; border: 1px solid rgba(120,105,80,.16); border-radius: 8px;
     box-shadow: 0 1px 2px rgba(70,55,30,.05), 0 10px 30px rgba(70,55,30,.07);
   }
   @media (prefers-color-scheme: dark) {

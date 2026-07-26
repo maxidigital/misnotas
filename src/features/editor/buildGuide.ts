@@ -202,10 +202,10 @@ function css(width: string): string {
   .track.anim { transition: transform .28s cubic-bezier(.22,.61,.36,1); }
   .page { flex: 0 0 100%; width: 100%; height: 100%; overflow-y: auto; overscroll-behavior-y: contain; -webkit-overflow-scrolling: touch; }
 
-  /* Reading sheet (card) — fills to the bottom */
+  /* Reading sheet (card) — llena el alto, con unos px de aire arriba/abajo */
   .wrap {
-    max-width: ${width}; margin: 0 auto; min-height: 100%; padding: 30px 34px 40px;
-    background: #FBF7EE; border: 1px solid rgba(120,105,80,.16); border-radius: 18px;
+    max-width: ${width}; margin: 6px auto; min-height: calc(100% - 12px); padding: 30px 34px 40px;
+    background: #FBF7EE; border: 1px solid rgba(120,105,80,.16); border-radius: 8px;
     box-shadow: 0 1px 2px rgba(70,55,30,.05), 0 10px 30px rgba(70,55,30,.07);
   }
   @media (prefers-color-scheme: dark) {
