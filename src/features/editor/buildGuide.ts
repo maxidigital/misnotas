@@ -17,6 +17,17 @@ function findFolio(id){
   }
   return null;
 }
+/* Orden lineal de TODOS los folios (a lo largo de las secciones), para Ant./Sig. y swipe. */
+var FLAT = [];
+GUIDE.sections.forEach(function(s){ s.folios.forEach(function(f){ FLAT.push(f); }); });
+function flatIndex(id){ for(var k=0;k<FLAT.length;k++){ if(FLAT[k].id===id) return k; } return -1; }
+function currentFolioId(){ var p=(location.hash||'').replace(/^#/,'').split('/').filter(Boolean); return (p[0]==='f'&&p[1])?p[1]:null; }
+function goRel(delta){
+  var id=currentFolioId(); if(!id) return;
+  var gi=flatIndex(id); if(gi<0) return;
+  var t=gi+delta; if(t<0||t>=FLAT.length) return;
+  location.hash='#/f/'+FLAT[t].id;
+}
 function crumbLink(label, go){ return '<button class="crumb" data-go="'+go+'">'+esc(label)+'</button>'; }
 function crumbCur(label){ return '<span class="crumb cur">'+esc(label)+'</span>'; }
 function crumbHome(current){ return current ? '<span class="crumb cur">\\u2302 Inicio</span>' : '<button class="crumb" data-go="#/">\\u2302 Inicio</button>'; }
@@ -55,8 +66,9 @@ function renderFolio(id){
       return '<button class="linkbtn" data-kind="'+l.target.kind+'" data-id="'+l.target.id+'">'+esc(l.label||'Ir')+'</button>';
     }).join('') + '</div>';
   }
-  var prev = i>0 ? s.folios[i-1] : null;
-  var next = i<s.folios.length-1 ? s.folios[i+1] : null;
+  var gi = flatIndex(f.id);
+  var prev = gi>0 ? FLAT[gi-1] : null;
+  var next = (gi>=0 && gi<FLAT.length-1) ? FLAT[gi+1] : null;
   app.innerHTML = html;
   pagenav.innerHTML = ''
     + '<button class="nav-side" '+(prev?'data-go="#/f/'+prev.id+'"':'disabled')+'>\\u2039 Ant.</button>'
@@ -80,12 +92,23 @@ document.addEventListener('click', function(e){
   }
 });
 document.addEventListener('keydown', function(e){
-  var parts = (location.hash||'').replace(/^#/,'').split('/').filter(Boolean);
-  if(parts[0]!=='f' || !parts[1]) return;
-  var r = findFolio(parts[1]); if(!r) return;
-  if(e.key==='ArrowLeft' && r.index>0) location.hash = '#/f/'+r.section.folios[r.index-1].id;
-  if(e.key==='ArrowRight' && r.index<r.section.folios.length-1) location.hash = '#/f/'+r.section.folios[r.index+1].id;
+  if(!currentFolioId()) return;
+  if(e.key==='ArrowLeft') goRel(-1);
+  if(e.key==='ArrowRight') goRel(1);
 });
+/* Swipe horizontal para ir a anterior/siguiente (sin romper el scroll vertical). */
+var tsx=0, tsy=0, tracking=false;
+if(scroller){
+  scroller.addEventListener('touchstart', function(e){
+    if(e.touches.length!==1){ tracking=false; return; }
+    tracking=true; tsx=e.touches[0].clientX; tsy=e.touches[0].clientY;
+  }, {passive:true});
+  scroller.addEventListener('touchend', function(e){
+    if(!tracking) return; tracking=false;
+    var t=e.changedTouches[0]; var dx=t.clientX-tsx, dy=t.clientY-tsy;
+    if(Math.abs(dx)>60 && Math.abs(dx)>Math.abs(dy)*1.6){ goRel(dx<0?1:-1); }
+  }, {passive:true});
+}
 window.addEventListener('hashchange', render);
 render();
 `;
