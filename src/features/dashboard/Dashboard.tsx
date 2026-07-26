@@ -20,6 +20,7 @@ import {
   FolderPlus,
   Home,
   Library,
+  Link2,
   LogOut,
   MoreVertical,
   Pencil,
@@ -37,6 +38,7 @@ import {
   createFolder,
   updateFolder,
   deleteFolder,
+  publicUrl,
   ApiError,
   type GuideMeta,
   type Folder,
@@ -243,7 +245,14 @@ function GuideCard({ g, onOpen, nodes }: { g: GuideMeta; onOpen: () => void; nod
             <div className="text-xs text-muted-foreground">
               {g.sections} secciones · {g.folios} folios
             </div>
-            <div className="text-xs text-muted-foreground">{fmtDate(g.updatedAt)}</div>
+            <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
+              <span>{fmtDate(g.updatedAt)}</span>
+              {g.published && (
+                <span className="inline-flex items-center gap-1 rounded-full bg-success/15 px-2 py-0.5 text-[10px] font-medium text-success">
+                  <span className="h-1.5 w-1.5 rounded-full bg-success" /> Publicada
+                </span>
+              )}
+            </div>
           </button>
           <Kebab nodes={nodes} />
         </div>
@@ -418,6 +427,17 @@ export function Dashboard() {
       { type: 'item', label: 'Renombrar', icon: <Pencil className="h-4 w-4" />, onSelect: () => { setRename(item); setRenameVal(item.name); } },
       ...(item.kind === 'guide'
         ? ([
+            {
+              type: 'item',
+              label: 'Copiar link',
+              icon: <Link2 className="h-4 w-4" />,
+              disabled: !guides.find((g) => g.id === item.id)?.published,
+              onSelect: () =>
+                navigator.clipboard
+                  .writeText(publicUrl(item.id))
+                  .then(() => toast.success('Link copiado'))
+                  .catch(() => toast.error('No se pudo copiar')),
+            },
             { type: 'item', label: 'Duplicar', icon: <Copy className="h-4 w-4" />, onSelect: () => onDuplicate(item.id) },
             { type: 'item', label: 'Exportar JSON', icon: <Download className="h-4 w-4" />, onSelect: () => onExport(item.id) },
           ] as MenuNode[])

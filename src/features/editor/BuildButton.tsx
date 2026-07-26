@@ -1,4 +1,4 @@
-import { Hammer } from 'lucide-react';
+import { Eye } from 'lucide-react';
 import { toast } from 'sonner';
 import { useEditorStore } from '@/store/useEditorStore';
 import { Button } from '@/components/ui/button';
@@ -17,12 +17,12 @@ export function BuildButton() {
       return;
     }
     openGuide(project);
-    toast.success('Guía generada (pestaña nueva)');
+    toast.success('Vista previa abierta (pestaña nueva)');
   };
 
   return (
-    <Button variant="outline" size="sm" onClick={onBuild} title="Generar la guía navegable (pestaña nueva)">
-      <Hammer className="h-4 w-4" /> Build
+    <Button variant="outline" size="sm" onClick={onBuild} title="Ver la guía navegable (pestaña nueva, no publica)">
+      <Eye className="h-4 w-4" /> Vista previa
     </Button>
   );
 }

@@ -29,9 +29,18 @@ export interface GuideMeta {
   name: string;
   folderId: string | null;
   updatedAt: string;
+  published?: boolean;
   sections: number;
   folios: number;
 }
+
+export interface PublishStatus {
+  published: boolean;
+  publishedAt: string | null;
+}
+
+/** Link público (sin login) de una guía publicada. */
+export const publicUrl = (id: string) => location.origin + '/p/' + id;
 
 export interface Folder {
   id: string;
@@ -49,6 +58,11 @@ export const updateGuide = (id: string, project: Project) =>
 export const patchGuide = (id: string, patch: { name?: string; folderId?: string | null }) =>
   api('/guides/' + id, { method: 'PATCH', body: JSON.stringify(patch) });
 export const deleteGuide = (id: string) => api('/guides/' + id, { method: 'DELETE' });
+
+export const getPublishStatus = (id: string): Promise<PublishStatus> => api('/guides/' + id + '/publish');
+export const publishGuide = (id: string, html: string): Promise<{ ok: boolean; url: string; publishedAt: string }> =>
+  api('/guides/' + id + '/publish', { method: 'POST', body: JSON.stringify({ html }) });
+export const unpublishGuide = (id: string) => api('/guides/' + id + '/publish', { method: 'DELETE' });
 
 export const listFolders = (): Promise<Folder[]> => api('/folders');
 export const createFolder = (name: string, parentId: string | null): Promise<Folder> =>

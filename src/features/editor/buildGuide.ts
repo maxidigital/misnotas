@@ -282,8 +282,8 @@ function css(width: string): string {
 `;
 }
 
-/** Builds the full navigable guide and opens it in a new browser tab. */
-export function openGuide(project: Project) {
+/** Builds the full self-contained navigable guide and returns the HTML string. */
+export function renderGuideHtml(project: Project): string {
   const width = project.maxChars && project.maxChars > 0 ? `${project.maxChars}ch` : '46rem';
 
   const bandCss = project.sections
@@ -324,6 +324,12 @@ export function openGuide(project: Project) {
     '<script>\nvar GUIDE = ' + json + ';\nvar LOGO = ' + JSON.stringify(LOGO) + ';\n' + RUNTIME + '\n</script>\n' +
     '</body>\n</html>';
 
+  return html;
+}
+
+/** Vista previa: genera la guía y la abre en una pestaña nueva (efímera, no publica). */
+export function openGuide(project: Project) {
+  const html = renderGuideHtml(project);
   const url = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
   window.open(url, '_blank', 'noopener');
   setTimeout(() => URL.revokeObjectURL(url), 30000);
