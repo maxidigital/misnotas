@@ -691,11 +691,6 @@ export function Dashboard() {
           <DialogHeader>
             <DialogTitle>¿Borrar “{del?.name}”?</DialogTitle>
           </DialogHeader>
-          <p className="text-sm text-muted-foreground">
-            {del?.kind === 'folder'
-              ? 'Se borra la carpeta; su contenido pasa a la carpeta padre.'
-              : 'Se elimina la guía y su contenido. No se puede deshacer.'}
-          </p>
           <DialogFooter>
             <Button variant="ghost" onClick={() => setDel(null)}>Cancelar</Button>
             <Button variant="destructive" onClick={doDelete}>Borrar</Button>
@@ -742,9 +737,6 @@ export function Dashboard() {
           <DialogHeader>
             <DialogTitle>¿Actualizar /p/{updPub?.slug}?</DialogTitle>
           </DialogHeader>
-          <p className="text-sm text-muted-foreground">
-            Se reemplaza lo que ven los alumnos por la versión actual de “{updPub?.guideName || 'la guía'}”. El link no cambia.
-          </p>
           <DialogFooter>
             <Button variant="ghost" onClick={() => setUpdPub(null)}>Cancelar</Button>
             <Button
@@ -765,7 +757,6 @@ export function Dashboard() {
           <DialogHeader>
             <DialogTitle>¿Borrar la publicación /p/{delPub?.slug}?</DialogTitle>
           </DialogHeader>
-          <p className="text-sm text-muted-foreground">El link dejará de funcionar. La guía no se toca.</p>
           <DialogFooter>
             <Button variant="ghost" onClick={() => setDelPub(null)}>Cancelar</Button>
             <Button variant="destructive" onClick={onDeletePub}>Borrar</Button>
