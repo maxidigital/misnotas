@@ -28,7 +28,7 @@ export function EditorWorkspace() {
 
   return (
     <PanelGroup direction="horizontal" autoSaveId="guide.editor.panels" className="min-h-0 flex-1">
-      <Panel defaultSize={30} minSize={22} className="bg-sidebar text-sidebar-foreground">
+      <Panel defaultSize={30} minSize={22} className="border-r border-border bg-muted">
         <SectionTree />
       </Panel>
       <PanelResizeHandle className="w-px bg-border/60 transition-colors hover:bg-primary/40 data-[resize-handle-state=drag]:bg-primary/60" />

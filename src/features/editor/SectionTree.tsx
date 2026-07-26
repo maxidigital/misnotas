@@ -56,19 +56,14 @@ export function SectionTree() {
   };
 
   if (!project) {
-    return <div className="p-4 text-sm text-sidebar-foreground/60">No hay proyecto activo.</div>;
+    return <div className="p-4 text-sm text-muted-foreground">No hay proyecto activo.</div>;
   }
 
   return (
     <div className="flex h-full flex-col">
       <div className="flex items-center justify-between px-4 py-3">
-        <span className="text-xs font-semibold uppercase tracking-wide text-sidebar-foreground/60">Secciones</span>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="text-sidebar-foreground/80 hover:!bg-white/10 hover:!text-sidebar-foreground"
-          onClick={() => addSection()}
-        >
+        <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Secciones</span>
+        <Button variant="ghost" size="sm" onClick={() => addSection()}>
           <Plus className="h-4 w-4" /> Sección
         </Button>
       </div>
@@ -102,18 +97,18 @@ function SortableSection({ section }: { section: Section }) {
       <div
         className={cn(
           'group flex items-center gap-1 rounded-lg px-2 py-2 transition-colors',
-          selected ? 'bg-white/[0.12]' : 'hover:bg-white/[0.06]'
+          selected ? 'bg-primary/12' : 'hover:bg-accent/60'
         )}
       >
         <button
-          className="cursor-grab text-sidebar-foreground/40 hover:text-sidebar-foreground active:cursor-grabbing"
+          className="cursor-grab text-muted-foreground/50 hover:text-foreground active:cursor-grabbing"
           {...attributes}
           {...listeners}
           title="Arrastrar para reordenar"
         >
           <GripVertical className="h-4 w-4" />
         </button>
-        <button className="text-sidebar-foreground/60" onClick={() => setCollapsed((c) => !c)} title={collapsed ? 'Expandir' : 'Colapsar'}>
+        <button className="text-muted-foreground" onClick={() => setCollapsed((c) => !c)} title={collapsed ? 'Expandir' : 'Colapsar'}>
           {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
         </button>
         <button className="flex min-w-0 flex-1 items-center gap-2 text-left" onClick={() => select({ sectionId: section.id })}>
@@ -124,15 +119,15 @@ function SortableSection({ section }: { section: Section }) {
             {section.name}
           </span>
           {section.type === 'apendice' && (
-            <span className="rounded bg-white/10 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-sidebar-foreground/70">
+            <span className="rounded bg-secondary px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
               apéndice
             </span>
           )}
         </button>
-        <span className="text-xs text-sidebar-foreground/50">{section.folios.length}</span>
+        <span className="text-xs text-muted-foreground">{section.folios.length}</span>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon-sm" className="text-sidebar-foreground/70 opacity-0 hover:!bg-white/10 hover:!text-sidebar-foreground group-hover:opacity-100 data-[state=open]:opacity-100">
+            <Button variant="ghost" size="icon-sm" className="opacity-0 group-hover:opacity-100 data-[state=open]:opacity-100">
               <MoreVertical className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
@@ -179,11 +174,11 @@ function SortableFolio({ folio, sectionId }: { folio: Folio; sectionId: string }
       <div
         className={cn(
           'group flex items-center gap-1 rounded-lg px-2 py-1.5 transition-colors',
-          selected ? 'bg-white/[0.12] font-medium' : 'hover:bg-white/[0.06]'
+          selected ? 'bg-primary/12 font-medium text-primary' : 'hover:bg-accent/60'
         )}
       >
         <button
-          className="cursor-grab text-sidebar-foreground/40 hover:text-sidebar-foreground active:cursor-grabbing"
+          className="cursor-grab text-muted-foreground/50 hover:text-foreground active:cursor-grabbing"
           {...attributes}
           {...listeners}
           title="Arrastrar para reordenar"
@@ -191,11 +186,11 @@ function SortableFolio({ folio, sectionId }: { folio: Folio; sectionId: string }
           <GripVertical className="h-3.5 w-3.5" />
         </button>
         <button className="min-w-0 flex-1 truncate py-0.5 text-left text-sm" onClick={() => select({ sectionId, folioId: folio.id })}>
-          {folio.title || <span className="text-sidebar-foreground/50">(sin título)</span>}
+          {folio.title || <span className="text-muted-foreground">(sin título)</span>}
         </button>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon-sm" className="text-sidebar-foreground/70 opacity-0 hover:!bg-white/10 hover:!text-sidebar-foreground group-hover:opacity-100 data-[state=open]:opacity-100">
+            <Button variant="ghost" size="icon-sm" className="opacity-0 group-hover:opacity-100 data-[state=open]:opacity-100">
               <MoreVertical className="h-3.5 w-3.5" />
             </Button>
           </DropdownMenuTrigger>
