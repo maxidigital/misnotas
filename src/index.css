@@ -1,0 +1,120 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Design tokens — dark-first, neutral blue-slate (de v2x-tools-frontend). */
+@layer base {
+  :root {
+    --background: 210 40% 98%;
+    --foreground: 226 22% 11%;
+    --card: 0 0% 100%;
+    --card-foreground: 226 22% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 226 22% 11%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 214 32% 91%;
+    --secondary-foreground: 226 22% 11%;
+    --muted: 214 32% 94%;
+    --muted-foreground: 215 16% 47%;
+    --accent: 214 32% 91%;
+    --accent-foreground: 226 22% 11%;
+    --success: 142 71% 40%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 214 32% 88%;
+    --input: 214 32% 88%;
+    --ring: 217 91% 60%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 226 22% 7%;
+    --foreground: 214 32% 91%;
+    --card: 224 26% 11%;
+    --card-foreground: 214 32% 91%;
+    --popover: 224 26% 11%;
+    --popover-foreground: 214 32% 91%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 222 25% 16%;
+    --secondary-foreground: 214 32% 91%;
+    --muted: 222 22% 15%;
+    --muted-foreground: 215 20% 60%;
+    --accent: 222 25% 18%;
+    --accent-foreground: 214 32% 91%;
+    --success: 142 69% 50%;
+    --destructive: 0 72% 55%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 222 20% 20%;
+    --input: 222 20% 22%;
+    --ring: 217 91% 60%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+}
+
+/* Tiptap editor surface */
+.rte-content {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+.rte-content p {
+  margin: 0 0 0.55em;
+}
+.rte-content p:last-child {
+  margin-bottom: 0;
+}
+.rte-content strong {
+  font-weight: 700;
+}
+.rte-content em {
+  font-style: italic;
+}
+.rte-content a.internal-link {
+  color: hsl(var(--primary));
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+.rte-content ul,
+.rte-content ol {
+  margin: 0 0 0.55em;
+  padding-left: 1.4em;
+}
+.rte-content ul {
+  list-style: disc;
+}
+.rte-content ol {
+  list-style: decimal;
+}
+.rte-content li {
+  margin: 0.15em 0;
+}
+.rte-content li > p {
+  margin: 0;
+}
+.rte-content hr {
+  border: none;
+  border-top: 2px solid hsl(var(--border));
+  margin: 0.9em 0;
+}
+.rte-content hr.ProseMirror-selectednode {
+  border-top-color: hsl(var(--primary));
+}
+.rte-content:focus {
+  outline: none;
+}
