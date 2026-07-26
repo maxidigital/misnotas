@@ -19,6 +19,7 @@ import {
   FolderInput,
   FolderPlus,
   Home,
+  Library,
   LogOut,
   MoreVertical,
   Pencil,
@@ -436,61 +437,79 @@ export function Dashboard() {
 
   return (
     <DndContext sensors={sensors} onDragEnd={onDragEnd}>
-      <div className="flex h-full flex-col">
-        <header className="flex items-center gap-3 border-b border-border px-6 py-3">
-          <img src="/blasco.png" alt="" className="h-7 w-7 object-contain dark:invert" />
-          <span className="font-semibold">misnotas</span>
+      <div className="flex h-full">
+        {/* Sidebar de navegación */}
+        <aside className="flex w-56 shrink-0 flex-col bg-sidebar text-sidebar-foreground">
+          <div className="flex items-center gap-2.5 px-5 py-5">
+            <img src="/blasco.png" alt="" className="h-7 w-7 object-contain [filter:invert(1)]" />
+            <span className="text-lg font-semibold tracking-tight">misnotas</span>
+          </div>
+          <nav className="px-3">
+            <div className="flex items-center gap-3 rounded-lg bg-white/10 px-3 py-2 text-sm font-medium">
+              <Library className="h-[18px] w-[18px]" /> Guías
+            </div>
+          </nav>
           <div className="flex-1" />
-          <input ref={fileRef} type="file" accept="application/json,.json" className="hidden" onChange={onImport} />
-          <Button variant="ghost" size="sm" onClick={() => setNewFolder(true)}>
-            <FolderPlus className="h-4 w-4" /> Carpeta
-          </Button>
-          <Button variant="ghost" size="sm" onClick={() => fileRef.current?.click()}>
-            <Upload className="h-4 w-4" /> Importar
-          </Button>
-          <Button size="sm" onClick={onNewGuide}>
-            <FilePlus2 className="h-4 w-4" /> Nueva guía
-          </Button>
-          <ThemeToggle />
-          <Button variant="ghost" size="icon" title="Salir" onClick={logout}>
-            <LogOut className="h-4 w-4" />
-          </Button>
-        </header>
-
-        {/* Breadcrumb (también drop targets) */}
-        <div className="flex items-center gap-1 px-6 py-3 text-sm text-muted-foreground">
-          <DropZone id="crumb-root" folderId={null} className="px-1">
-            <button className="flex items-center gap-1 hover:text-foreground" onClick={() => setCwd(null)}>
-              <Home className="h-4 w-4" /> Mis guías
+          <div className="border-t border-white/10 p-3">
+            <button
+              onClick={logout}
+              className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-sidebar-foreground/80 transition-colors hover:bg-white/10 hover:text-sidebar-foreground"
+            >
+              <LogOut className="h-[18px] w-[18px]" /> Salir
             </button>
-          </DropZone>
-          {crumbs.map((f) => (
-            <span key={f.id} className="flex items-center gap-1">
-              <ChevronRight className="h-4 w-4 opacity-50" />
-              <DropZone id={'crumb-' + f.id} folderId={f.id} className="px-1">
-                <button className="hover:text-foreground" onClick={() => setCwd(f.id)}>
-                  {f.name}
+          </div>
+        </aside>
+
+        {/* Main */}
+        <div className="flex min-w-0 flex-1 flex-col">
+          <header className="flex items-center gap-2 px-8 py-5">
+            {/* Breadcrumb (también drop targets) */}
+            <nav className="flex flex-1 items-center gap-1 text-sm text-foreground/70">
+              <DropZone id="crumb-root" folderId={null} className="px-1">
+                <button className="flex items-center gap-1.5 font-medium hover:text-foreground" onClick={() => setCwd(null)}>
+                  <Home className="h-4 w-4" /> Mis guías
                 </button>
               </DropZone>
-            </span>
-          ))}
-        </div>
+              {crumbs.map((f) => (
+                <span key={f.id} className="flex items-center gap-1">
+                  <ChevronRight className="h-4 w-4 opacity-50" />
+                  <DropZone id={'crumb-' + f.id} folderId={f.id} className="px-1">
+                    <button className="font-medium hover:text-foreground" onClick={() => setCwd(f.id)}>
+                      {f.name}
+                    </button>
+                  </DropZone>
+                </span>
+              ))}
+            </nav>
+            <input ref={fileRef} type="file" accept="application/json,.json" className="hidden" onChange={onImport} />
+            <Button variant="ghost" size="sm" onClick={() => setNewFolder(true)}>
+              <FolderPlus className="h-4 w-4" /> Carpeta
+            </Button>
+            <Button variant="ghost" size="sm" onClick={() => fileRef.current?.click()}>
+              <Upload className="h-4 w-4" /> Importar
+            </Button>
+            <Button size="sm" onClick={onNewGuide}>
+              <FilePlus2 className="h-4 w-4" /> Nueva guía
+            </Button>
+            <ThemeToggle />
+          </header>
 
-        <div className="min-h-0 flex-1 overflow-y-auto px-6 pb-10">
-          {!loaded ? (
-            <p className="text-muted-foreground">Cargando…</p>
-          ) : subfolders.length === 0 && items.length === 0 ? (
-            <p className="text-muted-foreground">Carpeta vacía. Creá una guía o una carpeta.</p>
-          ) : (
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {subfolders.map((f) => (
-                <FolderCard key={f.id} f={f} onOpen={() => setCwd(f.id)} nodes={itemNodes({ kind: 'folder', id: f.id, name: f.name })} />
-              ))}
-              {items.map((g) => (
-                <GuideCard key={g.id} g={g} onOpen={() => openGuide(g.id)} nodes={itemNodes({ kind: 'guide', id: g.id, name: g.name })} />
-              ))}
-            </div>
-          )}
+          <div className="min-h-0 flex-1 overflow-y-auto px-8 pb-10">
+            {!loaded ? (
+              <p className="text-foreground/70">Cargando…</p>
+            ) : subfolders.length === 0 && items.length === 0 ? (
+              <p className="text-foreground/70">Carpeta vacía. Creá una guía o una carpeta.</p>
+            ) : (
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                {subfolders.map((f) => (
+                  <FolderCard key={f.id} f={f} onOpen={() => setCwd(f.id)} nodes={itemNodes({ kind: 'folder', id: f.id, name: f.name })} />
+                ))}
+                {items.map((g) => (
+                  <GuideCard key={g.id} g={g} onOpen={() => openGuide(g.id)} nodes={itemNodes({ kind: 'guide', id: g.id, name: g.name })} />
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 

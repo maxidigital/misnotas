@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 export function TopBar() {
   const name = useEditorStore((s) => s.projects.find((p) => p.id === s.activeProjectId)?.name);
   return (
-    <header className="flex h-14 shrink-0 items-center gap-3 border-b border-border px-4">
+    <header className="flex h-14 shrink-0 items-center gap-3 border-b border-border bg-card px-4">
       <Button variant="ghost" size="sm" onClick={() => (location.hash = '#/')}>
         <ArrowLeft className="h-4 w-4" /> Mis guías
       </Button>

@@ -32,7 +32,7 @@ export function EditorWorkspace() {
         <SectionTree />
       </Panel>
       <PanelResizeHandle className="w-px bg-border/60 transition-colors hover:bg-primary/40 data-[resize-handle-state=drag]:bg-primary/60" />
-      <Panel minSize={40} className="flex min-h-0 flex-col bg-background">
+      <Panel minSize={40} className="flex min-h-0 flex-col bg-card">
         <FolioTabs />
         <div className="min-h-0 flex-1 overflow-y-auto">
           {!project ? (
