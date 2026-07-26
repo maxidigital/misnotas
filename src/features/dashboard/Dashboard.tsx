@@ -13,17 +13,19 @@ import {
   ChevronRight,
   Copy,
   Download,
+  ExternalLink,
   FilePlus2,
   FileText,
   Folder as FolderIcon,
   FolderInput,
   FolderPlus,
+  Globe,
   Home,
   Library,
-  Link2,
   LogOut,
   MoreVertical,
   Pencil,
+  RefreshCw,
   Trash2,
   Upload,
 } from 'lucide-react';
@@ -38,11 +40,17 @@ import {
   createFolder,
   updateFolder,
   deleteFolder,
+  listPublications,
+  createPublication,
+  updatePublication,
+  deletePublication,
   publicUrl,
   ApiError,
   type GuideMeta,
   type Folder,
+  type Publication,
 } from '@/services/guidesApi';
+import { renderGuideHtml } from '@/features/editor/buildGuide';
 import { useAuth } from '@/store/useAuth';
 import type { Project } from '@/types';
 import { Button } from '@/components/ui/button';
@@ -245,14 +253,7 @@ function GuideCard({ g, onOpen, nodes }: { g: GuideMeta; onOpen: () => void; nod
             <div className="text-xs text-muted-foreground">
               {g.sections} secciones · {g.folios} folios
             </div>
-            <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
-              <span>{fmtDate(g.updatedAt)}</span>
-              {g.published && (
-                <span className="inline-flex items-center gap-1 rounded-full bg-success/15 px-2 py-0.5 text-[10px] font-medium text-success">
-                  <span className="h-1.5 w-1.5 rounded-full bg-success" /> Publicada
-                </span>
-              )}
-            </div>
+            <div className="text-xs text-muted-foreground">{fmtDate(g.updatedAt)}</div>
           </button>
           <Kebab nodes={nodes} />
         </div>
@@ -275,8 +276,10 @@ function DropZone({ id, folderId, className, children }: { id: string; folderId:
 
 export function Dashboard() {
   const logout = useAuth((s) => s.logout);
+  const [view, setView] = React.useState<'guides' | 'publications'>('guides');
   const [guides, setGuides] = React.useState<GuideMeta[]>([]);
   const [folders, setFolders] = React.useState<Folder[]>([]);
+  const [pubs, setPubs] = React.useState<Publication[]>([]);
   const [loaded, setLoaded] = React.useState(false);
   const [cwd, setCwd] = React.useState<string | null>(null);
   const [rename, setRename] = React.useState<Item | null>(null);
@@ -284,14 +287,20 @@ export function Dashboard() {
   const [del, setDel] = React.useState<Item | null>(null);
   const [newFolder, setNewFolder] = React.useState(false);
   const [folderName, setFolderName] = React.useState('');
+  const [newPub, setNewPub] = React.useState(false);
+  const [pubSlug, setPubSlug] = React.useState('');
+  const [pubGuideId, setPubGuideId] = React.useState('');
+  const [pubBusy, setPubBusy] = React.useState(false);
+  const [delPub, setDelPub] = React.useState<Publication | null>(null);
   const fileRef = React.useRef<HTMLInputElement>(null);
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
 
   const reload = React.useCallback(() => {
-    Promise.all([listGuides(), listFolders()])
-      .then(([g, f]) => {
+    Promise.all([listGuides(), listFolders(), listPublications()])
+      .then(([g, f, p]) => {
         setGuides(g);
         setFolders(f);
+        setPubs(p);
         setLoaded(true);
       })
       .catch((e) => {
@@ -427,17 +436,6 @@ export function Dashboard() {
       { type: 'item', label: 'Renombrar', icon: <Pencil className="h-4 w-4" />, onSelect: () => { setRename(item); setRenameVal(item.name); } },
       ...(item.kind === 'guide'
         ? ([
-            {
-              type: 'item',
-              label: 'Copiar link',
-              icon: <Link2 className="h-4 w-4" />,
-              disabled: !guides.find((g) => g.id === item.id)?.published,
-              onSelect: () =>
-                navigator.clipboard
-                  .writeText(publicUrl(item.id))
-                  .then(() => toast.success('Link copiado'))
-                  .catch(() => toast.error('No se pudo copiar')),
-            },
             { type: 'item', label: 'Duplicar', icon: <Copy className="h-4 w-4" />, onSelect: () => onDuplicate(item.id) },
             { type: 'item', label: 'Exportar JSON', icon: <Download className="h-4 w-4" />, onSelect: () => onExport(item.id) },
           ] as MenuNode[])
@@ -455,6 +453,57 @@ export function Dashboard() {
     move(active, target.folderId);
   };
 
+  /* ---------- publicaciones ---------- */
+  const renderHtmlFor = async (guideId: string): Promise<{ html: string; name: string }> => {
+    const full = await getGuide(guideId);
+    return { html: renderGuideHtml(full), name: full.name || '' };
+  };
+  const onCreatePub = async () => {
+    const s = slug(pubSlug);
+    if (!pubSlug.trim()) return toast.error('Poné una URL');
+    if (!pubGuideId) return toast.error('Elegí una guía');
+    setPubBusy(true);
+    try {
+      const { html, name } = await renderHtmlFor(pubGuideId);
+      await createPublication({ slug: s, guideId: pubGuideId, guideName: name, html });
+      toast.success('Publicación creada');
+      setNewPub(false);
+      setPubSlug('');
+      setPubGuideId('');
+      reload();
+    } catch (e) {
+      toast.error(e instanceof ApiError && e.status === 409 ? 'Ese link ya existe' : 'No se pudo publicar');
+    } finally {
+      setPubBusy(false);
+    }
+  };
+  const onUpdatePub = async (p: Publication) => {
+    if (!p.guideId) return toast.error('Esta publicación no tiene guía asociada');
+    try {
+      const { html, name } = await renderHtmlFor(p.guideId);
+      await updatePublication(p.slug, { guideId: p.guideId, guideName: name, html });
+      toast.success('Publicación actualizada a la versión actual');
+      reload();
+    } catch {
+      toast.error('No se pudo actualizar (¿existe la guía?)');
+    }
+  };
+  const onDeletePub = async () => {
+    if (!delPub) return;
+    try {
+      await deletePublication(delPub.slug);
+      setDelPub(null);
+      reload();
+    } catch {
+      toast.error('No se pudo borrar');
+    }
+  };
+  const copyPub = (s: string) =>
+    navigator.clipboard
+      .writeText(publicUrl(s))
+      .then(() => toast.success('Link copiado'))
+      .catch(() => toast.error('No se pudo copiar'));
+
   return (
     <DndContext sensors={sensors} onDragEnd={onDragEnd}>
       <div className="flex h-full">
@@ -464,10 +513,24 @@ export function Dashboard() {
             <img src="/blasco.png" alt="" className="h-7 w-7 object-contain [filter:invert(1)]" />
             <span className="text-lg font-semibold tracking-tight">Instituto Blasco</span>
           </div>
-          <nav className="px-3">
-            <div className="flex items-center gap-3 rounded-lg bg-white/10 px-3 py-2 text-sm font-medium">
-              <Library className="h-[18px] w-[18px]" /> Guías
-            </div>
+          <nav className="space-y-1 px-3">
+            {([
+              { key: 'guides', label: 'Guías', icon: Library },
+              { key: 'publications', label: 'Publicaciones', icon: Globe },
+            ] as const).map((it) => (
+              <button
+                key={it.key}
+                onClick={() => setView(it.key)}
+                className={cn(
+                  'flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                  view === it.key
+                    ? 'bg-white/10'
+                    : 'text-sidebar-foreground/80 hover:bg-white/10 hover:text-sidebar-foreground'
+                )}
+              >
+                <it.icon className="h-[18px] w-[18px]" /> {it.label}
+              </button>
+            ))}
           </nav>
           <div className="flex-1" />
           <div className="border-t border-white/10 p-3">
@@ -482,54 +545,116 @@ export function Dashboard() {
 
         {/* Main */}
         <div className="flex min-w-0 flex-1 flex-col">
-          <header className="flex items-center gap-2 px-8 py-5">
-            {/* Breadcrumb (también drop targets) */}
-            <nav className="flex flex-1 items-center gap-1 text-sm text-foreground/70">
-              <DropZone id="crumb-root" folderId={null} className="px-1">
-                <button className="flex items-center gap-1.5 font-medium hover:text-foreground" onClick={() => setCwd(null)}>
-                  <Home className="h-4 w-4" /> Mis guías
-                </button>
-              </DropZone>
-              {crumbs.map((f) => (
-                <span key={f.id} className="flex items-center gap-1">
-                  <ChevronRight className="h-4 w-4 opacity-50" />
-                  <DropZone id={'crumb-' + f.id} folderId={f.id} className="px-1">
-                    <button className="font-medium hover:text-foreground" onClick={() => setCwd(f.id)}>
-                      {f.name}
+          {view === 'guides' ? (
+            <>
+              <header className="flex items-center gap-2 px-8 py-5">
+                {/* Breadcrumb (también drop targets) */}
+                <nav className="flex flex-1 items-center gap-1 text-sm text-foreground/70">
+                  <DropZone id="crumb-root" folderId={null} className="px-1">
+                    <button className="flex items-center gap-1.5 font-medium hover:text-foreground" onClick={() => setCwd(null)}>
+                      <Home className="h-4 w-4" /> Mis guías
                     </button>
                   </DropZone>
-                </span>
-              ))}
-            </nav>
-            <input ref={fileRef} type="file" accept="application/json,.json" className="hidden" onChange={onImport} />
-            <Button variant="ghost" size="sm" onClick={() => setNewFolder(true)}>
-              <FolderPlus className="h-4 w-4" /> Carpeta
-            </Button>
-            <Button variant="ghost" size="sm" onClick={() => fileRef.current?.click()}>
-              <Upload className="h-4 w-4" /> Importar
-            </Button>
-            <Button size="sm" onClick={onNewGuide}>
-              <FilePlus2 className="h-4 w-4" /> Nueva guía
-            </Button>
-            <ThemeToggle />
-          </header>
+                  {crumbs.map((f) => (
+                    <span key={f.id} className="flex items-center gap-1">
+                      <ChevronRight className="h-4 w-4 opacity-50" />
+                      <DropZone id={'crumb-' + f.id} folderId={f.id} className="px-1">
+                        <button className="font-medium hover:text-foreground" onClick={() => setCwd(f.id)}>
+                          {f.name}
+                        </button>
+                      </DropZone>
+                    </span>
+                  ))}
+                </nav>
+                <input ref={fileRef} type="file" accept="application/json,.json" className="hidden" onChange={onImport} />
+                <Button variant="ghost" size="sm" onClick={() => setNewFolder(true)}>
+                  <FolderPlus className="h-4 w-4" /> Carpeta
+                </Button>
+                <Button variant="ghost" size="sm" onClick={() => fileRef.current?.click()}>
+                  <Upload className="h-4 w-4" /> Importar
+                </Button>
+                <Button size="sm" onClick={onNewGuide}>
+                  <FilePlus2 className="h-4 w-4" /> Nueva guía
+                </Button>
+                <ThemeToggle />
+              </header>
 
-          <div className="min-h-0 flex-1 overflow-y-auto px-8 pb-10">
-            {!loaded ? (
-              <p className="text-foreground/70">Cargando…</p>
-            ) : subfolders.length === 0 && items.length === 0 ? (
-              <p className="text-foreground/70">Carpeta vacía. Creá una guía o una carpeta.</p>
-            ) : (
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                {subfolders.map((f) => (
-                  <FolderCard key={f.id} f={f} onOpen={() => setCwd(f.id)} nodes={itemNodes({ kind: 'folder', id: f.id, name: f.name })} />
-                ))}
-                {items.map((g) => (
-                  <GuideCard key={g.id} g={g} onOpen={() => openGuide(g.id)} nodes={itemNodes({ kind: 'guide', id: g.id, name: g.name })} />
-                ))}
+              <div className="min-h-0 flex-1 overflow-y-auto px-8 pb-10">
+                {!loaded ? (
+                  <p className="text-foreground/70">Cargando…</p>
+                ) : subfolders.length === 0 && items.length === 0 ? (
+                  <p className="text-foreground/70">Carpeta vacía. Creá una guía o una carpeta.</p>
+                ) : (
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                    {subfolders.map((f) => (
+                      <FolderCard key={f.id} f={f} onOpen={() => setCwd(f.id)} nodes={itemNodes({ kind: 'folder', id: f.id, name: f.name })} />
+                    ))}
+                    {items.map((g) => (
+                      <GuideCard key={g.id} g={g} onOpen={() => openGuide(g.id)} nodes={itemNodes({ kind: 'guide', id: g.id, name: g.name })} />
+                    ))}
+                  </div>
+                )}
               </div>
-            )}
-          </div>
+            </>
+          ) : (
+            <>
+              <header className="flex items-center gap-2 px-8 py-5">
+                <h1 className="flex-1 text-lg font-semibold tracking-tight">Publicaciones</h1>
+                <Button
+                  size="sm"
+                  onClick={() => {
+                    setPubSlug('');
+                    setPubGuideId(guides[0]?.id || '');
+                    setNewPub(true);
+                  }}
+                >
+                  <Globe className="h-4 w-4" /> Nueva publicación
+                </Button>
+                <ThemeToggle />
+              </header>
+
+              <div className="min-h-0 flex-1 overflow-y-auto px-8 pb-10">
+                {!loaded ? (
+                  <p className="text-foreground/70">Cargando…</p>
+                ) : pubs.length === 0 ? (
+                  <p className="text-foreground/70">No hay publicaciones. Creá una con “Nueva publicación”.</p>
+                ) : (
+                  <div className="space-y-2">
+                    {pubs.map((p) => (
+                      <div key={p.slug} className="flex items-center gap-3 rounded-xl border border-border/70 bg-card p-4 shadow-card">
+                        <Globe className="h-5 w-5 shrink-0 text-primary" />
+                        <div className="min-w-0 flex-1">
+                          <a
+                            href={publicUrl(p.slug)}
+                            target="_blank"
+                            rel="noopener"
+                            className="block truncate font-medium text-primary hover:underline"
+                          >
+                            /p/{p.slug}
+                          </a>
+                          <div className="truncate text-xs text-muted-foreground">
+                            {p.guideName || '(sin guía)'} · {fmtDate(p.updatedAt)}
+                          </div>
+                        </div>
+                        <Button variant="ghost" size="icon-sm" title="Copiar link" onClick={() => copyPub(p.slug)}>
+                          <Copy className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon-sm" title="Abrir" onClick={() => window.open(publicUrl(p.slug), '_blank', 'noopener')}>
+                          <ExternalLink className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon-sm" title="Actualizar a la versión actual de la guía" onClick={() => onUpdatePub(p)}>
+                          <RefreshCw className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon-sm" title="Borrar" onClick={() => setDelPub(p)}>
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </>
+          )}
         </div>
       </div>
 
@@ -573,6 +698,53 @@ export function Dashboard() {
           <DialogFooter>
             <Button variant="ghost" onClick={() => setDel(null)}>Cancelar</Button>
             <Button variant="destructive" onClick={doDelete}>Borrar</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={newPub} onOpenChange={(o) => !pubBusy && setNewPub(o)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Nueva publicación</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div>
+              <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-muted-foreground">URL</label>
+              <Input autoFocus placeholder="modulo-2" value={pubSlug} onChange={(e) => setPubSlug(e.target.value)} />
+              <p className="mt-1 truncate text-xs text-muted-foreground">{publicUrl(slug(pubSlug) || '…')}</p>
+            </div>
+            <div>
+              <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-muted-foreground">Guía</label>
+              <select
+                value={pubGuideId}
+                onChange={(e) => setPubGuideId(e.target.value)}
+                className="h-9 w-full rounded-md border border-input bg-card px-3 text-sm"
+              >
+                <option value="">Elegí una guía…</option>
+                {guides.map((g) => (
+                  <option key={g.id} value={g.id}>
+                    {g.name || '(sin nombre)'}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setNewPub(false)} disabled={pubBusy}>Cancelar</Button>
+            <Button onClick={onCreatePub} disabled={pubBusy}>Crear</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!delPub} onOpenChange={(o) => !o && setDelPub(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>¿Borrar la publicación /p/{delPub?.slug}?</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">El link dejará de funcionar. La guía no se toca.</p>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setDelPub(null)}>Cancelar</Button>
+            <Button variant="destructive" onClick={onDeletePub}>Borrar</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

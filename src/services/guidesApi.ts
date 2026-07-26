@@ -29,18 +29,20 @@ export interface GuideMeta {
   name: string;
   folderId: string | null;
   updatedAt: string;
-  published?: boolean;
   sections: number;
   folios: number;
 }
 
-export interface PublishStatus {
-  published: boolean;
-  publishedAt: string | null;
+export interface Publication {
+  slug: string;
+  guideId: string | null;
+  guideName: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
-/** Link público (sin login) de una guía publicada. */
-export const publicUrl = (id: string) => location.origin + '/p/' + id;
+/** Link público (sin login) de una publicación. */
+export const publicUrl = (slug: string) => location.origin + '/p/' + slug;
 
 export interface Folder {
   id: string;
@@ -59,10 +61,14 @@ export const patchGuide = (id: string, patch: { name?: string; folderId?: string
   api('/guides/' + id, { method: 'PATCH', body: JSON.stringify(patch) });
 export const deleteGuide = (id: string) => api('/guides/' + id, { method: 'DELETE' });
 
-export const getPublishStatus = (id: string): Promise<PublishStatus> => api('/guides/' + id + '/publish');
-export const publishGuide = (id: string, html: string): Promise<{ ok: boolean; url: string; publishedAt: string }> =>
-  api('/guides/' + id + '/publish', { method: 'POST', body: JSON.stringify({ html }) });
-export const unpublishGuide = (id: string) => api('/guides/' + id + '/publish', { method: 'DELETE' });
+export const listPublications = (): Promise<Publication[]> => api('/publications');
+export const createPublication = (p: { slug: string; guideId: string; guideName: string; html: string }): Promise<Publication> =>
+  api('/publications', { method: 'POST', body: JSON.stringify(p) });
+export const updatePublication = (
+  slug: string,
+  p: { guideId?: string; guideName?: string; html: string }
+): Promise<Publication> => api('/publications/' + slug, { method: 'PUT', body: JSON.stringify(p) });
+export const deletePublication = (slug: string) => api('/publications/' + slug, { method: 'DELETE' });
 
 export const listFolders = (): Promise<Folder[]> => api('/folders');
 export const createFolder = (name: string, parentId: string | null): Promise<Folder> =>

@@ -1,5 +1,5 @@
 import express from 'express';
-import { readFile, writeFile, readdir, mkdir, rename, unlink, stat } from 'node:fs/promises';
+import { readFile, writeFile, readdir, mkdir, rename, unlink } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -40,16 +40,20 @@ async function writeGuide(id, project) {
   await rename(tmp, fileFor(id)); // escritura atómica
 }
 
-/* ---------- guías publicadas (HTML final en DATA_DIR/published/<id>.html) ---------- */
-const pubFileFor = (id) => path.join(PUBLISHED_DIR, id + '.html');
-async function publishedIds() {
+/* ---------- publicaciones (slug -> guía; HTML final en DATA_DIR/published/<slug>.html) ---------- */
+const pubFileFor = (slug) => path.join(PUBLISHED_DIR, slug + '.html');
+const PUBLICATIONS_FILE = path.join(DATA_DIR, '_publications.json');
+async function readPublications() {
   try {
-    return new Set(
-      (await readdir(PUBLISHED_DIR)).filter((f) => f.endsWith('.html')).map((f) => f.slice(0, -5))
-    );
+    return JSON.parse(await readFile(PUBLICATIONS_FILE, 'utf8'));
   } catch {
-    return new Set();
+    return [];
   }
+}
+async function writePublications(list) {
+  const tmp = PUBLICATIONS_FILE + '.tmp';
+  await writeFile(tmp, JSON.stringify(list, null, 2));
+  await rename(tmp, PUBLICATIONS_FILE);
 }
 
 /* ---------- carpetas (registro en _folders.json) ---------- */
@@ -70,7 +74,6 @@ async function writeFolders(list) {
 
 app.get('/api/guides', requireAuth, async (_req, res) => {
   const files = (await readdir(DATA_DIR)).filter((f) => f.endsWith('.json') && !f.startsWith('_'));
-  const pub = await publishedIds();
   const list = [];
   for (const f of files) {
     try {
@@ -80,7 +83,6 @@ app.get('/api/guides', requireAuth, async (_req, res) => {
         name: p.name,
         folderId: p.folderId ?? null,
         updatedAt: p.updatedAt,
-        published: pub.has(p.id),
         sections: (p.sections || []).length,
         folios: (p.sections || []).reduce((a, s) => a + (s.folios || []).length, 0),
       });
@@ -92,34 +94,56 @@ app.get('/api/guides', requireAuth, async (_req, res) => {
   res.json(list);
 });
 
-/* ---------- publicar / despublicar ---------- */
-app.get('/api/guides/:id/publish', requireAuth, async (req, res) => {
-  if (!validId(req.params.id)) return res.status(400).json({ error: 'bad id' });
-  try {
-    const s = await stat(pubFileFor(req.params.id));
-    res.json({ published: true, publishedAt: s.mtime.toISOString() });
-  } catch {
-    res.json({ published: false, publishedAt: null });
-  }
-});
+/* ---------- publicaciones ---------- */
+app.get('/api/publications', requireAuth, async (_req, res) => res.json(await readPublications()));
 
-app.post('/api/guides/:id/publish', requireAuth, async (req, res) => {
-  if (!validId(req.params.id)) return res.status(400).json({ error: 'bad id' });
-  const html = req.body?.html;
-  if (typeof html !== 'string' || !html) return res.status(400).json({ error: 'html requerido' });
-  const dest = pubFileFor(req.params.id);
+app.post('/api/publications', requireAuth, async (req, res) => {
+  const b = req.body || {};
+  const slug = String(b.slug || '').trim();
+  if (!validId(slug)) return res.status(400).json({ error: 'slug inválido' });
+  if (typeof b.html !== 'string' || !b.html) return res.status(400).json({ error: 'html requerido' });
+  const list = await readPublications();
+  if (list.some((p) => p.slug === slug)) return res.status(409).json({ error: 'ese link ya existe' });
+  const dest = pubFileFor(slug);
   const tmp = dest + '.tmp';
-  await writeFile(tmp, html);
-  await rename(tmp, dest); // escritura atómica
-  res.json({ ok: true, url: '/p/' + req.params.id, publishedAt: new Date().toISOString() });
+  await writeFile(tmp, b.html);
+  await rename(tmp, dest);
+  const now = new Date().toISOString();
+  const pub = { slug, guideId: b.guideId || null, guideName: b.guideName || '', createdAt: now, updatedAt: now };
+  list.push(pub);
+  await writePublications(list);
+  res.json(pub);
 });
 
-app.delete('/api/guides/:id/publish', requireAuth, async (req, res) => {
-  if (!validId(req.params.id)) return res.status(400).json({ error: 'bad id' });
+app.put('/api/publications/:slug', requireAuth, async (req, res) => {
+  const slug = req.params.slug;
+  if (!validId(slug)) return res.status(400).json({ error: 'bad slug' });
+  const b = req.body || {};
+  if (typeof b.html !== 'string' || !b.html) return res.status(400).json({ error: 'html requerido' });
+  const list = await readPublications();
+  const pub = list.find((p) => p.slug === slug);
+  if (!pub) return res.status(404).json({ error: 'not found' });
+  const dest = pubFileFor(slug);
+  const tmp = dest + '.tmp';
+  await writeFile(tmp, b.html);
+  await rename(tmp, dest);
+  if (b.guideId) pub.guideId = b.guideId;
+  if (typeof b.guideName === 'string') pub.guideName = b.guideName;
+  pub.updatedAt = new Date().toISOString();
+  await writePublications(list);
+  res.json(pub);
+});
+
+app.delete('/api/publications/:slug', requireAuth, async (req, res) => {
+  const slug = req.params.slug;
+  if (!validId(slug)) return res.status(400).json({ error: 'bad slug' });
+  let list = await readPublications();
+  list = list.filter((p) => p.slug !== slug);
+  await writePublications(list);
   try {
-    await unlink(pubFileFor(req.params.id));
+    await unlink(pubFileFor(slug));
   } catch {
-    /* no estaba publicada */
+    /* ya no está */
   }
   res.json({ ok: true });
 });
@@ -172,11 +196,6 @@ app.delete('/api/guides/:id', requireAuth, async (req, res) => {
     await unlink(fileFor(req.params.id));
   } catch {
     /* ya no existe */
-  }
-  try {
-    await unlink(pubFileFor(req.params.id)); // borrar también el HTML publicado
-  } catch {
-    /* no estaba publicada */
   }
   res.json({ ok: true });
 });
@@ -233,11 +252,11 @@ app.delete('/api/folders/:id', requireAuth, async (req, res) => {
   res.json({ ok: true });
 });
 
-/* ---------- guía publicada, pública (sin auth): /p/<id> ---------- */
-app.get('/p/:id', async (req, res) => {
-  if (!validId(req.params.id)) return res.status(400).send('bad id');
-  const file = pubFileFor(req.params.id);
-  if (!existsSync(file)) return res.status(404).send('Guía no publicada');
+/* ---------- publicación pública (sin auth): /p/<slug> ---------- */
+app.get('/p/:slug', async (req, res) => {
+  if (!validId(req.params.slug)) return res.status(400).send('bad slug');
+  const file = pubFileFor(req.params.slug);
+  if (!existsSync(file)) return res.status(404).send('Publicación no encontrada');
   res.type('html').sendFile(file);
 });
 
