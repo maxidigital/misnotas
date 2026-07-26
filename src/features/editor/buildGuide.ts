@@ -2,12 +2,13 @@ import type { Project } from '@/types';
 import { bandColors } from './previewFolio';
 import { LOGO } from '@/logo';
 
-/** Reader runtime (vanilla). All navigation is delegated via data-go / data-kind+data-id. */
+/** Reader runtime (vanilla). Navigation via data-go / data-kind+data-id, plus a
+ *  finger-following horizontal carousel (prev | current | next) for folios. */
 const RUNTIME = `
-var app = document.getElementById('app');
 var crumbs = document.getElementById('crumbs');
 var pagenav = document.getElementById('pagenav');
-var scroller = document.querySelector('.scroll');
+var viewport = document.querySelector('.viewport');
+var track = document.getElementById('track');
 function esc(t){ return (t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function sectionById(id){ for(var i=0;i<GUIDE.sections.length;i++){ if(GUIDE.sections[i].id===id) return GUIDE.sections[i]; } return null; }
 function findFolio(id){
@@ -17,17 +18,19 @@ function findFolio(id){
   }
   return null;
 }
-/* Orden lineal de TODOS los folios (a lo largo de las secciones), para Ant./Sig. y swipe. */
+/* Orden lineal de TODOS los folios (a lo largo de las secciones): {s,f}. */
 var FLAT = [];
-GUIDE.sections.forEach(function(s){ s.folios.forEach(function(f){ FLAT.push(f); }); });
-function flatIndex(id){ for(var k=0;k<FLAT.length;k++){ if(FLAT[k].id===id) return k; } return -1; }
+GUIDE.sections.forEach(function(s){ s.folios.forEach(function(f){ FLAT.push({ s:s, f:f }); }); });
+function flatIndex(id){ for(var k=0;k<FLAT.length;k++){ if(FLAT[k].f.id===id) return k; } return -1; }
 function currentFolioId(){ var p=(location.hash||'').replace(/^#/,'').split('/').filter(Boolean); return (p[0]==='f'&&p[1])?p[1]:null; }
 function goRel(delta){
   var id=currentFolioId(); if(!id) return;
   var gi=flatIndex(id); if(gi<0) return;
   var t=gi+delta; if(t<0||t>=FLAT.length) return;
-  location.hash='#/f/'+FLAT[t].id;
+  location.hash='#/f/'+FLAT[t].f.id;
 }
+
+/* ---- breadcrumb + card helpers ---- */
 function crumbLink(label, go){ return '<button class="crumb" data-go="'+go+'">'+esc(label)+'</button>'; }
 function crumbCur(label){ return '<span class="crumb cur">'+esc(label)+'</span>'; }
 function crumbHome(current){ return current ? '<span class="crumb cur">\\u2302 Inicio</span>' : '<button class="crumb" data-go="#/">\\u2302 Inicio</button>'; }
@@ -37,28 +40,21 @@ function scard(go, label, sub, cls){
     + esc(label) + (sub?'<small>'+esc(sub)+'</small>':'')
     + '</span><span class="scard-arrow">\\u203a</span></button>';
 }
-function renderMenu(){
-  crumbs.innerHTML = crumbHome(true);
+
+/* ---- content builders (return inner HTML of a .wrap sheet) ---- */
+function menuInner(){
   var main = GUIDE.sections.filter(function(s){ return s.type!=='apendice'; });
   var apx = GUIDE.sections.filter(function(s){ return s.type==='apendice'; });
   var html = '<div class="menuhead"><img class="menu-logo" src="'+LOGO+'" alt=""><div class="menu-title">'+esc(GUIDE.name||'Gu\\u00eda')+'</div></div>';
   html += '<div class="grid">' + main.map(function(s){ return scard('#/s/'+s.id, s.name, s.folios.length+' folios', 'band-'+s.id); }).join('') + '</div>';
   if(apx.length) html += '<div class="group">Ap\\u00e9ndices</div><div class="grid">' + apx.map(function(s){ return scard('#/s/'+s.id, s.name, s.folios.length+' folios', 'band-'+s.id); }).join('') + '</div>';
-  app.innerHTML = html; pagenav.innerHTML = ''; if(scroller) scroller.scrollTop = 0;
+  return html;
 }
-function renderSection(id){
-  var s = sectionById(id); if(!s) return renderMenu();
-  crumbs.innerHTML = crumbHome(false) + csep() + crumbCur(s.name);
-  var html = '<h1 class="band band-'+s.id+'">'+esc(s.name)+'</h1>';
-  html += '<div class="grid">' + s.folios.map(function(f){ return scard('#/f/'+f.id, f.title||'(sin t\\u00edtulo)'); }).join('') + '</div>';
-  app.innerHTML = html;
-  pagenav.innerHTML = '';
-  if(scroller) scroller.scrollTop = 0;
+function sectionInner(s){
+  return '<h1 class="band band-'+s.id+'">'+esc(s.name)+'</h1>'
+    + '<div class="grid">' + s.folios.map(function(f){ return scard('#/f/'+f.id, f.title||'(sin t\\u00edtulo)'); }).join('') + '</div>';
 }
-function renderFolio(id){
-  var r = findFolio(id); if(!r) return renderMenu();
-  var s = r.section, f = r.folio, i = r.index;
-  crumbs.innerHTML = crumbHome(false) + csep() + crumbLink(s.name, '#/s/'+s.id) + csep() + crumbCur(f.title||'');
+function folioInner(f, s){
   var html = '<h1 class="band band-'+s.id+'">'+esc(f.title||'')+'</h1>';
   html += '<div class="body">'+(f.body||'')+'</div>';
   if(f.links && f.links.length){
@@ -66,14 +62,40 @@ function renderFolio(id){
       return '<button class="linkbtn" data-kind="'+l.target.kind+'" data-id="'+l.target.id+'">'+esc(l.label||'Ir')+'</button>';
     }).join('') + '</div>';
   }
-  var gi = flatIndex(f.id);
-  var prev = gi>0 ? FLAT[gi-1] : null;
-  var next = (gi>=0 && gi<FLAT.length-1) ? FLAT[gi+1] : null;
-  app.innerHTML = html;
+  return html;
+}
+function pageFolio(item){ return '<div class="page">'+(item?'<div class="wrap">'+folioInner(item.f,item.s)+'</div>':'')+'</div>'; }
+
+/* ---- track layout ---- */
+function setSingle(inner){
+  track.classList.remove('anim');
+  track.innerHTML = '<div class="page"><div class="wrap">'+inner+'</div></div>';
+  track.style.transform = 'translateX(0px)';
+}
+function setFolioTriple(gi){
+  var W = viewport.clientWidth;
+  track.classList.remove('anim');
+  track.innerHTML = pageFolio(gi>0?FLAT[gi-1]:null) + pageFolio(FLAT[gi]) + pageFolio(gi<FLAT.length-1?FLAT[gi+1]:null);
+  track.style.transform = 'translateX('+(-W)+'px)';
+}
+
+/* ---- render ---- */
+function renderMenu(){ crumbs.innerHTML = crumbHome(true); setSingle(menuInner()); pagenav.innerHTML=''; }
+function renderSection(id){
+  var s = sectionById(id); if(!s) return renderMenu();
+  crumbs.innerHTML = crumbHome(false)+csep()+crumbCur(s.name);
+  setSingle(sectionInner(s)); pagenav.innerHTML='';
+}
+function renderFolio(id){
+  var r = findFolio(id); if(!r) return renderMenu();
+  var s = r.section, f = r.folio, gi = flatIndex(f.id);
+  crumbs.innerHTML = crumbHome(false)+csep()+crumbLink(s.name,'#/s/'+s.id)+csep()+crumbCur(f.title||'');
+  setFolioTriple(gi);
+  var prev = gi>0 ? FLAT[gi-1].f : null;
+  var next = gi<FLAT.length-1 ? FLAT[gi+1].f : null;
   pagenav.innerHTML = ''
     + '<button class="nav-side" '+(prev?'data-go="#/f/'+prev.id+'"':'disabled')+'>\\u2039 Ant.</button>'
     + '<button class="nav-next" '+(next?'data-go="#/f/'+next.id+'"':'disabled')+'>Sig. \\u203a</button>';
-  if(scroller) scroller.scrollTop = 0;
 }
 function render(){
   var parts = (location.hash||'').replace(/^#/,'').split('/').filter(Boolean);
@@ -81,6 +103,8 @@ function render(){
   if(parts[0]==='s' && parts[1]) return renderSection(parts[1]);
   return renderMenu();
 }
+
+/* ---- click navigation ---- */
 document.addEventListener('click', function(e){
   var g = e.target.closest('[data-go]');
   if(g){ location.hash = g.getAttribute('data-go'); return; }
@@ -96,19 +120,44 @@ document.addEventListener('keydown', function(e){
   if(e.key==='ArrowLeft') goRel(-1);
   if(e.key==='ArrowRight') goRel(1);
 });
-/* Swipe horizontal para ir a anterior/siguiente (sin romper el scroll vertical). */
-var tsx=0, tsy=0, tracking=false;
-if(scroller){
-  scroller.addEventListener('touchstart', function(e){
-    if(e.touches.length!==1){ tracking=false; return; }
-    tracking=true; tsx=e.touches[0].clientX; tsy=e.touches[0].clientY;
-  }, {passive:true});
-  scroller.addEventListener('touchend', function(e){
-    if(!tracking) return; tracking=false;
-    var t=e.changedTouches[0]; var dx=t.clientX-tsx, dy=t.clientY-tsy;
-    if(Math.abs(dx)>60 && Math.abs(dx)>Math.abs(dy)*1.6){ goRel(dx<0?1:-1); }
-  }, {passive:true});
-}
+
+/* ---- finger-following swipe carousel ---- */
+var sx=0, sy=0, W=0, axis=null, dragging=false, swipable=false, hasPrev=false, hasNext=false, gi0=0, pendingHash=null;
+viewport.addEventListener('touchstart', function(e){
+  if(e.touches.length!==1){ swipable=false; return; }
+  axis=null; dragging=false; pendingHash=null;
+  var id=currentFolioId(); swipable=!!id;
+  sx=e.touches[0].clientX; sy=e.touches[0].clientY;
+  if(swipable){ gi0=flatIndex(id); hasPrev=gi0>0; hasNext=gi0<FLAT.length-1; W=viewport.clientWidth; track.classList.remove('anim'); }
+}, {passive:true});
+viewport.addEventListener('touchmove', function(e){
+  if(!swipable) return;
+  var dx=e.touches[0].clientX-sx, dy=e.touches[0].clientY-sy;
+  if(axis===null){ if(Math.abs(dx)<8 && Math.abs(dy)<8) return; axis = Math.abs(dx)>Math.abs(dy) ? 'x' : 'y'; }
+  if(axis!=='x') return;               // vertical → dejar el scroll normal
+  e.preventDefault(); dragging=true;
+  var d=dx; if((d>0&&!hasPrev)||(d<0&&!hasNext)) d*=0.28;   // resistencia en los extremos
+  track.style.transform = 'translateX('+(-W+d)+'px)';
+}, {passive:false});
+viewport.addEventListener('touchend', function(e){
+  if(!swipable || !dragging){ dragging=false; return; }
+  dragging=false;
+  var dx=e.changedTouches[0].clientX-sx;
+  var TH=Math.max(60, W*0.22);
+  track.classList.add('anim');
+  if(dx<=-TH && hasNext){ track.style.transform='translateX('+(-2*W)+'px)'; pendingHash='#/f/'+FLAT[gi0+1].f.id; }
+  else if(dx>=TH && hasPrev){ track.style.transform='translateX(0px)'; pendingHash='#/f/'+FLAT[gi0-1].f.id; }
+  else { track.style.transform='translateX('+(-W)+'px)'; pendingHash=null; }
+}, {passive:true});
+track.addEventListener('transitionend', function(e){
+  if(e.propertyName!=='transform') return;
+  if(pendingHash){ var h=pendingHash; pendingHash=null; if(location.hash!==h) location.hash=h; }
+});
+/* Recentrar sin reconstruir (evita saltos al mostrarse/ocultarse la barra del navegador). */
+window.addEventListener('resize', function(){
+  if(currentFolioId()){ track.classList.remove('anim'); track.style.transform='translateX('+(-viewport.clientWidth)+'px)'; }
+});
+
 window.addEventListener('hashchange', render);
 render();
 `;
@@ -125,7 +174,6 @@ function css(width: string): string {
     font-size: 1.5rem; line-height: 1.55;
   }
   @media (prefers-color-scheme: dark) { body { background: #15161A; color: #E7E5E0; } }
-  .scroll { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
 
   /* Top bar with breadcrumb */
   .topbar {
@@ -148,7 +196,13 @@ function css(width: string): string {
   .crumb:not(.cur) { opacity: .82; flex-shrink: 0; }
   .csep { opacity: .4; font-size: 1rem; flex-shrink: 0; }
 
-  /* Reading sheet (card) */
+  /* Carousel viewport + track (prev | current | next) */
+  .viewport { flex: 1; overflow: hidden; position: relative; }
+  .track { display: flex; height: 100%; will-change: transform; }
+  .track.anim { transition: transform .28s cubic-bezier(.22,.61,.36,1); }
+  .page { flex: 0 0 100%; width: 100%; height: 100%; overflow-y: auto; overscroll-behavior-y: contain; -webkit-overflow-scrolling: touch; }
+
+  /* Reading sheet (card) — fills to the bottom */
   .wrap {
     max-width: ${width}; margin: 0 auto; min-height: 100%; padding: 30px 34px 40px;
     background: #FBF7EE; border: 1px solid rgba(120,105,80,.16); border-radius: 18px;
@@ -265,7 +319,7 @@ export function openGuide(project: Project) {
     '<link rel="icon" href="' + LOGO + '">\n' +
     '<title>' + (project.name || 'Guía') + '</title>\n<style>' + css(width) + '\n' + bandCss + '</style>\n</head>\n<body>\n' +
     '<div class="topbar"><img class="brand-logo" src="' + LOGO + '" data-go="#/" alt=""><nav class="crumbs" id="crumbs"></nav></div>\n' +
-    '<div class="scroll"><div class="wrap"><div id="app"></div></div></div>\n' +
+    '<div class="viewport"><div class="track" id="track"></div></div>\n' +
     '<div class="pagenav" id="pagenav"></div>\n' +
     '<script>\nvar GUIDE = ' + json + ';\nvar LOGO = ' + JSON.stringify(LOGO) + ';\n' + RUNTIME + '\n</script>\n' +
     '</body>\n</html>';
