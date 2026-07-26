@@ -9,6 +9,9 @@ var crumbs = document.getElementById('crumbs');
 var pagenav = document.getElementById('pagenav');
 var viewport = document.querySelector('.viewport');
 var track = document.getElementById('track');
+var histPanel = document.getElementById('history');
+var histBackdrop = document.getElementById('histBackdrop');
+var histHandle = document.getElementById('histHandle');
 function esc(t){ return (t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function sectionById(id){ for(var i=0;i<GUIDE.sections.length;i++){ if(GUIDE.sections[i].id===id) return GUIDE.sections[i]; } return null; }
 function findFolio(id){
@@ -29,6 +32,33 @@ function goRel(delta){
   var t=gi+delta; if(t<0||t>=FLAT.length) return;
   location.hash='#/f/'+FLAT[t].f.id;
 }
+
+/* ---- historial ---- */
+var HIST = [];
+function pageLabel(hash){
+  var parts=(hash||'').replace(/^#/,'').split('/').filter(Boolean);
+  if(parts[0]==='f' && parts[1]){ var r=findFolio(parts[1]); return r ? (r.folio.title||'(sin t\\u00edtulo)') : 'Folio'; }
+  if(parts[0]==='s' && parts[1]){ var s=sectionById(parts[1]); return s ? s.name : 'Secci\\u00f3n'; }
+  return '\\u2302 Inicio';
+}
+function pushHist(hash){
+  hash = hash || '#/';
+  HIST = HIST.filter(function(h){ return h.hash!==hash; });
+  HIST.unshift({ hash: hash, label: pageLabel(hash) });
+  if(HIST.length>50) HIST.length=50;
+}
+function renderHistory(){
+  if(!histPanel) return;
+  var cur = location.hash || '#/';
+  var html = '<div class="hist-title">Historial</div>';
+  if(HIST.length>1) html += '<button class="hist-item hist-back" data-go="'+HIST[1].hash+'">\\u2039 Volver</button>';
+  html += HIST.map(function(h){
+    return '<button class="hist-item'+(h.hash===cur?' cur':'')+'" data-go="'+h.hash+'">'+esc(h.label)+'</button>';
+  }).join('');
+  histPanel.innerHTML = html;
+}
+function openHist(){ if(histPanel) histPanel.classList.add('open'); if(histBackdrop) histBackdrop.classList.add('open'); }
+function closeHist(){ if(histPanel) histPanel.classList.remove('open'); if(histBackdrop) histBackdrop.classList.remove('open'); }
 
 /* ---- breadcrumb + card helpers ---- */
 function crumbLink(label, go){ return '<button class="crumb" data-go="'+go+'">'+esc(label)+'</button>'; }
@@ -98,6 +128,8 @@ function renderFolio(id){
     + '<button class="nav-next" aria-label="Siguiente" '+(next?'data-go="#/f/'+next.id+'"':'disabled')+'>\\u2192</button>';
 }
 function render(){
+  pushHist(location.hash || '#/');
+  renderHistory();
   var parts = (location.hash||'').replace(/^#/,'').split('/').filter(Boolean);
   if(parts[0]==='f' && parts[1]) return renderFolio(parts[1]);
   if(parts[0]==='s' && parts[1]) return renderSection(parts[1]);
@@ -105,17 +137,20 @@ function render(){
 }
 
 /* ---- click navigation ---- */
+if(histHandle) histHandle.addEventListener('click', openHist);
+if(histBackdrop) histBackdrop.addEventListener('click', closeHist);
 document.addEventListener('click', function(e){
   var g = e.target.closest('[data-go]');
-  if(g){ location.hash = g.getAttribute('data-go'); return; }
+  if(g){ location.hash = g.getAttribute('data-go'); closeHist(); return; }
   var a = e.target.closest('a.internal-link, [data-kind][data-id]');
   if(a){
     e.preventDefault();
     var k = a.getAttribute('data-kind'), id = a.getAttribute('data-id');
-    if(id) location.hash = (k==='section'?'#/s/':'#/f/') + id;
+    if(id){ location.hash = (k==='section'?'#/s/':'#/f/') + id; closeHist(); }
   }
 });
 document.addEventListener('keydown', function(e){
+  if(e.key==='Escape') closeHist();
   if(!currentFolioId()) return;
   if(e.key==='ArrowLeft') goRel(-1);
   if(e.key==='ArrowRight') goRel(1);
@@ -195,6 +230,49 @@ function css(width: string): string {
   .crumb.cur { font-weight: 700; cursor: default; flex-shrink: 1; }
   .crumb:not(.cur) { opacity: .82; flex-shrink: 0; }
   .csep { opacity: .4; font-size: 1rem; flex-shrink: 0; }
+
+  /* Stage: panel de historial + viewport */
+  .stage { position: relative; flex: 1; display: flex; min-height: 0; }
+
+  .history {
+    position: absolute; z-index: 20; top: 0; bottom: 0; left: 0;
+    width: 80%; max-width: 320px;
+    background: #E3D8C4; border-right: 1px solid rgba(120,105,80,.24);
+    overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 8px;
+    transform: translateX(-100%); transition: transform .24s ease;
+  }
+  .history.open { transform: translateX(0); box-shadow: 0 0 40px rgba(0,0,0,.28); }
+  @media (prefers-color-scheme: dark) { .history { background: #1E2026; border-right-color: rgba(255,255,255,.08); } }
+
+  .hist-backdrop { position: absolute; inset: 0; z-index: 15; background: rgba(0,0,0,.35); opacity: 0; pointer-events: none; transition: opacity .24s; }
+  .hist-backdrop.open { opacity: 1; pointer-events: auto; }
+
+  .hist-handle {
+    position: absolute; z-index: 10; left: 0; top: 0; bottom: 0; width: 16px;
+    border: none; background: rgba(120,105,80,.12); color: inherit; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; font-size: 1rem;
+  }
+  .hist-handle::after { content: "\\203a"; opacity: .5; }
+  @media (prefers-color-scheme: dark) { .hist-handle { background: rgba(255,255,255,.06); } }
+
+  .hist-title { font-size: .82rem; text-transform: uppercase; letter-spacing: .5px; opacity: .55; padding: 8px 10px 4px; }
+  .hist-item {
+    display: block; width: 100%; text-align: left; cursor: pointer;
+    border: none; background: transparent; color: inherit; font-family: inherit;
+    font-size: 1rem; padding: 10px; border-radius: 8px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .hist-item:hover { background: rgba(120,105,80,.14); }
+  @media (prefers-color-scheme: dark) { .hist-item:hover { background: rgba(255,255,255,.08); } }
+  .hist-item.cur { font-weight: 700; }
+  .hist-back { opacity: .8; border-bottom: 1px solid rgba(120,105,80,.18); border-radius: 0; margin-bottom: 4px; }
+  @media (prefers-color-scheme: dark) { .hist-back { border-bottom-color: rgba(255,255,255,.08); } }
+
+  /* Escritorio: panel fijo, sin handle/backdrop */
+  @media (min-width: 900px) {
+    .history { position: static; transform: none; width: 260px; max-width: 260px; box-shadow: none; flex-shrink: 0; }
+    .hist-handle, .hist-backdrop { display: none; }
+  }
 
   /* Carousel viewport + track (prev | current | next) */
   .viewport { flex: 1; overflow: hidden; position: relative; }
@@ -318,7 +396,12 @@ export function renderGuideHtml(project: Project): string {
     '<link rel="icon" href="' + LOGO + '">\n' +
     '<title>' + (project.name || 'Guía') + '</title>\n<style>' + css(width) + '\n' + bandCss + '</style>\n</head>\n<body>\n' +
     '<div class="topbar"><img class="brand-logo" src="' + LOGO + '" data-go="#/" alt=""><nav class="crumbs" id="crumbs"></nav></div>\n' +
-    '<div class="viewport"><div class="track" id="track"></div></div>\n' +
+    '<div class="stage">' +
+      '<aside class="history" id="history"></aside>' +
+      '<div class="viewport"><div class="track" id="track"></div></div>' +
+      '<div class="hist-backdrop" id="histBackdrop"></div>' +
+      '<button class="hist-handle" id="histHandle" aria-label="Historial"></button>' +
+    '</div>\n' +
     '<div class="pagenav" id="pagenav"></div>\n' +
     '<script>\nvar GUIDE = ' + json + ';\nvar LOGO = ' + JSON.stringify(LOGO) + ';\n' + RUNTIME + '\n</script>\n' +
     '</body>\n</html>';
