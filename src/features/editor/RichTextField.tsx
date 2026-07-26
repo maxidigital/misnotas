@@ -181,8 +181,8 @@ export function RichTextField({ value, onChange, minHeight = '100%', className, 
   );
 
   return (
-    <div className={cn('rte flex min-h-0 flex-col rounded-md border border-input bg-background', className)}>
-      <div className="flex shrink-0 flex-wrap items-center gap-0.5 border-b border-border px-1.5 py-1">
+    <div className={cn('rte flex min-h-0 flex-col rounded-lg border border-input bg-card', className)}>
+      <div className="flex shrink-0 flex-wrap items-center gap-0.5 rounded-t-lg border-b border-border/60 bg-muted/40 px-2 py-1.5">
         <ToolBtn active={editor.isActive('bold')} title="Negrita" onClick={() => editor.chain().focus().toggleBold().run()}>
           <Bold className="h-3.5 w-3.5" />
         </ToolBtn>
@@ -216,7 +216,7 @@ export function RichTextField({ value, onChange, minHeight = '100%', className, 
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <span className="mx-1 h-4 w-px bg-border" />
+        <span className="mx-1 h-4 w-px bg-border/60" />
 
         <ToolBtn active={editor.isActive({ textAlign: 'left' })} title="Izquierda" onClick={() => editor.chain().focus().setTextAlign('left').run()}>
           <AlignLeft className="h-3.5 w-3.5" />
@@ -231,7 +231,7 @@ export function RichTextField({ value, onChange, minHeight = '100%', className, 
           <AlignJustify className="h-3.5 w-3.5" />
         </ToolBtn>
 
-        <span className="mx-1 h-4 w-px bg-border" />
+        <span className="mx-1 h-4 w-px bg-border/60" />
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -253,7 +253,7 @@ export function RichTextField({ value, onChange, minHeight = '100%', className, 
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <span className="mx-1 h-4 w-px bg-border" />
+        <span className="mx-1 h-4 w-px bg-border/60" />
 
         <ToolBtn active={editor.isActive('bulletList')} title="Viñetas" onClick={() => editor.chain().focus().toggleBulletList().run()}>
           <List className="h-3.5 w-3.5" />
@@ -265,7 +265,7 @@ export function RichTextField({ value, onChange, minHeight = '100%', className, 
           <Minus className="h-3.5 w-3.5" />
         </ToolBtn>
 
-        <span className="mx-1 h-4 w-px bg-border" />
+        <span className="mx-1 h-4 w-px bg-border/60" />
 
         {editor.isActive('internalLink') ? (
           <ToolBtn active title="Quitar enlace" onClick={() => editor.chain().focus().unsetMark('internalLink').run()}>

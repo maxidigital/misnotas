@@ -62,7 +62,7 @@ export function SectionTree() {
 
   return (
     <div className="flex h-full flex-col">
-      <div className="flex items-center justify-between px-3 py-2.5">
+      <div className="flex items-center justify-between px-4 py-3">
         <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Secciones</span>
         <Button variant="ghost" size="sm" onClick={() => addSection()}>
           <Plus className="h-4 w-4" /> Sección
@@ -97,8 +97,8 @@ function SortableSection({ section }: { section: Section }) {
     <div ref={setNodeRef} style={style} className="mb-1">
       <div
         className={cn(
-          'group flex items-center gap-1 rounded-md px-1.5 py-1.5',
-          selected ? 'bg-primary/10' : 'hover:bg-accent'
+          'group flex items-center gap-1 rounded-lg px-2 py-2 transition-colors',
+          selected ? 'bg-accent' : 'hover:bg-accent/60'
         )}
       >
         <button
@@ -144,7 +144,7 @@ function SortableSection({ section }: { section: Section }) {
       </div>
 
       {!collapsed && (
-        <div className="ml-6 border-l border-border pl-1">
+        <div className="ml-5 pl-2">
           <SortableContext items={section.folios.map((f) => f.id)} strategy={verticalListSortingStrategy}>
             {section.folios.map((folio) => (
               <SortableFolio key={folio.id} folio={folio} sectionId={section.id} />
@@ -170,8 +170,8 @@ function SortableFolio({ folio, sectionId }: { folio: Folio; sectionId: string }
     <div ref={setNodeRef} style={style}>
       <div
         className={cn(
-          'group flex items-center gap-1 rounded-md px-1.5 py-1',
-          selected ? 'bg-primary/15 text-primary' : 'hover:bg-accent'
+          'group flex items-center gap-1 rounded-lg px-2 py-1.5 transition-colors',
+          selected ? 'bg-primary/12 font-medium text-primary' : 'hover:bg-accent/60'
         )}
       >
         <button

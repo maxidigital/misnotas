@@ -93,18 +93,18 @@ function css(width: string): string {
   html, body { height: 100%; margin: 0; }
   body {
     display: flex; flex-direction: column; height: 100vh; overflow: hidden;
-    background: #e6e8ec; color: #1a1a1a;
+    background: #EFE8DA; color: #2A2620;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     font-size: 1.5rem; line-height: 1.55;
   }
-  @media (prefers-color-scheme: dark) { body { background: #0e1013; color: #e8e8e8; } }
+  @media (prefers-color-scheme: dark) { body { background: #17181C; color: #E7E5E0; } }
   .scroll { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
   .topbar {
     flex-shrink: 0; display: flex; align-items: center; gap: 12px;
-    background: #dfe2e7; border-bottom: 1px solid rgba(127,127,127,.25);
+    background: #ECE5D8; border-bottom: 1px solid rgba(127,127,127,.25);
     padding: 10px 16px; font-size: 1rem;
   }
-  @media (prefers-color-scheme: dark) { .topbar { background: #15171c; } }
+  @media (prefers-color-scheme: dark) { .topbar { background: #202228; } }
   .topbar button { cursor: pointer; border: 1px solid rgba(127,127,127,.3); background: transparent; color: inherit; border-radius: 8px; padding: 6px 12px; font-size: 1rem; }
   .topbar .t { flex: 1; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .topbar .brand-logo { height: 26px; width: 26px; object-fit: contain; }
@@ -113,8 +113,8 @@ function css(width: string): string {
   .menu-logo { height: 84px; width: 84px; object-fit: contain; }
   @media (prefers-color-scheme: dark) { .menu-logo { filter: invert(1); } }
   .menu-title { font-size: 1.5rem; font-weight: 700; margin-top: 6px; }
-  .wrap { max-width: ${width}; margin: 0 auto; padding: 28px 32px 48px; min-height: 100%; background: #ffffff; }
-  @media (prefers-color-scheme: dark) { .wrap { background: #16181d; } }
+  .wrap { max-width: ${width}; margin: 0 auto; padding: 28px 32px 48px; min-height: 100%; background: #FFFDFC; }
+  @media (prefers-color-scheme: dark) { .wrap { background: #262930; } }
   h1.band { font-size: 2.1rem; text-align: center; font-weight: 700; padding: .12em .8em; margin: 0 5% 1em; }
   .body p { margin: 0 0 .7em; }
   .body p:empty::before { content: "\\00a0"; }
@@ -123,12 +123,12 @@ function css(width: string): string {
   .body li { margin: .15em 0; }
   .body hr { border: none; border-top: 2px solid rgba(127,127,127,.4); margin: .9em 0; }
   .body strong { font-weight: 700; } .body em { font-style: italic; }
-  a.internal-link { color: #2f6f9f; text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
-  @media (prefers-color-scheme: dark) { a.internal-link { color: #5aa0d6; } }
+  a.internal-link { color: #4A6B57; text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
+  @media (prefers-color-scheme: dark) { a.internal-link { color: #89A995; } }
   .grid { display: grid; grid-template-columns: 1fr; gap: 12px; margin-top: 8px; }
   @media (min-width: 600px) { .grid { grid-template-columns: 1fr 1fr; } }
-  .scard { cursor: pointer; text-align: left; border: 1px solid rgba(127,127,127,.22); border-radius: 12px; padding: 16px 18px; font-size: 1.15rem; font-weight: 600; color: inherit; background: #fff; }
-  @media (prefers-color-scheme: dark) { .scard { background: #1b1e24; } }
+  .scard { cursor: pointer; text-align: left; border: 1px solid rgba(127,127,127,.22); border-radius: 12px; padding: 16px 18px; font-size: 1.15rem; font-weight: 600; color: inherit; background: #FFFDFC; }
+  @media (prefers-color-scheme: dark) { .scard { background: #2A2D34; } }
   .scard small { display: block; font-weight: 400; opacity: .7; font-size: .8rem; margin-top: 4px; }
   .group { font-size: .8rem; text-transform: uppercase; letter-spacing: .5px; opacity: .6; margin: 1.8em 0 .3em; }
   .links { display: flex; flex-wrap: wrap; gap: 10px; margin: 1.2em 0; }
@@ -136,12 +136,12 @@ function css(width: string): string {
   .pagenav {
     flex-shrink: 0; display: flex; justify-content: center; gap: 8px; padding: 10px 16px;
     padding-bottom: calc(10px + env(safe-area-inset-bottom));
-    background: #dfe2e7; border-top: 1px solid rgba(127,127,127,.28);
+    background: #ECE5D8; border-top: 1px solid rgba(127,127,127,.28);
   }
-  @media (prefers-color-scheme: dark) { .pagenav { background: #15171c; } }
+  @media (prefers-color-scheme: dark) { .pagenav { background: #202228; } }
   .pagenav:empty { display: none; }
-  .pagenav button { flex: 1; max-width: calc(${width} / 3); cursor: pointer; border: 1px solid rgba(127,127,127,.3); background: #fff; color: inherit; border-radius: 10px; padding: 12px 8px; font-size: 1rem; min-height: 54px; }
-  @media (prefers-color-scheme: dark) { .pagenav button { background: #1b1e24; } }
+  .pagenav button { flex: 1; max-width: calc(${width} / 3); cursor: pointer; border: 1px solid rgba(127,127,127,.3); background: #FFFDFC; color: inherit; border-radius: 10px; padding: 12px 8px; font-size: 1rem; min-height: 54px; }
+  @media (prefers-color-scheme: dark) { .pagenav button { background: #2A2D34; } }
   .pagenav button:disabled { opacity: .4; }
 `;
 }

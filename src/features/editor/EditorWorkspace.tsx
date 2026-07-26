@@ -28,11 +28,11 @@ export function EditorWorkspace() {
 
   return (
     <PanelGroup direction="horizontal" autoSaveId="guide.editor.panels" className="min-h-0 flex-1">
-      <Panel defaultSize={32} minSize={22} className="border-r border-border">
+      <Panel defaultSize={30} minSize={22} className="bg-sidebar text-sidebar-foreground">
         <SectionTree />
       </Panel>
-      <PanelResizeHandle className="w-px bg-border transition-colors hover:bg-primary/40 data-[resize-handle-state=drag]:bg-primary" />
-      <Panel minSize={40} className="flex min-h-0 flex-col">
+      <PanelResizeHandle className="w-px bg-border/60 transition-colors hover:bg-primary/40 data-[resize-handle-state=drag]:bg-primary/60" />
+      <Panel minSize={40} className="flex min-h-0 flex-col bg-background">
         <FolioTabs />
         <div className="min-h-0 flex-1 overflow-y-auto">
           {!project ? (

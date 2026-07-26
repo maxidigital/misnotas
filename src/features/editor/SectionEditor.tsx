@@ -12,13 +12,13 @@ const TYPES: { value: SectionType; label: string }[] = [
 export function SectionEditor({ section }: { section: Section }) {
   const update = useEditorStore((s) => s.updateSection);
   return (
-    <div className="mx-auto max-w-3xl space-y-6 p-6">
+    <div className="mx-auto max-w-3xl space-y-6 p-6 md:p-8">
       <div className="space-y-1.5">
-        <label className="text-sm font-medium">Nombre de la sección</label>
+        <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Nombre de la sección</label>
         <Input value={section.name} onChange={(e) => update(section.id, { name: e.target.value })} />
       </div>
       <div className="space-y-1.5">
-        <label className="text-sm font-medium">Tipo</label>
+        <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Tipo</label>
         <div className="flex gap-2">
           {TYPES.map((t) => (
             <button
@@ -26,10 +26,10 @@ export function SectionEditor({ section }: { section: Section }) {
               type="button"
               onClick={() => update(section.id, { type: t.value })}
               className={cn(
-                'rounded-md border px-3 py-1.5 text-sm transition-colors',
+                'rounded-lg border px-3.5 py-2 text-sm transition-colors',
                 section.type === t.value
-                  ? 'border-primary bg-primary/10 text-primary'
-                  : 'border-input hover:bg-accent'
+                  ? 'border-primary/50 bg-primary/10 text-primary'
+                  : 'border-border hover:bg-accent'
               )}
             >
               {t.label}
@@ -39,7 +39,7 @@ export function SectionEditor({ section }: { section: Section }) {
       </div>
 
       <div className="space-y-1.5">
-        <label className="text-sm font-medium">Color de la franja del título</label>
+        <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Color de la franja del título</label>
         <div className="flex flex-wrap gap-2">
           {PALETTE.map((c) => {
             const selected = (section.titleBarColor ?? '').toLowerCase() === c.value.toLowerCase();

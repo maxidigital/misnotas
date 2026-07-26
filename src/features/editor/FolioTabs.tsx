@@ -25,7 +25,7 @@ export function FolioTabs() {
   if (tabs.length === 0) return null;
 
   return (
-    <div className="flex shrink-0 items-stretch overflow-x-auto border-b border-border bg-muted/30">
+    <div className="flex shrink-0 items-stretch overflow-x-auto border-b border-border/60 bg-muted/30">
       {tabs.map((t) => {
         const active = t.id === activeFolioId;
         return (
@@ -33,9 +33,9 @@ export function FolioTabs() {
             key={t.id}
             onClick={() => select({ sectionId: t.sectionId, folioId: t.id })}
             className={cn(
-              'group flex max-w-[15rem] shrink-0 cursor-pointer items-center gap-1.5 border-r border-t-2 px-3 py-1.5 text-sm',
+              'group flex max-w-[15rem] shrink-0 cursor-pointer items-center gap-1.5 border-r border-border/40 border-t-2 px-3.5 py-2 text-sm transition-colors',
               active
-                ? 'border-t-primary bg-background text-foreground'
+                ? 'border-t-primary bg-background font-medium text-foreground'
                 : 'border-t-transparent text-muted-foreground hover:bg-background/60'
             )}
           >

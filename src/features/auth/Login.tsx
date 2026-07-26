@@ -19,9 +19,9 @@ export function Login() {
 
   return (
     <div className="flex h-full items-center justify-center p-6">
-      <div className="w-full max-w-xs space-y-4 rounded-xl border border-border bg-card p-6 text-center shadow-sm">
+      <div className="w-full max-w-sm space-y-5 rounded-2xl border border-border/70 bg-card p-8 text-center shadow-card">
         <img src="/blasco.png" alt="" className="mx-auto h-16 w-16 object-contain dark:invert" />
-        <div className="text-lg font-semibold">misnotas</div>
+        <div className="text-xl font-semibold tracking-tight">misnotas</div>
         <Input
           type="password"
           autoFocus

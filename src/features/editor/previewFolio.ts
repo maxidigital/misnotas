@@ -77,16 +77,16 @@ export function openFolioPreview(
   :root { color-scheme: light dark; }
   * { box-sizing: border-box; }
   body {
-    margin: 0; background: #e6e8ec; color: #1a1a1a;
+    margin: 0; background: #EFE8DA; color: #2A2620;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     font-size: 1.5rem; line-height: 1.55;
   }
-  @media (prefers-color-scheme: dark) { body { background: #0e1013; color: #e8e8e8; } }
+  @media (prefers-color-scheme: dark) { body { background: #17181C; color: #E7E5E0; } }
   .wrap {
     max-width: ${width}; margin: 0 auto; padding: 40px 32px 96px; min-height: 100vh;
-    background: #ffffff;
+    background: #FFFDFC;
   }
-  @media (prefers-color-scheme: dark) { .wrap { background: #16181d; } }
+  @media (prefers-color-scheme: dark) { .wrap { background: #262930; } }
   h1 {
     font-size: 2.1rem; text-align: center; font-weight: 700;
     background: ${band.lightBg}; color: ${band.lightText};
@@ -103,8 +103,8 @@ export function openFolioPreview(
   li { margin: .15em 0; }
   strong { font-weight: 700; }
   em { font-style: italic; }
-  a.internal-link { color: #2f6f9f; text-decoration: underline; text-underline-offset: 2px; cursor: help; }
-  @media (prefers-color-scheme: dark) { a.internal-link { color: #5aa0d6; } }
+  a.internal-link { color: #4A6B57; text-decoration: underline; text-underline-offset: 2px; cursor: help; }
+  @media (prefers-color-scheme: dark) { a.internal-link { color: #89A995; } }
 </style>
 </head>
 <body>

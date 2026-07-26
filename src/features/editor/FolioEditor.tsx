@@ -21,19 +21,23 @@ export function FolioEditor({ folio }: { folio: Folio }) {
   const titleBarColor = sections.find((s) => s.folios.some((f) => f.id === folio.id))?.titleBarColor;
 
   return (
-    <div className="mx-auto flex h-full max-w-3xl flex-col gap-3 p-4">
-      <div className="shrink-0 space-y-1.5">
+    <div className="mx-auto flex h-full max-w-3xl flex-col gap-5 p-6 md:p-8">
+      <div className="shrink-0 space-y-2">
         <div className="flex items-center justify-between">
-          <label className="text-sm font-medium">Título del folio</label>
-          <Button variant="outline" size="sm" onClick={() => openFolioPreview(folio, sections, maxChars, titleBarColor)}>
+          <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Título del folio</label>
+          <Button variant="ghost" size="sm" onClick={() => openFolioPreview(folio, sections, maxChars, titleBarColor)}>
             <Eye className="h-4 w-4" /> Vista previa
           </Button>
         </div>
-        <Input value={folio.title} onChange={(e) => update(folio.id, { title: e.target.value })} />
+        <Input
+          value={folio.title}
+          onChange={(e) => update(folio.id, { title: e.target.value })}
+          className="h-10 text-base"
+        />
       </div>
 
-      <div className="flex min-h-0 flex-1 flex-col gap-1.5">
-        <label className="text-sm font-medium">Cuerpo</label>
+      <div className="flex min-h-0 flex-1 flex-col gap-2">
+        <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Cuerpo</label>
         <RichTextField
           className="min-h-0 flex-1"
           value={folio.guion}
@@ -43,10 +47,10 @@ export function FolioEditor({ folio }: { folio: Folio }) {
       </div>
 
       {/* Enlaces */}
-      <div className="max-h-[38vh] shrink-0 space-y-2 overflow-y-auto pt-1">
+      <div className="max-h-[38vh] shrink-0 space-y-3 overflow-y-auto border-t border-border/50 pt-4">
         <div className="flex items-center justify-between">
-          <label className="text-sm font-medium">Enlaces</label>
-          <Button variant="outline" size="sm" onClick={() => addLink(folio.id)}>
+          <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Enlaces</label>
+          <Button variant="ghost" size="sm" onClick={() => addLink(folio.id)}>
             <Plus className="h-4 w-4" /> Agregar enlace
           </Button>
         </div>

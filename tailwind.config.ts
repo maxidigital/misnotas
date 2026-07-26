@@ -1,8 +1,8 @@
 import type { Config } from 'tailwindcss';
 import animate from 'tailwindcss-animate';
 
-// Dark-first, neutral blue-slate (mismo sistema que v2x-tools-frontend).
-// Tokens = CSS variables en src/index.css. No orange, no gradients.
+// Cálido, tipo libro (arena + salvia) en light; warm dark sin negro.
+// Tokens = CSS variables en src/index.css.
 const config: Config = {
   darkMode: 'class',
   content: ['./index.html', './src/**/*.{ts,tsx}'],
@@ -22,11 +22,16 @@ const config: Config = {
         popover: { DEFAULT: 'hsl(var(--popover))', foreground: 'hsl(var(--popover-foreground))' },
         success: 'hsl(var(--success))',
         destructive: { DEFAULT: 'hsl(var(--destructive))', foreground: 'hsl(var(--destructive-foreground))' },
+        sidebar: { DEFAULT: 'hsl(var(--sidebar))', foreground: 'hsl(var(--sidebar-foreground))' },
       },
       borderRadius: {
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)',
+        xl: 'calc(var(--radius) + 4px)',
+      },
+      boxShadow: {
+        card: 'var(--shadow)',
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],

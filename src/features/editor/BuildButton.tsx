@@ -21,7 +21,7 @@ export function BuildButton() {
   };
 
   return (
-    <Button variant="default" size="sm" onClick={onBuild} title="Generar la guía navegable (pestaña nueva)">
+    <Button variant="outline" size="sm" onClick={onBuild} title="Generar la guía navegable (pestaña nueva)">
       <Hammer className="h-4 w-4" /> Build
     </Button>
   );

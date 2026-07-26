@@ -196,7 +196,10 @@ function Kebab({ nodes }: { nodes: MenuNode[] }) {
 }
 
 const cardCls = (over: boolean) =>
-  cn('group relative rounded-xl border bg-card p-4', over ? 'border-primary ring-2 ring-primary/40' : 'border-border hover:border-primary/50');
+  cn(
+    'group relative rounded-xl border border-border/70 bg-card p-5 shadow-card transition-all duration-150',
+    over ? 'border-primary/60 ring-2 ring-primary/30' : 'hover:border-border hover:shadow-md'
+  );
 
 function FolderCard({ f, onOpen, nodes }: { f: Folder; onOpen: () => void; nodes: MenuNode[] }) {
   const drag = useDraggable({ id: 'drag-' + f.id, data: { kind: 'folder', id: f.id, name: f.name } });
@@ -479,7 +482,7 @@ export function Dashboard() {
           ) : subfolders.length === 0 && items.length === 0 ? (
             <p className="text-muted-foreground">Carpeta vacía. Creá una guía o una carpeta.</p>
           ) : (
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {subfolders.map((f) => (
                 <FolderCard key={f.id} f={f} onOpen={() => setCwd(f.id)} nodes={itemNodes({ kind: 'folder', id: f.id, name: f.name })} />
               ))}

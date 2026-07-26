@@ -2,59 +2,65 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Design tokens — dark-first, neutral blue-slate (de v2x-tools-frontend). */
+/* Design tokens — cálido, tipo libro (arena + salvia). Warm dark (sin negro). */
 @layer base {
   :root {
-    --background: 210 40% 98%;
-    --foreground: 226 22% 11%;
-    --card: 0 0% 100%;
-    --card-foreground: 226 22% 11%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 226 22% 11%;
-    --primary: 217 91% 60%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 214 32% 91%;
-    --secondary-foreground: 226 22% 11%;
-    --muted: 214 32% 94%;
-    --muted-foreground: 215 16% 47%;
-    --accent: 214 32% 91%;
-    --accent-foreground: 226 22% 11%;
-    --success: 142 71% 40%;
-    --destructive: 0 72% 51%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 214 32% 88%;
-    --input: 214 32% 88%;
-    --ring: 217 91% 60%;
-    --radius: 0.5rem;
+    --background: 38 41% 95%;
+    --foreground: 36 14% 15%;
+    --card: 20 100% 99%;
+    --card-foreground: 36 14% 15%;
+    --popover: 20 100% 99%;
+    --popover-foreground: 36 14% 15%;
+    --primary: 143 13% 43%;
+    --primary-foreground: 45 33% 98%;
+    --secondary: 39 32% 88%;
+    --secondary-foreground: 36 14% 15%;
+    --muted: 39 35% 90%;
+    --muted-foreground: 37 9% 38%;
+    --accent: 39 32% 88%;
+    --accent-foreground: 36 14% 15%;
+    --success: 137 16% 44%;
+    --destructive: 11 48% 48%;
+    --destructive-foreground: 45 33% 98%;
+    --border: 37 19% 81%;
+    --input: 37 19% 81%;
+    --ring: 143 13% 43%;
+    --sidebar: 39 34% 89%;
+    --sidebar-foreground: 36 14% 15%;
+    --radius: 0.625rem;
+    --shadow: 0 1px 2px hsl(36 20% 20% / 0.04), 0 2px 6px hsl(36 20% 20% / 0.04);
   }
 
   .dark {
-    --background: 226 22% 7%;
-    --foreground: 214 32% 91%;
-    --card: 224 26% 11%;
-    --card-foreground: 214 32% 91%;
-    --popover: 224 26% 11%;
-    --popover-foreground: 214 32% 91%;
-    --primary: 217 91% 60%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 222 25% 16%;
-    --secondary-foreground: 214 32% 91%;
-    --muted: 222 22% 15%;
-    --muted-foreground: 215 20% 60%;
-    --accent: 222 25% 18%;
-    --accent-foreground: 214 32% 91%;
-    --success: 142 69% 50%;
-    --destructive: 0 72% 55%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 222 20% 20%;
-    --input: 222 20% 22%;
-    --ring: 217 91% 60%;
+    --background: 228 8% 12%;
+    --foreground: 43 13% 89%;
+    --card: 222 12% 17%;
+    --card-foreground: 43 13% 89%;
+    --popover: 222 12% 17%;
+    --popover-foreground: 43 13% 89%;
+    --primary: 143 16% 60%;
+    --primary-foreground: 228 8% 12%;
+    --secondary: 222 11% 18%;
+    --secondary-foreground: 43 13% 89%;
+    --muted: 220 11% 15%;
+    --muted-foreground: 220 8% 65%;
+    --accent: 222 11% 18%;
+    --accent-foreground: 43 13% 89%;
+    --success: 144 24% 59%;
+    --destructive: 12 49% 55%;
+    --destructive-foreground: 43 13% 89%;
+    --border: 224 10% 21%;
+    --input: 224 10% 23%;
+    --ring: 143 16% 60%;
+    --sidebar: 225 11% 14%;
+    --sidebar-foreground: 43 13% 89%;
+    --shadow: 0 1px 2px hsl(0 0% 0% / 0.28), 0 2px 8px hsl(0 0% 0% / 0.22);
   }
 }
 
 @layer base {
   * {
-    @apply border-border;
+    border-color: hsl(var(--border));
   }
   html,
   body,
@@ -63,23 +69,30 @@
   }
   body {
     @apply bg-background text-foreground font-sans antialiased;
+    font-feature-settings: 'kern', 'liga', 'calt';
+    text-rendering: optimizeLegibility;
+  }
+  h1,
+  h2,
+  h3 {
+    letter-spacing: -0.011em;
   }
 }
 
 /* Tiptap editor surface */
 .rte-content {
-  padding: 0.5rem 0.75rem;
-  font-size: 0.95rem;
-  line-height: 1.55;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  line-height: 1.65;
 }
 .rte-content p {
-  margin: 0 0 0.55em;
+  margin: 0 0 0.6em;
 }
 .rte-content p:last-child {
   margin-bottom: 0;
 }
 .rte-content strong {
-  font-weight: 700;
+  font-weight: 650;
 }
 .rte-content em {
   font-style: italic;
@@ -88,11 +101,12 @@
   color: hsl(var(--primary));
   text-decoration: underline;
   text-underline-offset: 2px;
+  text-decoration-thickness: 1px;
   cursor: pointer;
 }
 .rte-content ul,
 .rte-content ol {
-  margin: 0 0 0.55em;
+  margin: 0 0 0.6em;
   padding-left: 1.4em;
 }
 .rte-content ul {
@@ -109,8 +123,8 @@
 }
 .rte-content hr {
   border: none;
-  border-top: 2px solid hsl(var(--border));
-  margin: 0.9em 0;
+  border-top: 1px solid hsl(var(--border));
+  margin: 1em 0;
 }
 .rte-content hr.ProseMirror-selectednode {
   border-top-color: hsl(var(--primary));
