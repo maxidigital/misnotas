@@ -50,8 +50,7 @@ function pushHist(hash){
 function renderHistory(){
   if(!histPanel) return;
   var cur = location.hash || '#/';
-  var html = '<div class="hist-title">Historial</div>';
-  if(HIST.length>1) html += '<button class="hist-item hist-back" data-go="'+HIST[1].hash+'">\\u2039 Volver</button>';
+  var html = '<div class="hist-title">Sesi\\u00f3n</div>';
   html += HIST.map(function(h){
     return '<button class="hist-item'+(h.hash===cur?' cur':'')+'" data-go="'+h.hash+'">'+esc(h.label)+'</button>';
   }).join('');
@@ -275,8 +274,6 @@ function css(width: string): string {
   .hist-item:hover { background: rgba(120,105,80,.14); }
   @media (prefers-color-scheme: dark) { .hist-item:hover { background: rgba(255,255,255,.08); } }
   .hist-item.cur { font-weight: 700; }
-  .hist-back { opacity: .8; border-bottom: 1px solid rgba(120,105,80,.18); border-radius: 0; margin-bottom: 4px; }
-  @media (prefers-color-scheme: dark) { .hist-back { border-bottom-color: rgba(255,255,255,.08); } }
 
   /* Escritorio: panel fijo, sin handle/backdrop */
   @media (min-width: 900px) {
