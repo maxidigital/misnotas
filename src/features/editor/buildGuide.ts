@@ -123,9 +123,11 @@ function renderFolio(id){
   setFolioTriple(gi);
   var prev = gi>0 ? FLAT[gi-1].f : null;
   var next = gi<FLAT.length-1 ? FLAT[gi+1].f : null;
+  var chevL = '<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>';
+  var chevR = '<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>';
   pagenav.innerHTML = ''
-    + '<button class="nav-side" aria-label="Anterior" '+(prev?'data-go="#/f/'+prev.id+'"':'disabled')+'>\\u2190</button>'
-    + '<button class="nav-next" aria-label="Siguiente" '+(next?'data-go="#/f/'+next.id+'"':'disabled')+'>\\u2192</button>';
+    + '<button class="nav-side" aria-label="Anterior" '+(prev?'data-go="#/f/'+prev.id+'"':'disabled')+'>'+chevL+'</button>'
+    + '<button class="nav-next" aria-label="Siguiente" '+(next?'data-go="#/f/'+next.id+'"':'disabled')+'>'+chevR+'</button>';
 }
 function render(){
   pushHist(location.hash || '#/');
@@ -248,12 +250,20 @@ function css(width: string): string {
   .hist-backdrop.open { opacity: 1; pointer-events: auto; }
 
   .hist-handle {
-    position: absolute; z-index: 10; left: 0; top: 0; bottom: 0; width: 16px;
-    border: none; background: rgba(120,105,80,.12); color: inherit; cursor: pointer;
-    display: flex; align-items: center; justify-content: center; font-size: 1rem;
+    position: absolute; z-index: 10; left: 0; top: 0; bottom: 0; width: 30px;
+    border: none; border-right: 1px solid rgba(120,105,80,.28);
+    background: #E3D8C4; color: inherit; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
   }
-  .hist-handle::after { content: "\\203a"; opacity: .5; }
-  @media (prefers-color-scheme: dark) { .hist-handle { background: rgba(255,255,255,.06); } }
+  .hist-handle::after {
+    content: "\\203a"; font-size: 1.3rem; font-weight: 700; opacity: .7;
+    background: rgba(120,105,80,.16); border-radius: 999px; width: 22px; height: 44px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  @media (prefers-color-scheme: dark) {
+    .hist-handle { background: #1E2026; border-right-color: rgba(255,255,255,.10); }
+    .hist-handle::after { background: rgba(255,255,255,.10); }
+  }
 
   .hist-title { font-size: .82rem; text-transform: uppercase; letter-spacing: .5px; opacity: .55; padding: 8px 10px 4px; }
   .hist-item {
@@ -343,9 +353,11 @@ function css(width: string): string {
   .pagenav:empty { display: none; }
   .pagenav button {
     flex: 1; max-width: calc(${width} / 2); cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
     border: 1px solid rgba(120,105,80,.28); background: #FBF7EE; color: inherit;
-    border-radius: 12px; padding: 8px; font-size: 1.6rem; line-height: 1; min-height: 54px;
+    border-radius: 12px; padding: 8px; min-height: 54px;
   }
+  .pagenav svg { pointer-events: none; }
   @media (prefers-color-scheme: dark) { .pagenav button { background: #2A2D34; border-color: rgba(255,255,255,.10); } }
   .pagenav button.nav-next { font-weight: 700; border-color: rgba(120,105,80,.5); }
   @media (prefers-color-scheme: dark) { .pagenav button.nav-next { border-color: rgba(255,255,255,.24); } }

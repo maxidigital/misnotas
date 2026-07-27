@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Globe, Loader2 } from 'lucide-react';
+import { RefreshCw, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useEditorStore } from '@/store/useEditorStore';
 import { Button } from '@/components/ui/button';
@@ -29,7 +29,7 @@ export function PublishButton() {
       toast.success(linked.length === 1 ? 'Publicación actualizada' : linked.length + ' publicaciones actualizadas');
       setOpen(false);
     } catch {
-      toast.error('No se pudo publicar');
+      toast.error('No se pudo actualizar');
     } finally {
       setBusy(false);
     }
@@ -37,14 +37,14 @@ export function PublishButton() {
 
   return (
     <>
-      <Button size="sm" onClick={() => setOpen(true)} title="Publicar los cambios en las publicaciones de esta guía">
-        <Globe className="h-4 w-4" /> Publicar
+      <Button size="sm" onClick={() => setOpen(true)} title="Actualizar las publicaciones de esta guía">
+        <RefreshCw className="h-4 w-4" /> Actualizar
       </Button>
 
       <Dialog open={open} onOpenChange={(o) => !busy && setOpen(o)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>¿Publicar cambios?</DialogTitle>
+            <DialogTitle>¿Actualizar la guía publicada?</DialogTitle>
           </DialogHeader>
           <DialogFooter>
             <Button variant="ghost" onClick={() => setOpen(false)} disabled={busy}>
@@ -52,7 +52,7 @@ export function PublishButton() {
             </Button>
             <Button onClick={onConfirm} disabled={busy}>
               {busy && <Loader2 className="h-4 w-4 animate-spin" />}
-              Publicar
+              Actualizar
             </Button>
           </DialogFooter>
         </DialogContent>
