@@ -110,16 +110,16 @@ function setFolioTriple(gi){
 }
 
 /* ---- render ---- */
-function renderMenu(){ crumbs.innerHTML = crumbHome(true); setSingle(menuInner()); pagenav.innerHTML=''; }
+function renderMenu(){ crumbs.innerHTML = ''; setSingle(menuInner()); pagenav.innerHTML=''; }
 function renderSection(id){
   var s = sectionById(id); if(!s) return renderMenu();
-  crumbs.innerHTML = crumbHome(false)+csep()+crumbCur(s.name);
+  crumbs.innerHTML = crumbHome(false);
   setSingle(sectionInner(s)); pagenav.innerHTML='';
 }
 function renderFolio(id){
   var r = findFolio(id); if(!r) return renderMenu();
   var s = r.section, f = r.folio, gi = flatIndex(f.id);
-  crumbs.innerHTML = crumbHome(false)+csep()+crumbLink(s.name,'#/s/'+s.id)+csep()+crumbCur(f.title||'');
+  crumbs.innerHTML = crumbHome(false)+csep()+crumbLink(s.name,'#/s/'+s.id);
   setFolioTriple(gi);
   var prev = gi>0 ? FLAT[gi-1].f : null;
   var next = gi<FLAT.length-1 ? FLAT[gi+1].f : null;
