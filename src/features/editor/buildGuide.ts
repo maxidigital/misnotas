@@ -444,7 +444,7 @@ function css(width: string): string {
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
   .tree-folio:hover { background: var(--hover); }
-  .tree-folio.cur { font-weight: 700; }
+  .tree-folio.cur { font-weight: 700; background: var(--hover); box-shadow: inset 3px 0 0 var(--link); }
   .hist-title { flex-shrink: 0; font-size: .82rem; text-transform: uppercase; letter-spacing: .5px; opacity: .55; padding: 8px 10px 4px; }
   .hist-list { flex: 1; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; }
   .hist-item {
