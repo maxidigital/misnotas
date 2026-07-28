@@ -14,7 +14,8 @@ var histBackdrop = document.getElementById('histBackdrop');
 var brandLogo = document.getElementById('brandLogo');
 var settings = document.getElementById('settings');
 var histWrap = document.getElementById('histWrap');
-var histToggle = document.getElementById('histToggle');
+var togIndex = document.getElementById('togIndex');
+var togSession = document.getElementById('togSession');
 function esc(t){ return (t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function sectionById(id){ for(var i=0;i<GUIDE.sections.length;i++){ if(GUIDE.sections[i].id===id) return GUIDE.sections[i]; } return null; }
 function findFolio(id){
@@ -73,8 +74,39 @@ function renderHistory(){
   html += '<button class="hist-clear">Limpiar</button>';
   histPanel.innerHTML = html;
 }
-function openHist(){ if(histWrap) histWrap.classList.add('open'); if(histBackdrop) histBackdrop.classList.add('open'); }
-function closeHist(){ if(histWrap) histWrap.classList.remove('open'); if(histBackdrop) histBackdrop.classList.remove('open'); }
+/* ---- panel lateral: dos vistas (Índice / Sesión) ---- */
+var panelView = 'session';
+var treeOpen = {};
+function renderTree(){
+  if(!histPanel) return;
+  var cur = currentFolioId();
+  var html = '<div class="hist-title">\\u00cdndice</div><div class="hist-list">';
+  GUIDE.sections.forEach(function(s){
+    var open = !!treeOpen[s.id];
+    html += '<button class="tree-sec" data-sec="'+s.id+'">'
+      + '<span class="tree-chevron">'+(open?'\\u25be':'\\u25b8')+'</span>'
+      + '<span class="tree-dot band-'+s.id+'"></span>'
+      + '<span class="tree-name">'+esc(s.name)+'</span>'
+      + '<span class="tree-count">'+s.folios.length+'</span></button>';
+    if(open){
+      html += s.folios.map(function(f){
+        return '<button class="tree-folio'+(cur===f.id?' cur':'')+'" data-go="#/f/'+f.id+'">'+esc(f.title||'(sin t\\u00edtulo)')+'</button>';
+      }).join('');
+    }
+  });
+  html += '</div>';
+  histPanel.innerHTML = html;
+}
+function renderPanel(){ if(panelView==='index') renderTree(); else renderHistory(); }
+function openPanel(view){
+  panelView = view;
+  if(view==='index'){ var cur=currentFolioId(); if(cur){ var r=findFolio(cur); if(r) treeOpen[r.section.id]=true; } }
+  if(histWrap){ histWrap.classList.remove('view-index','view-session'); histWrap.classList.add('view-'+view); }
+  renderPanel();
+  if(histWrap) histWrap.classList.add('open');
+  if(histBackdrop) histBackdrop.classList.add('open');
+}
+function closePanel(){ if(histWrap) histWrap.classList.remove('open'); if(histBackdrop) histBackdrop.classList.remove('open'); }
 function isTouch(){ return window.matchMedia('(hover: none) and (pointer: coarse)').matches; }
 
 /* ---- breadcrumb + card helpers ---- */
@@ -152,7 +184,7 @@ function renderFolio(id){
 }
 function render(){
   pushHist(location.hash || '#/');
-  renderHistory();
+  renderPanel();
   var parts = (location.hash||'').replace(/^#/,'').split('/').filter(Boolean);
   if(parts[0]==='f' && parts[1]) return renderFolio(parts[1]);
   if(parts[0]==='s' && parts[1]) return renderSection(parts[1]);
@@ -160,26 +192,31 @@ function render(){
 }
 
 /* ---- click navigation ---- */
-if(histBackdrop) histBackdrop.addEventListener('click', closeHist);
-if(histToggle) histToggle.addEventListener('click', function(e){
+if(histBackdrop) histBackdrop.addEventListener('click', closePanel);
+function togHandler(view){ return function(e){
   e.stopPropagation();
-  if(histWrap){ if(histWrap.classList.contains('open')) closeHist(); else openHist(); }
-});
+  if(histWrap && histWrap.classList.contains('open') && panelView===view) closePanel();
+  else openPanel(view);
+}; }
+if(togIndex) togIndex.addEventListener('click', togHandler('index'));
+if(togSession) togSession.addEventListener('click', togHandler('session'));
 if(histPanel) histPanel.addEventListener('click', function(e){
+  var sec=e.target.closest('.tree-sec');
+  if(sec){ e.stopPropagation(); var sid=sec.getAttribute('data-sec'); treeOpen[sid]=!treeOpen[sid]; renderTree(); return; }
   if(e.target.closest('.hist-clear')){ e.stopPropagation(); clearHist(); }
 });
 document.addEventListener('click', function(e){
   var g = e.target.closest('[data-go]');
-  if(g){ location.hash = g.getAttribute('data-go'); if(isTouch()) closeHist(); return; }
+  if(g){ location.hash = g.getAttribute('data-go'); if(isTouch()) closePanel(); return; }
   var a = e.target.closest('a.internal-link, [data-kind][data-id]');
   if(a){
     e.preventDefault();
     var k = a.getAttribute('data-kind'), id = a.getAttribute('data-id');
-    if(id){ location.hash = (k==='section'?'#/s/':'#/f/') + id; if(isTouch()) closeHist(); }
+    if(id){ location.hash = (k==='section'?'#/s/':'#/f/') + id; if(isTouch()) closePanel(); }
   }
 });
 document.addEventListener('keydown', function(e){
-  if(e.key==='Escape') closeHist();
+  if(e.key==='Escape') closePanel();
   if(!currentFolioId()) return;
   if(e.key==='ArrowLeft') goRel(-1);
   if(e.key==='ArrowRight') goRel(1);
@@ -187,7 +224,7 @@ document.addEventListener('keydown', function(e){
 
 /* ---- finger-following swipe carousel + tap "kindle" a la izquierda para el historial ---- */
 var sx=0, sy=0, W=0, axis=null, dragging=false, swipable=false, hasPrev=false, hasNext=false, gi0=0, pendingHash=null;
-var startLeft=false, moved=false;
+var startLeft=false, startTop=false, moved=false;
 function drawerMode(){ return window.matchMedia('(max-width: 899px)').matches; }
 viewport.addEventListener('touchstart', function(e){
   if(e.touches.length!==1){ swipable=false; return; }
@@ -196,6 +233,7 @@ viewport.addEventListener('touchstart', function(e){
   sx=e.touches[0].clientX; sy=e.touches[0].clientY;
   var vr=viewport.getBoundingClientRect();
   startLeft=(sx-vr.left) < Math.max(56, vr.width*0.18);
+  startTop=(sy-vr.top) < vr.height/2;
   if(swipable){ gi0=flatIndex(id); hasPrev=gi0>0; hasNext=gi0<FLAT.length-1; W=viewport.clientWidth; track.classList.remove('anim'); }
 }, {passive:true});
 viewport.addEventListener('touchmove', function(e){
@@ -209,10 +247,10 @@ viewport.addEventListener('touchmove', function(e){
   track.style.transform = 'translateX('+(-W+d)+'px)';
 }, {passive:false});
 viewport.addEventListener('touchend', function(e){
-  // tap (sin arrastrar) en la banda izquierda → abrir el historial
+  // tap (sin arrastrar) en la banda izquierda → arriba: Índice, abajo: Sesión
   if(!moved && startLeft && !(histWrap && histWrap.classList.contains('open'))
      && !e.target.closest('a, button')){
-    openHist(); dragging=false; return;
+    openPanel(startTop ? 'index' : 'session'); dragging=false; return;
   }
   if(!swipable || !dragging){ dragging=false; return; }
   dragging=false;
@@ -367,24 +405,46 @@ function css(width: string): string {
     overflow: hidden; display: flex; flex-direction: column; padding: 8px;
   }
   .histwrap.open .history { box-shadow: 0 0 40px rgba(0,0,0,.28); }
-  .hist-toggle {
-    align-self: center; flex-shrink: 0; cursor: pointer;
-    width: 24px; height: 66px; padding: 0;
+  /* Dos flechitas apiladas: arriba = Índice, abajo = Sesión */
+  .toggles { align-self: stretch; flex-shrink: 0; width: 24px; display: flex; flex-direction: column; box-shadow: 2px 0 8px rgba(0,0,0,.12); }
+  .tog {
+    flex: 1; cursor: pointer; padding: 0;
     display: flex; align-items: center; justify-content: center;
     border: 1px solid var(--bar-bd); border-left: none;
     background: var(--bar); color: inherit;
-    border-radius: 0 10px 10px 0; box-shadow: 2px 0 8px rgba(0,0,0,.12);
   }
-  .hist-toggle svg { pointer-events: none; opacity: .7; transition: transform .24s ease; }
-  .histwrap.open .hist-toggle svg { transform: rotate(180deg); }
+  .tog:first-child { border-radius: 0 10px 0 0; }
+  .tog:last-child { border-radius: 0 0 10px 0; border-top: none; }
+  .tog svg { pointer-events: none; opacity: .7; transition: transform .24s ease; }
+  .histwrap.open.view-index .tog-index svg { transform: rotate(180deg); }
+  .histwrap.open.view-session .tog-session svg { transform: rotate(180deg); }
   .hist-backdrop { display: none; position: absolute; inset: 0; z-index: 15; background: rgba(0,0,0,.35); opacity: 0; pointer-events: none; transition: opacity .24s; }
   .hist-backdrop.open { opacity: 1; pointer-events: auto; }
-  /* Táctil (mobile/tablet): sin flechita, se usa el tap kindle; el backdrop cierra al tocar afuera.
-     Desktop: la flechita abre/cierra y el panel queda abierto hasta que el usuario lo cierre. */
+  /* Táctil (mobile/tablet): sin flechitas, se usa el tap kindle (arriba Índice / abajo Sesión);
+     el backdrop cierra al tocar afuera. Desktop: flechitas y el panel queda abierto hasta cerrarlo. */
   @media (hover: none) and (pointer: coarse) {
-    .hist-toggle { display: none; }
+    .toggles { display: none; }
     .hist-backdrop { display: block; }
   }
+  /* Índice (árbol) */
+  .tree-sec {
+    display: flex; align-items: center; gap: 6px; width: 100%; cursor: pointer;
+    border: none; background: transparent; color: inherit; font-family: inherit;
+    font-size: 1rem; text-align: left; padding: 8px; border-radius: 8px;
+  }
+  .tree-sec:hover { background: var(--hover); }
+  .tree-chevron { flex-shrink: 0; width: 1em; opacity: .6; font-size: .8em; }
+  .tree-dot { flex-shrink: 0; width: 10px; height: 10px; border-radius: 999px; background: var(--bbg, var(--hover)); }
+  .tree-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .tree-count { flex-shrink: 0; opacity: .5; font-size: .8rem; }
+  .tree-folio {
+    display: block; width: 100%; cursor: pointer;
+    border: none; background: transparent; color: inherit; font-family: inherit;
+    font-size: .95rem; text-align: left; padding: 6px 8px 6px 30px; border-radius: 8px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .tree-folio:hover { background: var(--hover); }
+  .tree-folio.cur { font-weight: 700; }
   .hist-title { flex-shrink: 0; font-size: .82rem; text-transform: uppercase; letter-spacing: .5px; opacity: .55; padding: 8px 10px 4px; }
   .hist-list { flex: 1; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; }
   .hist-item {
@@ -543,7 +603,10 @@ export function renderGuideHtml(project: Project): string {
     '<div class="stage">' +
       '<div class="histwrap" id="histWrap">' +
         '<aside class="history" id="history"></aside>' +
-        '<button class="hist-toggle" id="histToggle" aria-label="Historial"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg></button>' +
+        '<div class="toggles">' +
+          '<button class="tog tog-index" id="togIndex" aria-label="Índice"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg></button>' +
+          '<button class="tog tog-session" id="togSession" aria-label="Sesión"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg></button>' +
+        '</div>' +
       '</div>' +
       '<div class="viewport"><div class="track" id="track"></div></div>' +
       '<div class="hist-backdrop" id="histBackdrop"></div>' +
