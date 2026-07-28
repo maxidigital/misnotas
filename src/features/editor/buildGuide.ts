@@ -446,14 +446,16 @@ function css(width: string): string {
   .pagenav button:disabled { opacity: .38; }
   .nav-side, .nav-next { flex: 1; max-width: calc(${width} / 2); }
   .nav-next { font-weight: 700; border-color: var(--btn-bd-strong); }
-  .pagenav.has-acts { justify-content: space-between; }
+  /* Con botones personalizados: flechas compactas pegadas al grupo, todo centrado */
   .pagenav.has-acts .nav-side, .pagenav.has-acts .nav-next { flex: 0 0 auto; width: 56px; max-width: 56px; }
-  .pageacts { flex: 1; min-width: 0; display: flex; justify-content: center; gap: 8px; }
-  .pageacts .linkbtn { flex: 1; min-width: 0; max-width: 240px; padding: 10px 14px; font-size: 1rem; font-weight: 600; }
-  /* Táctil (sin mouse): se navega con swipe → sin flechas. */
+  .pageacts { min-width: 0; display: flex; justify-content: center; gap: 8px; }
+  .pageacts .linkbtn { flex: 0 1 auto; min-width: 110px; max-width: 240px; padding: 10px 16px; font-size: 1rem; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  /* Táctil (sin mouse): se navega con swipe → sin flechas; los botones ocupan el ancho */
   @media (hover: none) and (pointer: coarse) {
     .pagenav .nav-side, .pagenav .nav-next { display: none; }
     .pagenav:not(.has-acts) { display: none; }
+    .pageacts { flex: 1; }
+    .pageacts .linkbtn { flex: 1 1 0; min-width: 0; }
   }
 `;
 }
