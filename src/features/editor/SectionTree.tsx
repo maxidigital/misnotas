@@ -111,7 +111,11 @@ function SortableSection({ section }: { section: Section }) {
         <button className="text-muted-foreground" onClick={() => setCollapsed((c) => !c)} title={collapsed ? 'Expandir' : 'Colapsar'}>
           {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
         </button>
-        <button className="flex min-w-0 flex-1 items-center gap-2 text-left" onClick={() => select({ sectionId: section.id })}>
+        <button
+          className="flex min-w-0 flex-1 items-center gap-2 text-left"
+          onClick={() => setCollapsed((c) => !c)}
+          title={collapsed ? 'Expandir' : 'Colapsar'}
+        >
           <span
             className="truncate text-sm font-medium"
             style={section.titleBarColor ? { color: section.titleBarColor } : undefined}
@@ -173,7 +177,7 @@ function SortableFolio({ folio, sectionId }: { folio: Folio; sectionId: string }
     <div ref={setNodeRef} style={style}>
       <div
         className={cn(
-          'group flex items-center gap-1 rounded-lg px-2 py-1.5 transition-colors',
+          'group flex items-center gap-1 rounded-lg px-2 py-0 transition-colors',
           selected ? 'bg-primary/12 font-medium text-primary' : 'hover:bg-accent/60'
         )}
       >
