@@ -487,7 +487,7 @@ function css(width: string): string {
 
   .menuhead { text-align: center; margin: 4px 0 24px; }
   .menu-logo { height: 84px; width: 84px; object-fit: contain; filter: invert(var(--logo-invert)); }
-  .menu-title { font-size: 1.5rem; font-weight: 700; margin-top: 6px; }
+  .menu-title { font-size: calc(1.5rem * var(--fz, 1)); font-weight: 700; margin-top: 6px; }
 
   /* Title band */
   h1.band {
@@ -513,7 +513,7 @@ function css(width: string): string {
     display: flex; align-items: center; justify-content: space-between; gap: 12px;
     cursor: pointer; text-align: left; width: 100%;
     border: 1px solid var(--card-bd); border-radius: 14px; padding: 16px 18px;
-    font-size: 1.15rem; font-weight: 600; color: inherit; background: var(--card);
+    font-size: calc(1.15rem * var(--fz, 1)); font-weight: 600; color: inherit; background: var(--card);
     transition: border-color .12s, box-shadow .12s, transform .12s;
   }
   .scard:hover { border-color: var(--card-bd-h); box-shadow: var(--card-sh); transform: translateY(-1px); }
