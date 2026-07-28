@@ -34,28 +34,41 @@ function goRel(delta){
   location.hash='#/f/'+FLAT[t].f.id;
 }
 
-/* ---- historial ---- */
+/* ---- historial (persistido por guía en localStorage) ---- */
 var HIST = [];
+function histKey(){ return 'reader.hist:' + location.pathname; }
+function saveHist(){ try{ localStorage.setItem(histKey(), JSON.stringify(HIST)); }catch(e){} }
+try{ var _hs=JSON.parse(localStorage.getItem(histKey())||'[]'); if(_hs && _hs.length) HIST=_hs.filter(function(x){ return typeof x==='string'; }); }catch(e){}
 function pageLabel(hash){
   var parts=(hash||'').replace(/^#/,'').split('/').filter(Boolean);
   if(parts[0]==='f' && parts[1]){ var r=findFolio(parts[1]); return r ? (r.folio.title||'(sin t\\u00edtulo)') : 'Folio'; }
   if(parts[0]==='s' && parts[1]){ var s=sectionById(parts[1]); return s ? s.name : 'Secci\\u00f3n'; }
   return '\\u2302 Inicio';
 }
+function hashResolves(hash){
+  var p=(hash||'').replace(/^#/,'').split('/').filter(Boolean);
+  if(p[0]==='f' && p[1]) return !!findFolio(p[1]);
+  if(p[0]==='s' && p[1]) return !!sectionById(p[1]);
+  return false;
+}
 function pushHist(hash){
   hash = hash || '#/';
   if(hash==='#/' || hash==='#') return;   // no guardar Inicio en la sesión
-  HIST = HIST.filter(function(h){ return h.hash!==hash; });
-  HIST.unshift({ hash: hash, label: pageLabel(hash) });
+  HIST = HIST.filter(function(h){ return h!==hash; });
+  HIST.unshift(hash);
   if(HIST.length>50) HIST.length=50;
+  saveHist();
 }
+function clearHist(){ HIST=[]; saveHist(); renderHistory(); }
 function renderHistory(){
   if(!histPanel) return;
   var cur = location.hash || '#/';
+  var items = HIST.filter(hashResolves);
   var html = '<div class="hist-title">Sesi\\u00f3n</div>';
-  html += HIST.map(function(h){
-    return '<button class="hist-item'+(h.hash===cur?' cur':'')+'" data-go="'+h.hash+'">'+esc(h.label)+'</button>';
-  }).join('');
+  html += '<div class="hist-list">' + items.map(function(h){
+    return '<button class="hist-item'+(h===cur?' cur':'')+'" data-go="'+h+'">'+esc(pageLabel(h))+'</button>';
+  }).join('') + '</div>';
+  html += '<button class="hist-clear">Limpiar</button>';
   histPanel.innerHTML = html;
 }
 function openHist(){ if(histPanel) histPanel.classList.add('open'); if(histBackdrop) histBackdrop.classList.add('open'); }
@@ -145,6 +158,9 @@ function render(){
 
 /* ---- click navigation ---- */
 if(histBackdrop) histBackdrop.addEventListener('click', closeHist);
+if(histPanel) histPanel.addEventListener('click', function(e){
+  if(e.target.closest('.hist-clear')){ e.stopPropagation(); clearHist(); }
+});
 document.addEventListener('click', function(e){
   var g = e.target.closest('[data-go]');
   if(g){ location.hash = g.getAttribute('data-go'); closeHist(); return; }
@@ -335,13 +351,14 @@ function css(width: string): string {
     position: absolute; z-index: 20; top: 0; bottom: 0; left: 0;
     width: 80%; max-width: 320px;
     background: var(--bar); border-right: 1px solid var(--bar-bd);
-    overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 8px;
+    overflow: hidden; display: flex; flex-direction: column; padding: 8px;
     transform: translateX(-100%); transition: transform .24s ease;
   }
   .history.open { transform: translateX(0); box-shadow: 0 0 40px rgba(0,0,0,.28); }
   .hist-backdrop { position: absolute; inset: 0; z-index: 15; background: rgba(0,0,0,.35); opacity: 0; pointer-events: none; transition: opacity .24s; }
   .hist-backdrop.open { opacity: 1; pointer-events: auto; }
-  .hist-title { font-size: .82rem; text-transform: uppercase; letter-spacing: .5px; opacity: .55; padding: 8px 10px 4px; }
+  .hist-title { flex-shrink: 0; font-size: .82rem; text-transform: uppercase; letter-spacing: .5px; opacity: .55; padding: 8px 10px 4px; }
+  .hist-list { flex: 1; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; }
   .hist-item {
     display: block; width: 100%; text-align: left; cursor: pointer;
     border: none; background: transparent; color: inherit; font-family: inherit;
@@ -350,6 +367,12 @@ function css(width: string): string {
   }
   .hist-item:hover { background: var(--hover); }
   .hist-item.cur { font-weight: 700; }
+  .hist-clear {
+    flex-shrink: 0; margin-top: 6px; cursor: pointer;
+    border: 1px solid var(--btn-bd); background: var(--btn); color: inherit;
+    border-radius: 8px; padding: 10px; font-family: inherit; font-size: .95rem;
+  }
+  .hist-clear:hover { border-color: var(--btn-bd-strong); }
   @media (min-width: 900px) {
     .history { position: static; transform: none; width: 260px; max-width: 260px; box-shadow: none; flex-shrink: 0; }
     .hist-backdrop { display: none; }
