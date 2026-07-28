@@ -11,7 +11,6 @@ var viewport = document.querySelector('.viewport');
 var track = document.getElementById('track');
 var histPanel = document.getElementById('history');
 var histBackdrop = document.getElementById('histBackdrop');
-var histHandle = document.getElementById('histHandle');
 function esc(t){ return (t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function sectionById(id){ for(var i=0;i<GUIDE.sections.length;i++){ if(GUIDE.sections[i].id===id) return GUIDE.sections[i]; } return null; }
 function findFolio(id){
@@ -139,7 +138,6 @@ function render(){
 }
 
 /* ---- click navigation ---- */
-if(histHandle) histHandle.addEventListener('click', openHist);
 if(histBackdrop) histBackdrop.addEventListener('click', closeHist);
 document.addEventListener('click', function(e){
   var g = e.target.closest('[data-go]');
@@ -158,18 +156,23 @@ document.addEventListener('keydown', function(e){
   if(e.key==='ArrowRight') goRel(1);
 });
 
-/* ---- finger-following swipe carousel ---- */
+/* ---- finger-following swipe carousel + tap "kindle" a la izquierda para el historial ---- */
 var sx=0, sy=0, W=0, axis=null, dragging=false, swipable=false, hasPrev=false, hasNext=false, gi0=0, pendingHash=null;
+var startLeft=false, moved=false;
+function drawerMode(){ return window.matchMedia('(max-width: 899px)').matches; }
 viewport.addEventListener('touchstart', function(e){
   if(e.touches.length!==1){ swipable=false; return; }
-  axis=null; dragging=false; pendingHash=null;
+  axis=null; dragging=false; pendingHash=null; moved=false;
   var id=currentFolioId(); swipable=!!id;
   sx=e.touches[0].clientX; sy=e.touches[0].clientY;
+  var vr=viewport.getBoundingClientRect();
+  startLeft=(sx-vr.left) < Math.max(56, vr.width*0.18);
   if(swipable){ gi0=flatIndex(id); hasPrev=gi0>0; hasNext=gi0<FLAT.length-1; W=viewport.clientWidth; track.classList.remove('anim'); }
 }, {passive:true});
 viewport.addEventListener('touchmove', function(e){
-  if(!swipable) return;
   var dx=e.touches[0].clientX-sx, dy=e.touches[0].clientY-sy;
+  if(Math.abs(dx)>10 || Math.abs(dy)>10) moved=true;
+  if(!swipable) return;
   if(axis===null){ if(Math.abs(dx)<8 && Math.abs(dy)<8) return; axis = Math.abs(dx)>Math.abs(dy) ? 'x' : 'y'; }
   if(axis!=='x') return;               // vertical → dejar el scroll normal
   e.preventDefault(); dragging=true;
@@ -177,6 +180,11 @@ viewport.addEventListener('touchmove', function(e){
   track.style.transform = 'translateX('+(-W+d)+'px)';
 }, {passive:false});
 viewport.addEventListener('touchend', function(e){
+  // tap (sin arrastrar) en la banda izquierda → abrir el historial
+  if(!moved && startLeft && drawerMode() && !(histPanel && histPanel.classList.contains('open'))
+     && !e.target.closest('a, button')){
+    openHist(); dragging=false; return;
+  }
   if(!swipable || !dragging){ dragging=false; return; }
   dragging=false;
   var dx=e.changedTouches[0].clientX-sx;
@@ -249,22 +257,6 @@ function css(width: string): string {
   .hist-backdrop { position: absolute; inset: 0; z-index: 15; background: rgba(0,0,0,.35); opacity: 0; pointer-events: none; transition: opacity .24s; }
   .hist-backdrop.open { opacity: 1; pointer-events: auto; }
 
-  .hist-handle {
-    position: absolute; z-index: 10; left: 0; top: 0; bottom: 0; width: 30px;
-    border: none; border-right: 1px solid rgba(120,105,80,.28);
-    background: #E3D8C4; color: inherit; cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .hist-handle::after {
-    content: "\\203a"; font-size: 1.3rem; font-weight: 700; opacity: .7;
-    background: rgba(120,105,80,.16); border-radius: 999px; width: 22px; height: 44px;
-    display: flex; align-items: center; justify-content: center;
-  }
-  @media (prefers-color-scheme: dark) {
-    .hist-handle { background: #1E2026; border-right-color: rgba(255,255,255,.10); }
-    .hist-handle::after { background: rgba(255,255,255,.10); }
-  }
-
   .hist-title { font-size: .82rem; text-transform: uppercase; letter-spacing: .5px; opacity: .55; padding: 8px 10px 4px; }
   .hist-item {
     display: block; width: 100%; text-align: left; cursor: pointer;
@@ -276,10 +268,10 @@ function css(width: string): string {
   @media (prefers-color-scheme: dark) { .hist-item:hover { background: rgba(255,255,255,.08); } }
   .hist-item.cur { font-weight: 700; }
 
-  /* Escritorio: panel fijo, sin handle/backdrop */
+  /* Escritorio: panel fijo, sin backdrop */
   @media (min-width: 900px) {
     .history { position: static; transform: none; width: 260px; max-width: 260px; box-shadow: none; flex-shrink: 0; }
-    .hist-handle, .hist-backdrop { display: none; }
+    .hist-backdrop { display: none; }
   }
 
   /* Carousel viewport + track (prev | current | next) */
@@ -414,7 +406,6 @@ export function renderGuideHtml(project: Project): string {
       '<aside class="history" id="history"></aside>' +
       '<div class="viewport"><div class="track" id="track"></div></div>' +
       '<div class="hist-backdrop" id="histBackdrop"></div>' +
-      '<button class="hist-handle" id="histHandle" aria-label="Historial"></button>' +
     '</div>\n' +
     '<div class="pagenav" id="pagenav"></div>\n' +
     '<script>\nvar GUIDE = ' + json + ';\nvar LOGO = ' + JSON.stringify(LOGO) + ';\n' + RUNTIME + '\n</script>\n' +
