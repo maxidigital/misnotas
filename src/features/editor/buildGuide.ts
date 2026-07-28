@@ -75,6 +75,7 @@ function renderHistory(){
 }
 function openHist(){ if(histWrap) histWrap.classList.add('open'); if(histBackdrop) histBackdrop.classList.add('open'); }
 function closeHist(){ if(histWrap) histWrap.classList.remove('open'); if(histBackdrop) histBackdrop.classList.remove('open'); }
+function isTouch(){ return window.matchMedia('(hover: none) and (pointer: coarse)').matches; }
 
 /* ---- breadcrumb + card helpers ---- */
 function crumbLink(label, go){ return '<button class="crumb" data-go="'+go+'">'+esc(label)+'</button>'; }
@@ -169,12 +170,12 @@ if(histPanel) histPanel.addEventListener('click', function(e){
 });
 document.addEventListener('click', function(e){
   var g = e.target.closest('[data-go]');
-  if(g){ location.hash = g.getAttribute('data-go'); closeHist(); return; }
+  if(g){ location.hash = g.getAttribute('data-go'); if(isTouch()) closeHist(); return; }
   var a = e.target.closest('a.internal-link, [data-kind][data-id]');
   if(a){
     e.preventDefault();
     var k = a.getAttribute('data-kind'), id = a.getAttribute('data-id');
-    if(id){ location.hash = (k==='section'?'#/s/':'#/f/') + id; closeHist(); }
+    if(id){ location.hash = (k==='section'?'#/s/':'#/f/') + id; if(isTouch()) closeHist(); }
   }
 });
 document.addEventListener('keydown', function(e){
@@ -376,8 +377,14 @@ function css(width: string): string {
   }
   .hist-toggle svg { pointer-events: none; opacity: .7; transition: transform .24s ease; }
   .histwrap.open .hist-toggle svg { transform: rotate(180deg); }
-  .hist-backdrop { position: absolute; inset: 0; z-index: 15; background: rgba(0,0,0,.35); opacity: 0; pointer-events: none; transition: opacity .24s; }
+  .hist-backdrop { display: none; position: absolute; inset: 0; z-index: 15; background: rgba(0,0,0,.35); opacity: 0; pointer-events: none; transition: opacity .24s; }
   .hist-backdrop.open { opacity: 1; pointer-events: auto; }
+  /* Táctil (mobile/tablet): sin flechita, se usa el tap kindle; el backdrop cierra al tocar afuera.
+     Desktop: la flechita abre/cierra y el panel queda abierto hasta que el usuario lo cierre. */
+  @media (hover: none) and (pointer: coarse) {
+    .hist-toggle { display: none; }
+    .hist-backdrop { display: block; }
+  }
   .hist-title { flex-shrink: 0; font-size: .82rem; text-transform: uppercase; letter-spacing: .5px; opacity: .55; padding: 8px 10px 4px; }
   .hist-list { flex: 1; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; }
   .hist-item {
