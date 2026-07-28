@@ -84,14 +84,8 @@ function sectionInner(s){
     + '<div class="grid">' + s.folios.map(function(f){ return scard('#/f/'+f.id, f.title||'(sin t\\u00edtulo)'); }).join('') + '</div>';
 }
 function folioInner(f, s){
-  var html = '<h1 class="band band-'+s.id+'">'+esc(f.title||'')+'</h1>';
-  html += '<div class="body">'+(f.body||'')+'</div>';
-  if(f.links && f.links.length){
-    html += '<div class="links">' + f.links.map(function(l){
-      return '<button class="linkbtn" data-kind="'+l.target.kind+'" data-id="'+l.target.id+'">'+esc(l.label||'Ir')+'</button>';
-    }).join('') + '</div>';
-  }
-  return html;
+  return '<h1 class="band band-'+s.id+'">'+esc(f.title||'')+'</h1>'
+    + '<div class="body">'+(f.body||'')+'</div>';
 }
 function pageFolio(item){ return '<div class="page">'+(item?'<div class="wrap">'+folioInner(item.f,item.s)+'</div>':'')+'</div>'; }
 
@@ -109,11 +103,11 @@ function setFolioTriple(gi){
 }
 
 /* ---- render ---- */
-function renderMenu(){ crumbs.innerHTML = ''; setSingle(menuInner()); pagenav.innerHTML=''; }
+function renderMenu(){ crumbs.innerHTML = ''; setSingle(menuInner()); pagenav.className='pagenav'; pagenav.innerHTML=''; }
 function renderSection(id){
   var s = sectionById(id); if(!s) return renderMenu();
   crumbs.innerHTML = crumbHome(false);
-  setSingle(sectionInner(s)); pagenav.innerHTML='';
+  setSingle(sectionInner(s)); pagenav.className='pagenav'; pagenav.innerHTML='';
 }
 function renderFolio(id){
   var r = findFolio(id); if(!r) return renderMenu();
@@ -124,9 +118,19 @@ function renderFolio(id){
   var next = gi<FLAT.length-1 ? FLAT[gi+1].f : null;
   var chevL = '<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>';
   var chevR = '<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>';
-  pagenav.innerHTML = ''
-    + '<button class="nav-side" aria-label="Anterior" '+(prev?'data-go="#/f/'+prev.id+'"':'disabled')+'>'+chevL+'</button>'
-    + '<button class="nav-next" aria-label="Siguiente" '+(next?'data-go="#/f/'+next.id+'"':'disabled')+'>'+chevR+'</button>';
+  var prevBtn = '<button class="nav-side" aria-label="Anterior" '+(prev?'data-go="#/f/'+prev.id+'"':'disabled')+'>'+chevL+'</button>';
+  var nextBtn = '<button class="nav-next" aria-label="Siguiente" '+(next?'data-go="#/f/'+next.id+'"':'disabled')+'>'+chevR+'</button>';
+  var links = (f.links||[]).slice(0,3);
+  if(links.length){
+    var acts = links.map(function(l){
+      return '<button class="linkbtn" data-kind="'+l.target.kind+'" data-id="'+l.target.id+'">'+esc(l.label||'Ir')+'</button>';
+    }).join('');
+    pagenav.className = 'pagenav has-acts';
+    pagenav.innerHTML = prevBtn + '<div class="pageacts">'+acts+'</div>' + nextBtn;
+  } else {
+    pagenav.className = 'pagenav';
+    pagenav.innerHTML = prevBtn + nextBtn;
+  }
 }
 function render(){
   pushHist(location.hash || '#/');
@@ -329,38 +333,38 @@ function css(width: string): string {
   .scard-arrow { flex-shrink: 0; font-size: 1.5em; line-height: 1; opacity: .38; }
   .group { font-size: .8rem; text-transform: uppercase; letter-spacing: .5px; opacity: .6; margin: 1.8em 0 .3em; }
 
-  .links { display: flex; flex-wrap: wrap; gap: 10px; margin: 1.4em 0 .2em; }
-  .linkbtn { cursor: pointer; border: 1px solid rgba(120,105,80,.35); background: transparent; color: inherit; border-radius: 10px; padding: 10px 16px; font-size: 1.05rem; }
-  @media (prefers-color-scheme: dark) { .linkbtn { border-color: rgba(255,255,255,.22); } }
-
-  /* Bottom navigation */
+  /* Barra inferior: flechas (desktop) + botones personalizados del folio */
   .pagenav {
-    flex-shrink: 0; display: flex; justify-content: center; gap: 8px; padding: 10px 16px;
-    padding-bottom: calc(10px + env(safe-area-inset-bottom));
+    flex-shrink: 0; display: flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 10px 16px; padding-bottom: calc(10px + env(safe-area-inset-bottom));
     background: #E3D8C4; border-top: 1px solid rgba(120,105,80,.24);
   }
   @media (prefers-color-scheme: dark) { .pagenav { background: #1E2026; border-top-color: rgba(255,255,255,.08); } }
   .pagenav:empty { display: none; }
+  .pagenav svg { pointer-events: none; }
   .pagenav button {
-    flex: 1; max-width: calc(${width} / 2); cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
     border: 1px solid rgba(120,105,80,.28); background: #FBF7EE; color: inherit;
     border-radius: 12px; padding: 8px; min-height: 54px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
-  .pagenav svg { pointer-events: none; }
   @media (prefers-color-scheme: dark) { .pagenav button { background: #2A2D34; border-color: rgba(255,255,255,.10); } }
-  .pagenav button.nav-next { font-weight: 700; border-color: rgba(120,105,80,.5); }
-  @media (prefers-color-scheme: dark) { .pagenav button.nav-next { border-color: rgba(255,255,255,.24); } }
   .pagenav button:not(:disabled):hover { border-color: rgba(120,105,80,.55); }
   .pagenav button:disabled { opacity: .38; }
-  /* En pantallas chicas: barra inferior más compacta y a todo el ancho */
-  @media (max-width: 560px) {
-    .pagenav { gap: 8px; padding-left: 10px; padding-right: 10px; }
-    .pagenav button { padding: 8px; font-size: 1.5rem; min-height: 52px; max-width: none; }
-  }
-  /* Dispositivos táctiles (sin mouse): se navega con swipe, sobran las flechas */
+  /* Flechas: centradas y anchas cuando el folio no tiene botones */
+  .nav-side, .nav-next { flex: 1; max-width: calc(${width} / 2); }
+  .nav-next { font-weight: 700; border-color: rgba(120,105,80,.5); }
+  @media (prefers-color-scheme: dark) { .nav-next { border-color: rgba(255,255,255,.24); } }
+  /* Con botones personalizados: flechas compactas a los costados, botones al medio */
+  .pagenav.has-acts { justify-content: space-between; }
+  .pagenav.has-acts .nav-side, .pagenav.has-acts .nav-next { flex: 0 0 auto; width: 56px; max-width: 56px; }
+  .pageacts { flex: 1; min-width: 0; display: flex; justify-content: center; gap: 8px; }
+  .pageacts .linkbtn { flex: 1; min-width: 0; max-width: 240px; padding: 10px 14px; font-size: 1rem; font-weight: 600; }
+  /* Táctil (sin mouse): se navega con swipe → sin flechas.
+     Queda la barra solo si el folio tiene botones personalizados. */
   @media (hover: none) and (pointer: coarse) {
-    .pagenav { display: none; }
+    .pagenav .nav-side, .pagenav .nav-next { display: none; }
+    .pagenav:not(.has-acts) { display: none; }
   }
 `;
 }
