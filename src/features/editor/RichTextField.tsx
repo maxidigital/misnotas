@@ -142,17 +142,54 @@ export function RichTextField({ value, onChange, minHeight = '100%', className, 
     const { from, to } = editor.state.selection;
     return editor.state.doc.textBetween(from, to, '\n', ' ');
   };
-  const doCopy = () => void navigator.clipboard?.writeText(selText());
+  // HTML de la selección (conserva negrita, color, tamaño, listas…).
+  const selHtml = () => {
+    const sel = window.getSelection();
+    if (!sel || sel.rangeCount === 0) return '';
+    const div = document.createElement('div');
+    div.appendChild(sel.getRangeAt(0).cloneContents());
+    return div.innerHTML;
+  };
+  const writeRich = () => {
+    const html = selHtml();
+    const text = selText();
+    if (navigator.clipboard && 'write' in navigator.clipboard && typeof ClipboardItem !== 'undefined' && html) {
+      return navigator.clipboard
+        .write([
+          new ClipboardItem({
+            'text/html': new Blob([html], { type: 'text/html' }),
+            'text/plain': new Blob([text], { type: 'text/plain' }),
+          }),
+        ])
+        .catch(() => void navigator.clipboard?.writeText(text));
+    }
+    return navigator.clipboard?.writeText(text);
+  };
+  const doCopy = () => void writeRich();
   const doCut = () => {
-    void navigator.clipboard?.writeText(selText());
+    void writeRich();
     editor.chain().focus().deleteSelection().run();
   };
   const doPaste = () => {
-    if (!navigator.clipboard) return;
-    navigator.clipboard
-      .readText()
-      .then((t) => editor.chain().focus().insertContent(t).run())
-      .catch(() => {});
+    const plain = () =>
+      navigator.clipboard?.readText().then((t) => editor.chain().focus().insertContent(t).run()).catch(() => {});
+    if (navigator.clipboard && 'read' in navigator.clipboard) {
+      navigator.clipboard
+        .read()
+        .then(async (items) => {
+          for (const it of items) {
+            if (it.types.includes('text/html')) {
+              const html = await (await it.getType('text/html')).text();
+              editor.chain().focus().insertContent(html).run();
+              return;
+            }
+          }
+          void plain();
+        })
+        .catch(() => void plain());
+    } else {
+      void plain();
+    }
   };
   const applyLink = (kind: 'folio' | 'section', id: string) =>
     editor.chain().focus().setMark('internalLink', { kind, targetId: id }).run();
@@ -197,16 +234,20 @@ export function RichTextField({ value, onChange, minHeight = '100%', className, 
               <Palette className="h-3.5 w-3.5" style={currentColor ? { color: currentColor } : undefined} />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="start">
+          <DropdownMenuContent
+            align="start"
+            onCloseAutoFocus={(e) => {
+              e.preventDefault();
+              editor.commands.focus();
+            }}
+          >
             <div className="grid grid-cols-8 gap-1 p-1">
               {PALETTE.map((c) => (
-                <button
+                <DropdownMenuItem
                   key={c.value}
-                  type="button"
                   title={c.name}
-                  onMouseDown={(e) => e.preventDefault()}
-                  onClick={() => editor.chain().focus().setMark('textStyle', { color: c.value }).run()}
-                  className="h-6 w-6 rounded-full border border-black/10"
+                  onSelect={() => editor.chain().focus().setMark('textStyle', { color: c.value }).run()}
+                  className="h-6 w-6 rounded-full border border-black/10 !p-0"
                   style={{ background: c.value }}
                 />
               ))}
@@ -243,7 +284,13 @@ export function RichTextField({ value, onChange, minHeight = '100%', className, 
               <ChevronDown className="h-3 w-3 opacity-60" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="start">
+          <DropdownMenuContent
+            align="start"
+            onCloseAutoFocus={(e) => {
+              e.preventDefault();
+              editor.commands.focus();
+            }}
+          >
             {SIZES.map((s) => (
               <DropdownMenuItem
                 key={s.label}
