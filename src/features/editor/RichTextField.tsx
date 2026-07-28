@@ -173,6 +173,7 @@ export function RichTextField({ value, onChange, minHeight = '100%', className, 
       variant="ghost"
       size="icon-sm"
       title={title}
+      onMouseDown={(e) => e.preventDefault()}
       onClick={onClick}
       className={cn(active && 'bg-accent text-accent-foreground')}
     >
@@ -192,7 +193,7 @@ export function RichTextField({ value, onChange, minHeight = '100%', className, 
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button type="button" variant="ghost" size="icon-sm" title="Color del texto">
+            <Button type="button" variant="ghost" size="icon-sm" title="Color del texto" onMouseDown={(e) => e.preventDefault()}>
               <Palette className="h-3.5 w-3.5" style={currentColor ? { color: currentColor } : undefined} />
             </Button>
           </DropdownMenuTrigger>
@@ -203,6 +204,7 @@ export function RichTextField({ value, onChange, minHeight = '100%', className, 
                   key={c.value}
                   type="button"
                   title={c.name}
+                  onMouseDown={(e) => e.preventDefault()}
                   onClick={() => editor.chain().focus().setMark('textStyle', { color: c.value }).run()}
                   className="h-6 w-6 rounded-full border border-black/10"
                   style={{ background: c.value }}
@@ -235,7 +237,7 @@ export function RichTextField({ value, onChange, minHeight = '100%', className, 
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button type="button" variant="ghost" size="sm" className="h-7 gap-1 px-2" title="Tamaño del texto">
+            <Button type="button" variant="ghost" size="sm" className="h-7 gap-1 px-2" title="Tamaño del texto" onMouseDown={(e) => e.preventDefault()}>
               <Type className="h-3.5 w-3.5" />
               <span className="text-xs">{currentSizeLabel}</span>
               <ChevronDown className="h-3 w-3 opacity-60" />
@@ -275,7 +277,7 @@ export function RichTextField({ value, onChange, minHeight = '100%', className, 
           <LinkTargetMenu
             onPick={(t) => editor.chain().focus().setMark('internalLink', { kind: t.kind, targetId: t.id }).run()}
             trigger={
-              <Button type="button" variant="ghost" size="icon-sm" title="Enlazar la selección">
+              <Button type="button" variant="ghost" size="icon-sm" title="Enlazar la selección" onMouseDown={(e) => e.preventDefault()}>
                 <Link2 className="h-3.5 w-3.5" />
               </Button>
             }
