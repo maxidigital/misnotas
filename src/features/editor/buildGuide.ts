@@ -303,6 +303,10 @@ if(settings) settings.addEventListener('click', function(e){
   var t=e.target.closest('[data-theme]'); if(t){ applyTheme(t.getAttribute('data-theme')); return; }
   var f=e.target.closest('[data-fs]'); if(f){ applyFZ(FZ + (f.getAttribute('data-fs')==='+'?0.1:-0.1)); return; }
 });
+/* listeners directos, a prueba de balas, para A- / A+ */
+var fzMinus=document.getElementById('fzMinus'), fzPlus=document.getElementById('fzPlus');
+if(fzMinus) fzMinus.addEventListener('click', function(e){ e.stopPropagation(); applyFZ(FZ-0.1); });
+if(fzPlus) fzPlus.addEventListener('click', function(e){ e.stopPropagation(); applyFZ(FZ+0.1); });
 document.addEventListener('click', function(e){
   if(settings && !settings.hidden && e.target!==brandLogo && !settings.contains(e.target)) settings.hidden=true;
 });
@@ -487,7 +491,7 @@ function css(width: string): string {
 
   /* Title band */
   h1.band {
-    font-size: 1.95rem; text-align: center; font-weight: 700; line-height: 1.2;
+    font-size: calc(1.95rem * var(--fz, 1)); text-align: center; font-weight: 700; line-height: 1.2;
     padding: .55em .9em; margin: 0 0 1.1em; border-radius: 16px;
     background: var(--bbg, #ddd); color: var(--btxt, #333);
   }
@@ -601,8 +605,8 @@ export function renderGuideHtml(project: Project): string {
         '</div>' +
         '<div class="set-label">Texto</div>' +
         '<div class="set-row set-fs">' +
-          '<button data-fs="-" aria-label="Achicar">A−</button>' +
-          '<button data-fs="+" aria-label="Agrandar">A+</button>' +
+          '<button id="fzMinus" data-fs="-" aria-label="Achicar">A−</button>' +
+          '<button id="fzPlus" data-fs="+" aria-label="Agrandar">A+</button>' +
         '</div>' +
       '</div>' +
     '</div>\n' +
