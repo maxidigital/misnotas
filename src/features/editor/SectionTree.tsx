@@ -84,7 +84,7 @@ function SortableSection({ section }: { section: Section }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: section.id });
   const style = { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.5 : 1 };
 
-  const [collapsed, setCollapsed] = React.useState(false);
+  const [collapsed, setCollapsed] = React.useState(true);
   const selection = useEditorStore((s) => s.selection);
   const select = useEditorStore((s) => s.select);
   const addFolio = useEditorStore((s) => s.addFolio);
@@ -194,7 +194,7 @@ function SortableFolio({ folio, sectionId }: { folio: Folio; sectionId: string }
         </button>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon-sm" className="opacity-0 group-hover:opacity-100 data-[state=open]:opacity-100">
+            <Button variant="ghost" size="icon-sm" className="h-6 w-6 opacity-0 group-hover:opacity-100 data-[state=open]:opacity-100">
               <MoreVertical className="h-3.5 w-3.5" />
             </Button>
           </DropdownMenuTrigger>
