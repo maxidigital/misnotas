@@ -13,6 +13,7 @@ var histPanel = document.getElementById('history');
 var histBackdrop = document.getElementById('histBackdrop');
 var brandLogo = document.getElementById('brandLogo');
 var settings = document.getElementById('settings');
+var histBtn = document.getElementById('histBtn');
 function esc(t){ return (t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function sectionById(id){ for(var i=0;i<GUIDE.sections.length;i++){ if(GUIDE.sections[i].id===id) return GUIDE.sections[i]; } return null; }
 function findFolio(id){
@@ -158,6 +159,10 @@ function render(){
 
 /* ---- click navigation ---- */
 if(histBackdrop) histBackdrop.addEventListener('click', closeHist);
+if(histBtn) histBtn.addEventListener('click', function(e){
+  e.stopPropagation();
+  if(histPanel){ if(histPanel.classList.contains('open')) closeHist(); else openHist(); }
+});
 if(histPanel) histPanel.addEventListener('click', function(e){
   if(e.target.closest('.hist-clear')){ e.stopPropagation(); clearHist(); }
 });
@@ -203,7 +208,7 @@ viewport.addEventListener('touchmove', function(e){
 }, {passive:false});
 viewport.addEventListener('touchend', function(e){
   // tap (sin arrastrar) en la banda izquierda → abrir el historial
-  if(!moved && startLeft && drawerMode() && !(histPanel && histPanel.classList.contains('open'))
+  if(!moved && startLeft && !(histPanel && histPanel.classList.contains('open'))
      && !e.target.closest('a, button')){
     openHist(); dragging=false; return;
   }
@@ -327,6 +332,15 @@ function css(width: string): string {
   .crumb.cur { font-weight: 700; cursor: default; flex-shrink: 1; }
   .crumb:not(.cur) { opacity: .82; flex-shrink: 0; }
   .csep { opacity: .4; font-size: 1rem; flex-shrink: 0; }
+  .hist-btn {
+    flex-shrink: 0; cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
+    width: 34px; height: 34px; padding: 0; border: 1px solid transparent;
+    background: transparent; color: inherit; border-radius: 8px;
+  }
+  .hist-btn:hover { background: var(--hover); }
+  .hist-btn svg { pointer-events: none; }
+  /* En táctil el historial se abre con el tap en la banda izquierda (kindle) */
+  @media (hover: none) and (pointer: coarse) { .hist-btn { display: none; } }
 
   /* Menú de ajustes (tema + tamaño de letra) */
   .settings {
@@ -373,10 +387,6 @@ function css(width: string): string {
     border-radius: 8px; padding: 10px; font-family: inherit; font-size: .95rem;
   }
   .hist-clear:hover { border-color: var(--btn-bd-strong); }
-  @media (min-width: 900px) {
-    .history { position: static; transform: none; width: 260px; max-width: 260px; box-shadow: none; flex-shrink: 0; }
-    .hist-backdrop { display: none; }
-  }
 
   /* Carousel viewport + track (prev | current | next) */
   .viewport { flex: 1; overflow: hidden; position: relative; }
@@ -500,6 +510,7 @@ export function renderGuideHtml(project: Project): string {
     '<div class="topbar">' +
       '<img class="brand-logo" id="brandLogo" src="' + LOGO + '" alt="" title="Ajustes">' +
       '<nav class="crumbs" id="crumbs"></nav>' +
+      '<button class="hist-btn" id="histBtn" aria-label="Historial" title="Sesión"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><polyline points="12 7 12 12 15 14"></polyline></svg></button>' +
       '<div class="settings" id="settings" hidden>' +
         '<div class="set-label">Tema</div>' +
         '<div class="set-row">' +
