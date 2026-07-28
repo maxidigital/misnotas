@@ -257,27 +257,7 @@ export const useEditorStore = create<EditorState>()((set, get) => {
             return { openFolioIds, selection };
           }),
 
-        loadProject: (project) => {
-          // Restaurar los tabs abiertos (persistidos por guía) si los folios siguen existiendo.
-          let open: string[] = [];
-          let active: string | null = null;
-          try {
-            const raw = localStorage.getItem('editor.tabs:' + project.id);
-            if (raw) {
-              const d = JSON.parse(raw);
-              const ids = new Set(project.sections.flatMap((s) => s.folios.map((f) => f.id)));
-              open = (Array.isArray(d.open) ? d.open : []).filter((x: string) => ids.has(x));
-              active = d.active && ids.has(d.active) ? d.active : (open[open.length - 1] ?? null);
-            }
-          } catch {
-            /* ignore */
-          }
-          let selection: Selection = {};
-          if (active) {
-            const sec = project.sections.find((s) => s.folios.some((f) => f.id === active));
-            selection = { sectionId: sec?.id, folioId: active };
-          }
-          set({ projects: [project], activeProjectId: project.id, selection, openFolioIds: open });
-        },
+        loadProject: (project) =>
+          set({ projects: [project], activeProjectId: project.id, selection: {}, openFolioIds: [] }),
       };
 });
