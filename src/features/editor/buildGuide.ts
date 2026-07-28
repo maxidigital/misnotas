@@ -211,7 +211,7 @@ window.addEventListener('resize', function(){
 
 /* ---- ajustes: tema (claro/oscuro/auto) + tamaño de letra ---- */
 var root = document.documentElement;
-var FS = 1.5;
+var FZ = 1;
 function currentTheme(){ return root.getAttribute('data-theme') || 'auto'; }
 function syncSettings(){
   if(!settings) return;
@@ -223,19 +223,19 @@ function applyTheme(t){
   try{ localStorage.setItem('reader.theme', t); }catch(e){}
   syncSettings();
 }
-function applyFS(v){
-  FS = Math.max(1.0, Math.min(2.3, Math.round(v*10)/10));
-  root.style.setProperty('--fs', FS+'rem');
-  try{ localStorage.setItem('reader.fs', String(FS)); }catch(e){}
+function applyFZ(v){
+  FZ = Math.max(0.8, Math.min(2.2, Math.round(v*10)/10));
+  root.style.setProperty('--fz', String(FZ));
+  try{ localStorage.setItem('reader.fz', String(FZ)); }catch(e){}
 }
 try{ var _t=localStorage.getItem('reader.theme'); if(_t==='light'||_t==='dark') root.setAttribute('data-theme', _t); }catch(e){}
-try{ var _f=parseFloat(localStorage.getItem('reader.fs')); if(_f) applyFS(_f); }catch(e){}
+try{ var _f=parseFloat(localStorage.getItem('reader.fz')); if(_f) applyFZ(_f); }catch(e){}
 syncSettings();
 if(brandLogo) brandLogo.addEventListener('click', function(e){ e.stopPropagation(); if(settings){ settings.hidden=!settings.hidden; syncSettings(); } });
 if(settings) settings.addEventListener('click', function(e){
   e.stopPropagation();
   var t=e.target.closest('[data-theme]'); if(t){ applyTheme(t.getAttribute('data-theme')); return; }
-  var f=e.target.closest('[data-fs]'); if(f){ applyFS(FS + (f.getAttribute('data-fs')==='+'?0.1:-0.1)); return; }
+  var f=e.target.closest('[data-fs]'); if(f){ applyFZ(FZ + (f.getAttribute('data-fs')==='+'?0.1:-0.1)); return; }
 });
 document.addEventListener('click', function(e){
   if(settings && !settings.hidden && e.target!==brandLogo && !settings.contains(e.target)) settings.hidden=true;
@@ -257,7 +257,7 @@ function css(width: string): string {
     --card:#FEFCF7; --card-bd:rgba(120,105,80,.20); --card-bd-h:rgba(120,105,80,.42);
     --card-sh:0 4px 14px rgba(70,55,30,.10);
     --btn:#FBF7EE; --btn-bd:rgba(120,105,80,.28); --btn-bd-strong:rgba(120,105,80,.5);
-    --link:#4A6B57; --logo-invert:0; --fs:1.5rem;
+    --link:#4A6B57; --logo-invert:0; --fz:1;
   }
   /* variables de tema oscuro (reutilizadas por auto y por override manual) */
   @media (prefers-color-scheme: dark) {
@@ -379,7 +379,7 @@ function css(width: string): string {
     background: var(--bbg, #ddd); color: var(--btxt, #333);
   }
 
-  .body { font-size: var(--fs); }
+  .body { zoom: var(--fz, 1); }
   .body p { margin: 0 0 .7em; }
   .body p:empty::before { content: "\\00a0"; }
   .body ul { list-style: disc; padding-left: 1.4em; }
