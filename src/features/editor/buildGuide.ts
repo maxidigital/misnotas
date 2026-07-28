@@ -492,7 +492,7 @@ function css(width: string): string {
     background: var(--bbg, #ddd); color: var(--btxt, #333);
   }
 
-  .body { zoom: var(--fz, 1); }
+  .body { font-size: calc(1.5rem * var(--fz, 1)); }
   .body p { margin: 0 0 .7em; }
   .body p:empty::before { content: "\\00a0"; }
   .body ul { list-style: disc; padding-left: 1.4em; }
