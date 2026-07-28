@@ -13,7 +13,8 @@ var histPanel = document.getElementById('history');
 var histBackdrop = document.getElementById('histBackdrop');
 var brandLogo = document.getElementById('brandLogo');
 var settings = document.getElementById('settings');
-var histBtn = document.getElementById('histBtn');
+var histWrap = document.getElementById('histWrap');
+var histToggle = document.getElementById('histToggle');
 function esc(t){ return (t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function sectionById(id){ for(var i=0;i<GUIDE.sections.length;i++){ if(GUIDE.sections[i].id===id) return GUIDE.sections[i]; } return null; }
 function findFolio(id){
@@ -72,8 +73,8 @@ function renderHistory(){
   html += '<button class="hist-clear">Limpiar</button>';
   histPanel.innerHTML = html;
 }
-function openHist(){ if(histPanel) histPanel.classList.add('open'); if(histBackdrop) histBackdrop.classList.add('open'); }
-function closeHist(){ if(histPanel) histPanel.classList.remove('open'); if(histBackdrop) histBackdrop.classList.remove('open'); }
+function openHist(){ if(histWrap) histWrap.classList.add('open'); if(histBackdrop) histBackdrop.classList.add('open'); }
+function closeHist(){ if(histWrap) histWrap.classList.remove('open'); if(histBackdrop) histBackdrop.classList.remove('open'); }
 
 /* ---- breadcrumb + card helpers ---- */
 function crumbLink(label, go){ return '<button class="crumb" data-go="'+go+'">'+esc(label)+'</button>'; }
@@ -159,9 +160,9 @@ function render(){
 
 /* ---- click navigation ---- */
 if(histBackdrop) histBackdrop.addEventListener('click', closeHist);
-if(histBtn) histBtn.addEventListener('click', function(e){
+if(histToggle) histToggle.addEventListener('click', function(e){
   e.stopPropagation();
-  if(histPanel){ if(histPanel.classList.contains('open')) closeHist(); else openHist(); }
+  if(histWrap){ if(histWrap.classList.contains('open')) closeHist(); else openHist(); }
 });
 if(histPanel) histPanel.addEventListener('click', function(e){
   if(e.target.closest('.hist-clear')){ e.stopPropagation(); clearHist(); }
@@ -208,7 +209,7 @@ viewport.addEventListener('touchmove', function(e){
 }, {passive:false});
 viewport.addEventListener('touchend', function(e){
   // tap (sin arrastrar) en la banda izquierda → abrir el historial
-  if(!moved && startLeft && !(histPanel && histPanel.classList.contains('open'))
+  if(!moved && startLeft && !(histWrap && histWrap.classList.contains('open'))
      && !e.target.closest('a, button')){
     openHist(); dragging=false; return;
   }
@@ -278,7 +279,7 @@ function css(width: string): string {
     --card:#FEFCF7; --card-bd:rgba(120,105,80,.20); --card-bd-h:rgba(120,105,80,.42);
     --card-sh:0 4px 14px rgba(70,55,30,.10);
     --btn:#FBF7EE; --btn-bd:rgba(120,105,80,.28); --btn-bd-strong:rgba(120,105,80,.5);
-    --link:#4A6B57; --logo-invert:0; --fz:1;
+    --link:#4A6B57; --logo-invert:0; --fz:1; --histw:min(80vw, 300px);
   }
   /* variables de tema oscuro (reutilizadas por auto y por override manual) */
   @media (prefers-color-scheme: dark) {
@@ -332,15 +333,6 @@ function css(width: string): string {
   .crumb.cur { font-weight: 700; cursor: default; flex-shrink: 1; }
   .crumb:not(.cur) { opacity: .82; flex-shrink: 0; }
   .csep { opacity: .4; font-size: 1rem; flex-shrink: 0; }
-  .hist-btn {
-    flex-shrink: 0; cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
-    width: 34px; height: 34px; padding: 0; border: 1px solid transparent;
-    background: transparent; color: inherit; border-radius: 8px;
-  }
-  .hist-btn:hover { background: var(--hover); }
-  .hist-btn svg { pointer-events: none; }
-  /* En táctil el historial se abre con el tap en la banda izquierda (kindle) */
-  @media (hover: none) and (pointer: coarse) { .hist-btn { display: none; } }
 
   /* Menú de ajustes (tema + tamaño de letra) */
   .settings {
@@ -361,14 +353,29 @@ function css(width: string): string {
 
   /* Stage: panel de historial + viewport */
   .stage { position: relative; flex: 1; display: flex; min-height: 0; }
-  .history {
+  .histwrap {
     position: absolute; z-index: 20; top: 0; bottom: 0; left: 0;
-    width: 80%; max-width: 320px;
+    display: flex; align-items: stretch;
+    transform: translateX(calc(-1 * var(--histw)));
+    transition: transform .24s ease;
+  }
+  .histwrap.open { transform: translateX(0); }
+  .history {
+    width: var(--histw);
     background: var(--bar); border-right: 1px solid var(--bar-bd);
     overflow: hidden; display: flex; flex-direction: column; padding: 8px;
-    transform: translateX(-100%); transition: transform .24s ease;
   }
-  .history.open { transform: translateX(0); box-shadow: 0 0 40px rgba(0,0,0,.28); }
+  .histwrap.open .history { box-shadow: 0 0 40px rgba(0,0,0,.28); }
+  .hist-toggle {
+    align-self: center; flex-shrink: 0; cursor: pointer;
+    width: 24px; height: 66px; padding: 0;
+    display: flex; align-items: center; justify-content: center;
+    border: 1px solid var(--bar-bd); border-left: none;
+    background: var(--bar); color: inherit;
+    border-radius: 0 10px 10px 0; box-shadow: 2px 0 8px rgba(0,0,0,.12);
+  }
+  .hist-toggle svg { pointer-events: none; opacity: .7; transition: transform .24s ease; }
+  .histwrap.open .hist-toggle svg { transform: rotate(180deg); }
   .hist-backdrop { position: absolute; inset: 0; z-index: 15; background: rgba(0,0,0,.35); opacity: 0; pointer-events: none; transition: opacity .24s; }
   .hist-backdrop.open { opacity: 1; pointer-events: auto; }
   .hist-title { flex-shrink: 0; font-size: .82rem; text-transform: uppercase; letter-spacing: .5px; opacity: .55; padding: 8px 10px 4px; }
@@ -510,7 +517,6 @@ export function renderGuideHtml(project: Project): string {
     '<div class="topbar">' +
       '<img class="brand-logo" id="brandLogo" src="' + LOGO + '" alt="" title="Ajustes">' +
       '<nav class="crumbs" id="crumbs"></nav>' +
-      '<button class="hist-btn" id="histBtn" aria-label="Historial" title="Sesión"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><polyline points="12 7 12 12 15 14"></polyline></svg></button>' +
       '<div class="settings" id="settings" hidden>' +
         '<div class="set-label">Tema</div>' +
         '<div class="set-row">' +
@@ -526,7 +532,10 @@ export function renderGuideHtml(project: Project): string {
       '</div>' +
     '</div>\n' +
     '<div class="stage">' +
-      '<aside class="history" id="history"></aside>' +
+      '<div class="histwrap" id="histWrap">' +
+        '<aside class="history" id="history"></aside>' +
+        '<button class="hist-toggle" id="histToggle" aria-label="Historial"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg></button>' +
+      '</div>' +
       '<div class="viewport"><div class="track" id="track"></div></div>' +
       '<div class="hist-backdrop" id="histBackdrop"></div>' +
     '</div>\n' +
