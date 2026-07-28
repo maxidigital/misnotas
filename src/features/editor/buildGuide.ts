@@ -487,7 +487,9 @@ export function renderGuideHtml(project: Project): string {
       return (
         `.band-${s.id}{--bbg:${b.lightBg};--btxt:${b.lightText};}` +
         `@media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .band-${s.id}{--bbg:${b.darkBg};--btxt:${b.darkText};}}` +
-        `:root[data-theme="dark"] .band-${s.id}{--bbg:${b.darkBg};--btxt:${b.darkText};}`
+        `:root[data-theme="dark"] .band-${s.id}{--bbg:${b.darkBg};--btxt:${b.darkText};}` +
+        // Si la sección tiene color propio, el botón del menú toma ese color.
+        (b.colored ? `.scard.band-${s.id}{background:var(--bbg);color:var(--btxt);border-color:transparent;}` : '')
       );
     })
     .join('\n');

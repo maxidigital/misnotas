@@ -15,6 +15,7 @@ export function bandColors(hex: string) {
       lightText: 'hsl(40 9% 28%)',
       darkBg: 'hsl(220 8% 25%)',
       darkText: 'hsl(40 9% 82%)',
+      colored: false,
     };
   }
   const sBg = clamp(s, 20, 42);
@@ -23,6 +24,7 @@ export function bandColors(hex: string) {
     lightText: `hsl(${h} ${clamp(s, 40, 70)}% 30%)`,
     darkBg: `hsl(${h} ${clamp(sBg, 18, 30)}% 24%)`,
     darkText: `hsl(${h} ${clamp(s, 34, 70)}% 82%)`,
+    colored: true,
   };
 }
 
