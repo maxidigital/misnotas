@@ -366,6 +366,10 @@ function css(width: string): string {
     .pagenav { gap: 8px; padding-left: 10px; padding-right: 10px; }
     .pagenav button { padding: 8px; font-size: 1.5rem; min-height: 52px; max-width: none; }
   }
+  /* Dispositivos táctiles (sin mouse): se navega con swipe, sobran las flechas */
+  @media (hover: none) and (pointer: coarse) {
+    .pagenav { display: none; }
+  }
 `;
 }
 
