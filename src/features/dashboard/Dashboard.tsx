@@ -83,14 +83,6 @@ import { cn } from '@/lib/cn';
 function slug(s: string) {
   return s.toLowerCase().normalize('NFD').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'guia';
 }
-function fmtDate(iso?: string) {
-  if (!iso) return '';
-  try {
-    return new Date(iso).toLocaleDateString('es', { day: '2-digit', month: 'short', year: 'numeric' });
-  } catch {
-    return '';
-  }
-}
 function fmtDateTime(iso?: string) {
   if (!iso) return '';
   try {
@@ -267,7 +259,7 @@ function GuideCard({ g, onOpen, nodes }: { g: GuideMeta; onOpen: () => void; nod
             <div className="text-xs text-muted-foreground">
               {g.sections} secciones · {g.folios} folios
             </div>
-            <div className="text-xs text-muted-foreground">{fmtDate(g.updatedAt)}</div>
+            <div className="text-xs text-muted-foreground">{fmtDateTime(g.updatedAt)}</div>
           </button>
           <Kebab nodes={nodes} />
         </div>

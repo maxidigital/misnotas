@@ -1,0 +1,273 @@
+{
+  "name": "Módulo 3",
+  "sections": [
+    {
+      "id": "s1",
+      "name": "Análisis Sistémico",
+      "type": "flujo",
+      "titleBarColor": "#6E5AA8",
+      "folios": [
+        {
+          "id": "s1f1",
+          "title": "General",
+          "guion": "<p><strong>CONSIGNA GENERAL DEL ANÁLISIS SISTÉMICO</strong></p><ul><li>Voy a contar hasta 3 y a la cuenta de 3 vas a conectar con la conciencia de tu sistema familiar y vas a ir exactamente al origen de aquello que necesita ser visto, reconocido y resuelto para el mayor bien de todo el sistema familiar. 1.2.3.</li></ul><p><strong>Preguntas Clave Generales</strong></p><ul><li>¿Qué necesita ser visto o reconocido en este momento?</li><li>¿Qué intenta mostrarte el sistema en este momento?</li></ul><p><strong>CONSIGNA PARA QUE EL ANCESTRO SE EXPRESE</strong></p><ul><li>Voy a contar hasta 3 y a la cuenta de 3 vas a conectar con la conciencia de tu sistema familiar. Y permitirás que este ancestro se exprese a través de ti y manifieste todo aquello que nunca pudo ser dicho, todo aquello que necesita ser visto, reconocido y comprendido para el mayor bien de todo el sistema familiar. 1.2.3.</li></ul><p><strong>INTEGRACIÓN UNIVERSAL</strong></p><p>Te veo, te reconozco y te honro. Reconozco tu historia, tu dolor, tu experiencia y tu lugar dentro de nuestro sistema familiar, y todo aquello que permaneció sin ser visto, reconocido o comprendido hoy puede encontrar su lugar y quedar en paz.</p>",
+          "links": []
+        },
+        {
+          "id": "s1f2",
+          "title": "Abortos y pérdidas gestacionales",
+          "guion": "<p><strong>Consigna</strong></p><p>Voy a contar hasta 3 y a la cuenta de 3 vas a conectar con la conciencia de tu sistema familiar y vas a ir exactamente al aborto o pérdida gestacional que necesita ser visto, reconocido y honrado dentro del sistema. 1.2.3.</p><p><strong>Integración</strong></p><p>Te veo, te reconozco y te honro. Aunque tu paso por esta familia haya sido breve, perteneces a ella, y hoy recibes el lugar, el reconocimiento y el amor que te corresponden dentro de nuestro sistema familiar.</p>",
+          "links": []
+        },
+        {
+          "id": "s1f3",
+          "title": "Cargas familiares",
+          "guion": "<p><strong>Consigna</strong></p><ul><li>Voy a contar hasta 3 y a la cuenta de 3 vas a conectar con la conciencia de tu sistema familiar y vas a ir exactamente a la carga, responsabilidad o lealtad familiar que no te pertenece y que necesita ser reconocida y liberada dentro del sistema. 1.2.3.</li><li>Voy a contar hasta 3 y a la cuenta de 3 vas a ir al desorden de roles o a las cargas que no te pertenecen y que estás llevando por lealtad familiar.</li></ul><p><strong>Integración</strong></p><p>Te veo, te reconozco y te honro. Reconozco las cargas, responsabilidades y sufrimientos que llevaste, y aquello que no me corresponde hoy puede regresar a su lugar con respeto, amor y paz dentro de nuestro sistema familiar.</p><p><strong>Frases durante el análisis</strong></p><ul><li>Con amor, retorno esta carga a su lugar legítimo.</li><li>Lo devuelvo a quien realmente le pertenece, con respeto y amor.</li><li>Honro tu destino y tomo solo lo que es mío.</li></ul>",
+          "links": []
+        },
+        {
+          "id": "s1f4",
+          "title": "Duelo no resuelto",
+          "guion": "<p><strong>Consigna</strong></p><ul><li>Voy a contar hasta 3 y a la cuenta de 3 vas a conectar con la conciencia de tu sistema familiar y vas a ir exactamente a la pérdida o duelo que necesita ser reconocido, honrado y completado dentro del sistema. 1.2.3.</li></ul><p><strong>Integración</strong></p><p>Te veo, te reconozco y te honro. Tu partida, tu lugar y tu historia son reconocidos dentro de nuestro sistema familiar, y lo que no pudo ser llorado o despedido hoy puede descansar en paz.</p>",
+          "links": []
+        },
+        {
+          "id": "s1f5",
+          "title": "Enfermedad familiar",
+          "guion": "<p><strong>Consigna</strong></p><ul><li>Voy a contar hasta 3 y a la cuenta de 3 vas a conectar con la conciencia de tu sistema familiar y vas a ir exactamente al origen de la enfermedad hereditaria o repetitiva que necesita ser comprendida, reconocida y sanada dentro del sistema. 1.2.3.</li><li>Voy a contar hasta 3 y a la cuenta de 3 vas a conectar con la conciencia familiar y vas a ir al origen de una enfermedad hereditaria dentro del sistema familiar.</li></ul><p><strong>Integración</strong></p><p>Te veo, te reconozco y te honro. Reconozco la enfermedad y el sufrimiento que acompañaron tu camino, y te doy un lugar de respeto y dignidad dentro de nuestro sistema familiar.</p><p><strong>Frases durante el análisis</strong></p><ul><li>Si esta enfermedad me conecta contigo, ahora te reconozco y te doy un lugar.</li><li>Agradezco el mensaje y la lección que traés.</li><li>Elijo soltar esta enfermedad, permitiendo que la salud y la vida fluyan en mí.</li><li>Respeto el pasado, pero camino hacia la vida.</li></ul>",
+          "links": []
+        },
+        {
+          "id": "s1f6",
+          "title": "Exclusión y olvidos",
+          "guion": "<p><strong>Consigna</strong></p><ul><li>Voy a contar hasta 3 y a la cuenta de 3 vas a conectar con la conciencia de tu sistema familiar y vas a ir exactamente a la persona, miembro o historia familiar que fue excluida, olvidada o no reconocida y que necesita ser vista e integrada dentro del sistema. 1.2.3.</li><li>Voy a contar hasta 3 y a la cuenta de 3 vas a ir al ancestro excluido u olvidado que el sistema necesita reconocer para poder sanar. 1.2.3</li></ul><p><strong>Integración</strong></p><p>Te veo, te reconozco y te honro. Aunque hayas sido olvidado, rechazado o excluido, perteneces a este sistema familiar y te doy el lugar que te corresponde con respeto y amor.</p>",
+          "links": []
+        },
+        {
+          "id": "s1f7",
+          "title": "Herida femenina y masculina del linaje",
+          "guion": "<p><strong>Consigna</strong></p><ul><li>Voy a contar hasta 3 y a la cuenta de 3 vas a conectar con la conciencia de tu sistema familiar y vas a ir exactamente al origen de la herida femenina o masculina de tu linaje que necesita ser vista, reconocida y resuelta para el mayor bien de todo el sistema familiar. 1.2.3.</li></ul><p><strong>Consigna ancestro</strong></p><ul><li>Voy a contar hasta 3 y a la cuenta de 3 vas a conectar con la conciencia de tu sistema familiar. Y permitirás que el ancestro relacionado con esta herida femenina o masculina se exprese a través de ti y manifieste todo aquello que nunca pudo ser dicho, todo aquello que necesita ser visto, reconocido y comprendido para el mayor bien de todo el sistema familiar. 1.2.3.</li></ul><p><strong>Integración</strong></p><p>Te veo, te reconozco y te honro. Reconozco tu historia, tu dolor, tu experiencia y tu lugar dentro de nuestro sistema familiar, y todo aquello que permaneció sin ser visto, reconocido o comprendido hoy puede encontrar su lugar y quedar en paz.</p>",
+          "links": []
+        },
+        {
+          "id": "s1f8",
+          "title": "Promesas y pactos familiares",
+          "guion": "<p><strong>Consigna</strong></p><p>Voy a contar hasta 3 y a la cuenta de 3 vas a conectar con la conciencia de tu sistema familiar y vas a ir exactamente al juramento, promesa, pacto o decisión que fue realizada dentro de tu sistema familiar y que todavía continúa condicionando tu vida actual.</p><p><strong>Integración</strong></p><p>Te veo, te reconozco y te honro. Reconozco la promesa, el pacto o el compromiso que asumiste y el propósito que tuvo en su momento, y aquello que continúa vigente hoy puede encontrar comprensión, libertad y paz dentro de nuestro sistema familiar.</p>",
+          "links": []
+        },
+        {
+          "id": "s1f9",
+          "title": "Roles familiares",
+          "guion": "<p><strong>Consigna</strong></p><ul><li>Voy a contar hasta 3 y a la cuenta de 3 vas a conectar con la conciencia de tu sistema familiar y vas a ir exactamente al desorden jerárquico, inversión de roles o confusión de lugares que necesita ser visto, reconocido y armonizado dentro del sistema. 1.2.3</li></ul><p><strong>Integración</strong></p><p>Te veo, te reconozco y te honro. Reconozco el lugar que ocupaste y las responsabilidades que asumiste, y hoy cada miembro de nuestro sistema familiar puede ocupar el lugar que le corresponde con respeto, equilibrio y amor.</p>",
+          "links": []
+        },
+        {
+          "id": "s1f10",
+          "title": "Sanación familiar",
+          "guion": "<p><strong>Consigna</strong></p><ul><li>Voy a contar hasta 3 y a la cuenta de 3 vas a conectar con la conciencia de tu sistema familiar y vas a ir exactamente a la herida, conflicto o aspecto pendiente de integración que necesita ser visto, reconocido y sanado para el mayor bien de todo el sistema familiar. 1.2.3.</li><li>Voy a contar hasta 3 y a la cuenta de 3 vas a sentir lo que tus ancestros, en el campo unificado, necesitan sanar.</li></ul><p><strong>Integración</strong></p><p>Te veo, te reconozco y te honro. Reconozco el dolor, la experiencia y la historia que necesitan ser sanados, y aquello que aún permanecía pendiente hoy puede encontrar comprensión, alivio y paz dentro de nuestro sistema familiar.</p><p><strong>Frases durante el análisis</strong></p><ul><li>Reconozco este dolor que aún necesita ser sanado.</li><li>Honro lo que no pudo ser resuelto en su momento.</li><li>Hoy permito que esta herida encuentre alivio y descanso.</li><li>Doy espacio a la sanación dentro del sistema.</li></ul>",
+          "links": []
+        },
+        {
+          "id": "s1f11",
+          "title": "Secretos familiares",
+          "guion": "<p><strong>Consigna</strong></p><ul><li>Voy a contar hasta 3 y a la cuenta de 3 vas a conectar con la conciencia de tu sistema familiar y vas a ir exactamente al secreto, conflicto o situación oculto que necesita ser reconocido y resuelto dentro del sistema. 1.2.3.</li></ul><p><strong>Integración</strong></p><p>Te veo, te reconozco y te honro. Te doy un lugar en nuestro sistema familiar, y lo que permaneció oculto hoy puede ser visto, reconocido y quedar en paz.</p><p><strong>Frases durante el análisis</strong></p><ul><li>Lo oculto ya no tiene poder sobre mí.</li><li>Ilumino el secreto, lo oculto, para que pierda peso y poder.</li></ul>",
+          "links": []
+        },
+        {
+          "id": "s1f12",
+          "title": "Sufrimiento repetitivo",
+          "guion": "<p><strong>Consigna</strong></p><ul><li>Voy a contar hasta 3 y a la cuenta de 3 vas a conectar con la conciencia de tu sistema familiar y vas a ir exactamente al origen del patrón de sufrimiento repetitivo que necesita ser visto, comprendido y sanado dentro del sistema. 1.2.3.</li></ul><p><strong>Integración</strong></p><p>Te veo, te reconozco y te honro. Reconozco el sufrimiento y los patrones que marcaron tu historia, y te doy un lugar de respeto dentro de nuestro sistema familiar.</p>",
+          "links": []
+        },
+        {
+          "id": "s1f13",
+          "title": "Traumas transgeneracionales",
+          "guion": "<p><strong>Consigna</strong></p><ul><li>Voy a contar hasta 3 y a la cuenta de 3 vas a conectar con la conciencia de tu sistema familiar y vas a ir exactamente al trauma, acontecimiento o experiencia transgeneracional que necesita ser visto, reconocido y sanado dentro del sistema. 1.2.3.</li></ul><p><strong>Integración</strong></p><p>Te veo, te reconozco y te honro. Reconozco el dolor, el miedo y las dificultades que atravesaste, así como la fuerza con la que seguiste adelante; lo que viviste tiene un lugar de respeto dentro de nuestra historia familiar.</p><p><strong>Frases durante el análisis</strong></p><ul><li>Desde la compasión, reconozco el sufrimiento que hubo aquí.</li><li>Honro el dolor vivido y busco la paz en el corazón del conflicto.</li></ul>",
+          "links": []
+        }
+      ]
+    },
+    {
+      "id": "s2",
+      "name": "Anamnesis",
+      "type": "flujo",
+      "titleBarColor": "#3F8FA6",
+      "folios": [
+        {
+          "id": "s2f1",
+          "title": "Anamnesis",
+          "guion": "<p><strong>DATOS GENERALES</strong></p><ul><li>Nombre y apellidos:</li><li>DNI:</li><li>Fecha de nacimiento:</li><li>Lugar de nacimiento:</li><li>Lugar de residencia:</li><li>Sexo:</li><li>Teléfono:</li><li>Email:</li></ul><p><strong>MOTIVO DE CONSULTA</strong></p><ul><li>¿Qué es lo que te ha hecho decidirte a realizar un análisis?</li><li>¿En qué crees que te puedo ayudar?</li><li>¿Qué es lo que más te preocupa ahora mismo?</li><li>¿Cuándo comenzó?</li><li>¿Cómo comenzó?</li></ul><p><strong>EXPLORACIÓN DEL SÍNTOMA / CONFLICTO</strong></p><ul><li>¿Qué sientes cuando sientes lo que sientes?</li><li>¿A qué se parece?</li><li>¿Cómo es?</li><li>¿Dónde lo sientes?</li><li>¿Qué emoción aparece primero?</li><li>¿Qué emoción aparece después?</li><li>¿Qué parte de tu vida se ve más afectada por esto?</li></ul>",
+          "links": []
+        },
+        {
+          "id": "s2f2",
+          "title": "Gestación",
+          "guion": "<ul><li>¿Qué sabes de tu embarazo?</li><li>¿Qué te contó tu madre?</li><li>¿Sabes si tu madre perdió algún embarazo antes de tenerte a ti?</li><li>¿Cómo era el entorno familiar, la situación económica y la relación de tus padres?</li><li>¿Cómo estaban tus padres cuando tu madre estaba embarazada de ti?</li><li>¿Cómo crees que se sentía tu madre cuando estaba embarazada de ti?</li><li>¿Cómo crees que se sentiría tu madre cuando estaba embarazada de ti? (se mantiene, aunque sea similar)</li><li>¿Qué crees que sentirías tú cuando estabas dentro de la barriga de tu madre?</li><li>¿Cuándo tu mamá tuvo algún problema durante el embarazo, qué crees que sentirías tú allí dentro?</li><li>¿Qué imaginas que sentirías?</li><li>¿Cómo crees que se sentiría tu madre después de haber perdido un bebé?</li><li>¿Qué crees que sentirías tú cuando estabas dentro de la barriga de tu mamá y pasó ese problema?</li></ul><p><strong>NACIMIENTO</strong></p><ul><li>¿Cómo fue tu nacimiento?</li><li>¿Qué sabes de tu parto?</li><li>¿Qué te contó tu madre?</li><li>¿Fue parto natural?</li><li>¿Hubo anestesia general?</li><li>¿Cómo imaginas que estaría tu madre durante un parto largo y difícil?</li><li>¿Cuánto duró el parto?</li><li>¿Cómo te imaginas que es estar en un parto de 24 horas?</li><li>¿Qué crees que sentiría tu madre en esos momentos?</li><li>¿Qué crees que sentirías tú?</li><li>Voy a contar hasta 3 y al contar a 3 irás al momento de tu nacimiento. 1…2…3…</li><li>¿Qué crees que sentirías tú en el momento de nacer si mamá estaba dormida?</li></ul>",
+          "links": []
+        },
+        {
+          "id": "s2f3",
+          "title": "Primera infancia",
+          "guion": "<ul><li>¿Qué recuerdas de tu infancia?</li><li>¿Algún hecho marcante o significativo?</li><li>¿Recuerdas algo en tu infancia que te haya quedado marcado?</li><li>¿Qué sentiste o crees que sentiste en ese momento?</li><li>¿Cómo era la casa donde vivías?</li><li>¿Recuerdas algo que haya sucedido en esa casa?</li><li>¿Fuiste a la guardería?</li><li>¿Cómo fue esa experiencia?</li><li>¿Cómo fue la experiencia en el colegio?</li><li>¿Algún hecho marcante en la época del colegio?</li><li>¿Qué crees que sentiste cuando pasó tal cosa?</li><li>¿Cómo crees que eso te afectó en tu vida?</li><li>¿Durante la infancia tuviste amigos imaginarios?</li><li>¿Tuviste algún amigo invisible?</li><li>¿Tuviste pesadillas en la infancia?</li><li>¿Qué sentías en esas pesadillas?</li></ul><p><strong>ADOLESCENCIA</strong></p><ul><li>¿Cómo fue tu primera menstruación? ¿Estabas preparada?</li><li>¿Sabías algo o no sabías nada?</li><li>¿Cómo viviste ese día?</li><li>¿Qué pasó ese día?</li><li>¿Qué sentiste en tu corazón?</li></ul><p><strong>INICIACIÓN SEXUAL</strong></p><ul><li>¿Qué sentiste?</li><li>¿Qué experimentaste?</li><li>¿Has tenido algún aborto?</li><li>¿El aborto fue natural o provocado?</li><li>¿Qué te hace sentir desde entonces?</li></ul>",
+          "links": []
+        },
+        {
+          "id": "s2f4",
+          "title": "Estudios",
+          "guion": "<ul><li>¿Has estudiado?</li><li>¿Qué te llevó a elegir esos estudios?</li><li>¿Te prohibieron estudiar algo o te obligaron?</li></ul><p><strong>PAREJAS Y MATRIMONIOS</strong></p><ul><li>¿Qué es lo que te decidió a casarte?</li><li>¿A qué se debe que te separaste?</li><li>¿Cómo fue el casamiento?</li><li>¿Cómo conociste a tu marido o mujer?</li><li>¿Qué sentiste al verlo/la?</li><li>¿Qué cosa te atrajo de él/ella?</li></ul><p><strong>ENFERMEDADES Y OPERACIONES</strong></p><ul><li>¿Te han operado alguna vez con anestesia general?</li><li>¿Ha muerto alguien de tus familiares directos?</li><li>¿Qué sentiste en el momento en que murió tu padre/madre?</li><li>¿Pudiste despedirte de él o ella?</li><li>¿Qué sentiste si no pudiste despedirte?</li><li>A la cuenta de tres irás al momento antes de que muera tu papá/mamá.</li></ul><p><strong>SISTEMA FAMILIAR (AMPLIADO)</strong></p><ul><li>¿Quiénes forman tu familia (padres, hermanos, abortos, fallecidos)?</li><li>¿Alguien fue excluido, rechazado u olvidado en la familia?</li><li>¿Hay secretos familiares de los que no se habla?</li><li>¿Ha habido algún hecho traumático que afectara a toda la familia (ruina, accidente, muerte violenta, guerra, migración)?</li><li>¿Se repiten enfermedades en la familia? ¿En qué generación comenzaron?</li><li>¿Hay enfermedades hereditarias o síntomas similares entre varios miembros?</li><li>¿Quién carga con el sufrimiento de la familia?</li></ul>",
+          "links": []
+        },
+        {
+          "id": "s2f5",
+          "title": "¿Quién quedó solo, abandonado o sin pareja?",
+          "guion": "<ul><li>¿Hay hijos no reconocidos o pérdidas no habladas?</li></ul><p><strong>DUELOS, PÉRDIDAS Y SISTEMA ENERGÉTICO (AMPLIADO)</strong></p><ul><li>¿Has vivido muertes importantes o recientes?</li><li>¿Cómo viviste esa pérdida?</li><li>¿Pudiste despedirte?</li><li>Desde esa muerte, ¿has notado algún síntoma físico o emocional nuevo?</li><li>¿Has desarrollado gustos, actitudes o comportamientos similares a los del fallecido?</li><li>¿Sientes su presencia, lo sueñas o piensas mucho en esa persona?</li><li>¿Hay fechas, lugares o situaciones que te alteren sin saber por qué?</li><li>¿Sientes que llevas una carga que no es tuya?</li></ul><p><strong>PREGUNTAS IMPORTANTES</strong></p><ul><li>¿Qué es lo que más te duele en esta vida?</li><li>¿Cuál es tu mayor miedo?</li><li>¿Cuál es tu emoción más profunda?</li><li>¿Hay algo más que no me hayas comentado y que consideres que deba saber para ayudarte?</li></ul>",
+          "links": []
+        }
+      ]
+    },
+    {
+      "id": "s3",
+      "name": "Trabajos Psíquicos",
+      "type": "flujo",
+      "titleBarColor": "#C0873E",
+      "folios": [
+        {
+          "id": "s3f1",
+          "title": "General",
+          "guion": "<p>PROMESAS, JURAMENTOS, ORDENACIÓN, MATRIMONIO, VOTOS, PACTOS, BRUJERÍA, MALDICIONES.</p><p>(En brujerías, amarres, maldiciones, ver quien lo ha hecho. En votos, juramentos, ver que se pronuncia).</p><ul><li>Ir al momento.</li><li>Voy a contar hasta 3 y a la cuenta de 3 irás al momento que realizas o te realizan esta promesa, juramento, brujería, te ordenas, etc., 1,2,3.</li><li>¿Qué está pasando?</li><li>AHÍ. ¿De qué manera afectan estos (…) en esta vida como (…)?</li><li>¿Estás dispuesto a romperlo o anularlo?</li><li>Fórmula - Yo (…) por el poder de mi voluntad rompo y anulo, ceso y termino el (…), que le hice a (…) en esa vida o en esta vida. - Yo (…) por el poder de mi voluntad rompo y anulo, ceso y termino definitivamente y para siempre el (…), que le hice a (…) en esa vida o en esta vida. - Yo (…) por el poder de mi voluntad rompo y anulo, ceso y termino definitivamente y para siempre el (…) que hice a (…) en esa vida pasada o en esta vida, y recupero mi energía y mi poder. Lo libero y me libero para siempre.</li><li>¿Ahora fíjate donde está la energía de esa promesa en tu cuerpo? (Mientras agarro la energía en tu cuerpo repite conmigo)</li></ul><p>- Yo soy yo, y mi naturaleza es la Luz, y le pido a la Luz que me ayude a liberarme de esta ENERGÍA (pacto, juramento, brujería) y arrancarla de mi cuerpo físico y de mi campo vibratorio y regresarla a la Luz ahora.</p><ul><li>Arrancar la energía.</li><li>Reclamar la energía y el poder si fuera necesario.</li></ul>",
+          "links": []
+        },
+        {
+          "id": "s3f2",
+          "title": "Promesas y juramentos",
+          "guion": "<p>1. Muerte en esa vida.</p><p>2. Ir al momento de la promesa o juramento, ver que se dice y hace.</p><p>3. Fíjate como tu promesa afecta a tu vida. (AHÍ).</p><p>4. ¿Estás dispuesto a romper tu promesa o juramento?</p><p>5. Fórmula (Repite conmigo)</p><ul><li>Yo (…) por el poder de mi voluntad rompo y anulo, ceso y termino el (…), que le hice a (…)</li></ul><p>en esa vida o en esta vida.</p><ul><li>Yo (…) por el poder de mi voluntad rompo y anulo, ceso y termino definitivamente y para</li></ul><p>siempre el (…), que le hice a (…) en esa vida o en esta vida.</p><ul><li>Yo (…) por el poder de mi voluntad rompo y anulo, ceso y termino definitivamente y para</li></ul><p>siempre el (…) que hice a (…) en esa vida pasada o en esta vida, y recupero mi energía y</p><p>mi poder. Lo libero y me libero para siempre.</p><p>6. ¿Ahora fíjate donde está la energía de esa promesa en tu cuerpo?</p><p>(Mientras agarro la energía en tu cuerpo repite conmigo)</p><ul><li>Yo soy yo, y mi naturaleza es la Luz, y le pido a la Luz que me ayude a liberarme de esta</li></ul><p>ENERGÍA (pacto, juramento, brujería) y arrancarla de mi cuerpo físico y de mi campo</p><p>vibratorio y regresarla a la Luz ahora.</p><p>7. Arrancar la energía.</p><p>8. Reclamar la energía.</p>",
+          "links": []
+        },
+        {
+          "id": "s3f3",
+          "title": "Votos eclesiásticos",
+          "guion": "<p>MONJES, SACERDOTES, CURAS.</p><p>1.   Muerte en esa vida. 2.   Ir al momento de la Ordenación como monje. 3.   Voy a contar hasta tres y a la cuenta de tres, irás al momento en el que te ordenas como monje. 1.2.3. ¿Cómo te ordenas? ¿Cuál es la fórmula que utilizas? ¿Cuáles son las palabras exactas que pronuncias al ordenarte?</p><p>4.   ¿De qué manera afectan estos votos en esta vida como (…)? 5.   ¿Estás dispuesto a romperlos?</p><ul><li>Yo (…) por el poder de mi voluntad rompo y anulo, ceso y termino el (…), que le hice a (…) en esa vida o en esta vida.</li><li>Yo (…) por el poder de mi voluntad rompo y anulo, ceso y termino definitivamente y para siempre el (…), que le hice a (…) en esa vida o en esta vida.</li><li>Yo (…) por el poder de mi voluntad rompo y anulo, ceso y termino definitivamente y para siempre el (…) que hice a (…) en esa vida pasada o en esta vida, y recupero mi energía y mi poder. Lo libero y me libero para siempre. 6.   Reclamar la Energía. 7.   ¿Ahora fíjate donde está la energía de esa promesa en tu cuerpo? (Mientras agarro la energía en tu cuerpo repite conmigo)</li><li>Yo soy yo, y mi naturaleza es la Luz, y le pido a la Luz que me ayude a liberarme de esta ENERGÍA y arrancarla de mi cuerpo físico y de mi campo vibratorio y regresarla a la Luz ahora. 8.   Arrancar la energía.</li></ul>",
+          "links": []
+        },
+        {
+          "id": "s3f4",
+          "title": "Votos matrimoniales",
+          "guion": "<p>1.   Si es en una vida pasada. Muerte en esa vida. 2.   Ir al momento del compromiso. 3.   Ir al momento del matrimonio y ver exactamente cuáles son las palabras exactas que pronuncias al casarte. 4.   ¿De qué manera afectan estos votos en esta vida como (…)? 5.   ¿Estás dispuesto a romperlos?</p><ul><li>Yo (…) por el poder de mi voluntad rompo y anulo, ceso y termino el (…), que le hice a (…) en esa vida o en esta vida.</li><li>Yo (…) por el poder de mi voluntad rompo y anulo, ceso y termino definitivamente y para siempre el (…), que le hice a (…) en esa vida o en esta vida.</li><li>Yo (…) por el poder de mi voluntad rompo y anulo, ceso y termino definitivamente y para siempre el (…) que hice a (…) en esa vida pasada o en esta vida, y recupero mi energía y mi poder. Lo libero y me libero para siempre. 6.   Reclamar la Energía. 7.   ¿Ahora fíjate donde está la energía de este matrimonio en tu cuerpo? (Mientras agarro la energía en tu cuerpo repite conmigo)</li><li>Yo soy yo, y mi naturaleza es la Luz, y le pido a la Luz que me ayude a liberarme de esta ENERGÍA y arrancarla de mi cuerpo físico y de mi campo vibratorio y regresarla a la Luz ahora. 8.   Arrancar la energía. 9.   Romper los anillos.</li></ul>",
+          "links": []
+        },
+        {
+          "id": "s3f5",
+          "title": "Pactos",
+          "guion": "<p>1.   Si es en una vida pasada. Muerte en esa vida. 2.   Voy a contar a 3 y a la cuenta de 3, irás al momento que realizas el pacto. 1.2.3. 3.   ¿Cuáles son las palabras exactas que pronuncias en el pacto? 4.   ¿De qué manera afecta este pacto en tu vida como (…)? 5.   ¿Estás dispuesto a romperlo?</p><ul><li>Yo (…) por el poder de mi voluntad rompo y anulo, ceso y termino el (…), que le hice a (…) en esa vida o en esta vida.</li><li>Yo (…) por el poder de mi voluntad rompo y anulo, ceso y termino definitivamente y para siempre el (…), que le hice a (…) en esa vida o en esta vida.</li><li>Yo (…) por el poder de mi voluntad rompo y anulo, ceso y termino definitivamente y para siempre el (…) que hice a (…) en esa vida pasada o en esta vida, y recupero mi energía y mi poder. Lo libero y me libero para siempre. 6.   ¿Ahora fíjate donde está la energía de ese pacto en tu cuerpo? (Mientras agarro la energía en tu cuerpo repite conmigo)</li><li>Yo soy yo, y mi naturaleza es la Luz, y le pido a la Luz que me ayude a liberarme de esta energía del pacto y arrancarla de mi cuerpo físico y de mi campo vibratorio y regrese a la Luz ahora. 7.   Arrancar la energía. 8.   Reclamar la energía y el poder.</li></ul>",
+          "links": []
+        },
+        {
+          "id": "s3f6",
+          "title": "Me maldicen",
+          "guion": "<p>1.    Si es en una vida pasada, muerte en esa vida. 2.    Ir al momento de la maldición y ver exactamente que palabras pronuncian al maldecirnos. 3.    AHI de la maldición. 4.    Hablar con el que maldice y ver si está dispuesto a acabar con la maldición o ritual. 5.    Tiene que ceder las cuerdas vocales y la garganta al que maldijo y hablar con él. SÍ.</p><ul><li>Yo (…) por el poder de mi voluntad, ceso y termino con la maldición que pronuncié contra (analizado) en esa vida pasada o en esta vida.</li><li>Yo (…) por el poder de mi voluntad ceso y termino definitivamente y para siempre con la maldición que pronuncié contra (…) en esa vida pasada o en esta vida.</li><li>Yo (…) por el poder de mi voluntad ceso y termino definitivamente y para siempre con la maldición que pronuncié contra (…) en esa vida pasada o en esta vida. Lo libero y me libero para siempre. NO.</li></ul><p>Seres de Luz, humildemente os pido que me asistáis y me ayudéis a romper esta maldición.</p><p>(Mientras agarro la energía en tu cuerpo repite conmigo)</p><p>Yo soy yo, y mi naturaleza es la Luz, y le pido a la Luz que me ayude a liberarme de esta ENERGÍA (pacto, juramento, brujería) y arrancarla de mi cuerpo físico y de mi campo vibratorio y regresarla a la Luz ahora.</p><p>6.    Arrancar la energía y sus ramificaciones y reclamar la Energía.</p>",
+          "links": []
+        },
+        {
+          "id": "s3f7",
+          "title": "Yo maldigo",
+          "guion": "<p>1.    Si es en una vida pasada, muerte en esa vida. 2.    Ir al momento de la maldición y ver exactamente que palabras pronuncia al maldecir. 3.    AHI de la maldición. 4.    ¿Ver si está dispuesto a acabar con la maldición o ritual?</p><p>SÍ.</p><p>Yo (…) por el poder de mi voluntad, ceso y termino con la maldición que pronuncié contra (…) en esa vida pasada o en esta vida.</p><p>Yo (…) por el poder de mi voluntad ceso y termino definitivamente y para siempre con la maldición que pronuncié contra (…) en esa vida pasada o en esta vida.</p><p>Yo (…) por el poder de mi voluntad ceso y termino definitivamente y para siempre con la maldición que pronuncié contra (…) en esa vida pasada o en esta vida. Lo libero y me libero para siempre.</p><p>NO.</p><p>Explicar las consecuencias. (Tiene que saber que las maldiciones nos vienen devueltas multiplicadas por 3).</p><p>5.    Hablar con el o los maldecidos si fuera necesario. 6.    Devolver la Energía.</p>",
+          "links": []
+        },
+        {
+          "id": "s3f8",
+          "title": "Energías no identificadas",
+          "guion": "<p>1. Describir lo que está ocurriendo. 2. Desarrollar la experiencia. 3. Momento más traumático. FEM-AHÍ. 4. Voy a contar hasta tres y a la cuenta de tres, irás al origen de tu relación con estos seres o energías. 1.2.3. 5. ¿En qué momento se dio el consentimiento? si lo hubo, tomar consciencia. 6. ¿De qué manera, consciente o inconsciente, crees que diste el consentimiento? 7. ¿Qué te ofrecieron o prometieron estas energías o seres? 8. Romper y anular el consentimiento. (Indicar el consentimiento exacto).</p><ul><li>Yo (…) por el poder de mi voluntad rompo y anulo, ceso y termino el CONSENTIMIENTO, que le hice a (…) en esa vida o en esta vida.</li><li>Yo (…) por el poder de mi voluntad rompo y anulo, ceso y termino definitivamente y para siempre el CONSENTIMIENTO, que le hice a (…) en esa vida o en esta vida.</li><li>Yo (…) por el poder de mi voluntad rompo y anulo, ceso y termino definitivamente y para siempre el CONSENTIMIENTO que hice a (…) en esa vida pasada o en esta vida, y recupero mi energía y mi poder. Y me libero para siempre. 9. Revisar Implantes energéticos. (Ver para qué sirven y de qué manera le afectan). 10.    Eliminarlos. 11.    Órdenes pos hipnóticas. (Mandatos - AHÍ) 12.    Recuperar la energía robada por el engaño y manipulación. 13.    Una vez hecho esto, hay que realizar un Mandato Positivo</li><li>DESDE ESTE MOMENTO QUEDA TERMINANTEMENTE PROHIBIDO VOLVER A EXPERIMENTAR CONMIGO O CON CUALQUIER MIEMBRO DE MI FAMILIA. YO SOY YO, PROFUNDAMENTE YO, Y EN MI CUERPO FÍSICO, EN MI CAMPO EMOCIONAL, EN MI CAMPO MENTAL Y EN MI CAMPO VIBRATORIO MANDO SOLO YO. (3 veces).</li></ul>",
+          "links": []
+        }
+      ]
+    },
+    {
+      "id": "s4",
+      "name": "Conciencia Perdida",
+      "type": "flujo",
+      "titleBarColor": "#A24E5E",
+      "folios": [
+        {
+          "id": "s4f1",
+          "title": "General",
+          "guion": "<p>Pedir al analizado si quiere prestar su voz y sus cuerdas vocales a la conciencia que parece estar presente en su campo energético para que pueda expresarse y comunicarse a través de él.</p><ul><li>Voy a contar hasta 3 y a la cuenta de 3, vas a ceder tus cuerdas vocales y tu garganta a quien quiera que este ahí contigo para que pueda hablar conmigo. 1.2.3.</li></ul><p>A quien esté ahí, quiero decirte que puedes hablar libremente conmigo, que yo te voy a escuchar. Yo no estoy aquí para juzgarte ni censurar. Estoy aquí únicamente para ayudarte.</p><ul><li>IDENTIFICAR LA CONCIENCIA PRESENTE</li></ul><p>Establecer una charla relajada. Demostrar amabilidad y dar confianza para favorecer el diálogo. Nunca llevar la contraria.</p><ul><li>¿Quién está ahí?</li><li>¿Comprendes el motivo de esta comunicación?</li><li>¿Eres consciente de dónde te encuentras?</li><li>¿Cómo te llamas?</li><li>¿Cuántos años tienes?</li><li>¿Eres hombre o mujer?</li><li>¿Sabes dónde estás?</li><li>¿Sabes qué ocurrió contigo?</li><li>¿Sabes por qué estás aquí?</li><li>ENTENDER LA RAZÓN, EL MOTIVO O LA CIRCUNSTANCIA DE LA CONCIENCIA</li></ul><p>Es importante comprender qué motivo, vínculo o sentimiento mantiene a esta conciencia junto a nuestro analizado.</p><p>Puede ser Familiar, apego, amor, protección, accidente, muerte repentina, asuntos pendientes, conflicto, culpa, resentimiento, venganza, búsqueda de ayuda, confusión, incluso no saber por qué está ahí.</p><ul><li>¿Por qué estás con mi analizada y qué te une a ella?</li><li>¿Eres familiar o tienes algún vínculo especial con ella?</li><li>¿Sabes por qué estás aquí o hay algo que no comprendes acerca de tu presencia?</li><li>¿Necesitas algo, deseas comunicar algún mensaje o buscas ayuda de alguna manera?</li><li>¿Hay algún asunto pendiente, conflicto, culpa, resentimiento, deseo de justicia o cualquier otra situación que te impida marcharte o seguir tu camino?</li></ul>",
+          "links": []
+        },
+        {
+          "id": "s4f2",
+          "title": "Cuéntame tu historia",
+          "guion": "<ul><li>¿Qué te pasó?</li><li>¿Qué ocurrió?</li><li>¿Qué paso con tu cuerpo?</li><li>¿Recuerdas lo sucedido?</li><li>¿Hay algo que todavía no comprendes?</li><li>ANÁLISIS DE MEMORIA</li><li>Voy a contar hasta 3 y a la cuenta de 3, irás a un momento cuando todavía estabas en un cuerpo físico. 1.2.3.</li><li>Voy a contar hasta 3 y a la cuenta de 3, irás al último momento que recuerdes de tu última experiencia de vida física. 1.2.3.</li><li>Cuéntame qué recuerdas.</li><li>¿Qué está pasando?</li><li>¿Dónde estás?</li><li>Voy a contar hasta 3 y a la cuenta de 3, irás al momento de tu muerte. 1.2.3.</li><li>¿Cuéntame qué está pasando?</li><li>RESOLUCIÓN DEL CONFLICTO</li></ul><p>Resolver aquello por lo cual permanece adherido al campo energético del analizado.</p><ul><li>Perdonar o pedir perdón.</li><li>Devolver energía o recuperar energía.</li><li>Resolver el conflicto.</li><li>QUE SE VAYA A LA LUZ</li><li>¿Te gustaría irte la Luz y ver todos tus seres amados?</li><li>SI RESPONDE QUE SI</li><li>¿Hay algo que te gustaría decir o hacer antes de irte a la Luz?</li><li>¿Hay alguien que te gustaría que venga a buscarte?</li></ul>",
+          "links": []
+        },
+        {
+          "id": "s4f3",
+          "title": "Yo voy a ayudarte",
+          "guion": "<p>Pido a la Conciencia Universal que envuelva a este ser con su luz divina y le muestre con claridad el camino de vuelta a casa. Percibe cómo una luz llena de paz, amor y comprensión se acerca hasta ti. No tienes nada que temer. No hay juicio. No hay exigencias. Solo amor, comprensión y acogida. Siente cómo esa luz te envuelve suavemente y disuelve toda confusión, todo miedo y toda carga que ya no necesitas llevar. Y mientras la observas, date cuenta de que no viene sola. Percibe cómo, desde esa luz, comienzan a acercarse aquellos seres que más amor pueden ofrecerte en este momento. Seres que te conocen, te comprenden y te aman profundamente. Observa sus rostros, su presencia y su energía. Reconoce la paz, la familiaridad y la seguridad que transmiten. Siente cómo su amor te envuelve y te recuerda que nunca has estado solo. Permítete acercarte a ellos. Permítete recibir su amor, su ayuda y su guía. Ellos conocen el camino. Han venido a acompañarte. Confía en la luz. Confía en quienes han venido a recibirte. Y, cuando estés preparado, ve con ellos. Permíteles guiarte hacia ese lugar de paz, amor y comprensión que te espera. Todo está bien. Puedes regresar en paz.</p><ul><li>SI RESPONDE QUE NO</li></ul><p>El Analizado tiene que decir</p><p>Pido a la Conciencia Universal y a la Luz Divina que activen la energía luminosa que hay en mí y me ayuden a liberar de mi campo vibratorio toda energía, presencia o conciencia que no me pertenece. Pido que todo vínculo que ya haya cumplido su propósito quede ahora liberado en armonía y para el mayor bien de todos los implicados. A la Luz Divina, te pido que envuelvas a esta conciencia o ser con tu amor, tu comprensión y tu luz, y le muestres con claridad el camino que le corresponde seguir. Que toda confusión se disuelva. Que todo miedo quede atrás. Que encuentre la paz, la comprensión y la ayuda que necesita para continuar su camino. Pido a los Seres de Luz que le acompañen, le guíen y le asistan hasta el lugar que le corresponde. Con amor y respeto, queda libre para seguir su camino y alcanzar la Luz.</p>",
+          "links": []
+        },
+        {
+          "id": "s4f4",
+          "title": "Reintegración del analizado",
+          "guion": "<p><strong>Que el analizado repita 3 veces:</strong></p><p>YO SOY YO, PROFUNDAMENTE YO, Y EN MI CUERPO FÍSICO, EN MI CAMPO EMOCIONAL, EN MI CAMPO MENTAL Y EN MI CAMPO VIBRATORIO MANDO SOLO YO.</p><p>Reconozco mi propia energía y tomo plenamente mi lugar. Recupero mi fuerza, mi vitalidad, mi conciencia y mi poder personal. Todo aquello que me pertenece ocupa ahora su lugar dentro de mí. Todo aquello que no me pertenece queda liberado. Estoy presente. Estoy completo. Estoy en paz.</p><p>Mi campo vibratorio queda completamente equilibrado, integrado y protegido. Así es.</p><ul><li>COMPROBACIÓN FINAL</li></ul><p><strong>Preguntar al inconsciente:</strong></p><ul><li>Voy a contar hasta 3 y a la cuenta de 3, voy a preguntarle a tu conciencia superior si percibe o siente alguna energía o presencia en tu campo energético. 1.2.3.</li></ul><p>Si la respuesta es afirmativa continuar con el análisis.</p><p>Si la respuesta es negativa permitir que todo quede integrado.</p><p>Y dar el Análisis por finalizado.</p>",
+          "links": []
+        },
+        {
+          "id": "s4f5",
+          "title": "Saber si hay una conciencia perdida",
+          "guion": "<ul><li>Voy a contar hasta 3 y a la cuenta de 3, voy a preguntarle a tu conciencia superior si percibe o siente alguna energía o presencia acompañándote o en tu campo energético. 1.2.3.</li></ul><p>¿Hay alguna energía contigo?</p><p>Si la respuesta es NO, no se fuerza ni se interpreta.</p><p>Simplemente se profundiza un poco más.</p><ul><li>Voy a contar hasta tres y a la cuenta de tres vas a decirme si hay alguna entidad o energía contigo. 1.2.3.</li></ul><p>Muchas veces, en este segundo nivel, la respuesta aparece.</p><p>Determinar cuántas conciencias hay</p><ul><li>Muy bien. Ahora voy a preguntar si hay una sola o si hay más de una.</li></ul>",
+          "links": []
+        },
+        {
+          "id": "s4f6",
+          "title": "Hablar al alma / cuando el alma no habla",
+          "guion": "<p>Explicar la situación</p><p>Quiero que sepas que, ante todo, estoy aquí para ayudar a mi analizada. Pero también estoy aquí para ayudarte a ti.</p><p>Sea cual sea tu historia, sea cual sea el motivo por el que te encuentras aquí, quiero que sepas que voy a escucharte y que haré todo lo posible por ayudarte.</p><p>No estoy aquí para juzgarte, ni para obligarte a nada.</p><p>Estoy aquí para comprender lo que te ha sucedido, comprender por qué estás aquí y ayudarte a encontrar la paz y volver a casa.</p><p>Por eso quiero que me escuches atentamente, porque es posible que haya cosas que todavía no comprendes sobre lo que te ha sucedido.</p><p>Tal vez no eres consciente de lo que está sucediendo, pero tu experiencia de vida física se terminó. Ahora te encuentras en otro estado de conciencia.</p><p>Hubo un momento en que tenías un cuerpo y, sin ser consciente de ello, algo sucedió en tu experiencia de vida y perdiste ese cuerpo físico.</p><p>Y lo que sucedió es que ese cuerpo físico murió, pero tú continúas existiendo como conciencia y, de hecho, ahora me estás escuchando.</p><ul><li>¿No te ha pasado que intentabas hablar con las personas y las personas no te hacían caso?</li><li>¿Recuerdas que querías acercarte a tu familia, a tus amigos o a las personas que amabas y nadie parecía escucharte?</li></ul><p><strong>Tal vez llegaste a preguntarte:</strong></p><ul><li>¿Qué está pasando?</li><li>¿Por qué no me escuchan?</li><li>¿Por qué no me ven?</li><li>¿Por qué nadie parece darse cuenta de que estoy aquí?</li></ul><p>Lo que ocurrió es que, al perder tu cuerpo físico, te volviste invisible para las personas que continúan viviendo en el plano físico.</p><p>Ellos no podían verte ni escucharte.</p><p>Y eso tuvo que ser muy extraño, confuso e incluso doloroso para ti.</p>",
+          "links": []
+        },
+        {
+          "id": "s4f7",
+          "title": "Razones por las que hoy estás aquí",
+          "guion": "<p>junto a mi analizado.</p><ul><li>Tal vez eres un familiar que siente mucho amor por mi analizada y permaneces junto a ella porque quieres cuidarla, protegerla o acompañarla.</li><li>Tal vez tengas algún conflicto que resolver con mi analizada.</li><li>O sientas rabia, resentimiento o deseos de venganza por algo que ocurrió.</li><li>Quizás haya algo que necesites decir, expresar o comprender.</li><li>O haya algo pendiente que todavía no has podido resolver.</li><li>Tal vez buscabas ayuda sin saberlo.</li><li>O tal vez ni siquiera sepas por qué estás aquí y simplemente un día te encontraste junto a esta persona.</li></ul><p>No importa.... Sea cual sea el motivo, quiero que sepas que quiero ayudarte.</p><p>Y ahora dime...</p><ul><li>¿Hay algún motivo por el cual estás con mi analizada o prefieres seguir tu camino y regresar a tu hogar?</li></ul><p><strong>HAY UN MOTIVO</strong></p><p>Ahora dime...</p><ul><li>¿Cuál es el motivo por el que permaneces junto a mi analizada?</li></ul><p><strong>REGRESAR AL HOGAR</strong></p><p>Explicar el regreso</p><p>Si estás preparado para continuar tu camino y volver a casa, voy a ayudarte...</p><p>Pero antes quiero que sepas, por si no eres consciente de dónde debes irte y cuál es el lugar al que ya tendrías que haber ido, que es un lugar de una inmensa paz y amor; un lugar donde podrás descansar, comprender lo sucedido y reencontrarte con todos tus seres amados, todos los seres que amas y te aman; un lugar maravilloso, nuestro verdadero hogar, y ahí tendrás la oportunidad de descansar o adquirir un nuevo cuerpo para una nueva experiencia.</p><p>Ahora dime...</p><ul><li>¿Quién te gustaría que viniera a buscarte?</li></ul>",
+          "links": []
+        },
+        {
+          "id": "s4f8",
+          "title": "Petición de ayuda y acompañamiento",
+          "guion": "<p>Voy a pedir por ti.</p><p>Voy a pedir que se abran las puertas de la Luz para recibirte.</p><p>Voy a pedir que aquellos seres de amor y de luz que te conocen y te aman puedan acercarse para acompañarte.</p><p>Voy a pedir que se te muestre el camino con claridad.</p><p>Pedir a la Luz para favorecer su marcha</p><p>Pido a la Conciencia Universal que envuelva a este ser con su luz divina y le muestre con claridad el camino de vuelta a casa.</p><p>Percibe cómo una luz llena de paz, amor y comprensión se acerca hasta ti.</p><p>No tienes nada que temer. No hay juicio. No hay exigencias. Solo amor, comprensión y acogida.</p><p>Siente cómo esa luz te envuelve suavemente y disuelve toda confusión, todo miedo y toda carga que ya no necesitas llevar.</p><p>Y mientras la observas, date cuenta de que no viene sola.</p><p>Percibe cómo, desde esa luz, comienzan a acercarse aquellos seres que más amor pueden ofrecerte en este momento. Seres que te conocen, te comprenden y te aman profundamente.</p><p>Observa sus rostros, su presencia y su energía. Reconoce la paz, la familiaridad y la seguridad que transmiten. Siente cómo su amor te envuelve y te recuerda que nunca has estado solo.</p><p>Permítete acercarte a ellos. Permítete recibir su amor, su ayuda y su guía.</p><p>Ellos conocen el camino. Han venido a acompañarte.</p><p>Confía en la luz. Confía en quienes han venido a recibirte.</p><p>Y, cuando estés preparado, ve con ellos. Permíteles guiarte hacia ese lugar de paz, amor y comprensión que te espera.</p><p>Todo está bien. Puedes regresar en paz.</p>",
+          "links": []
+        },
+        {
+          "id": "s4f9",
+          "title": "Conciencia perdida — vida presente",
+          "guion": "<p><strong>Si estuvo presente, preguntarle:</strong></p><ul><li>¿Cuáles fueron las últimas palabras que dijiste a esa persona?</li><li>¿Qué sentías en aquel momento?</li></ul><p>Revivir el momento en presente</p><p>Durante el análisis, llevar al analizado a revivir aquel día y aquel momento como si estuviera ocurriendo aquí y ahora.</p><p>Permitir que exprese y vacíe todas las emociones que surjan asociadas a esa experiencia.</p><p>Explorar la presencia en el presente</p><p>Una vez liberada la carga emocional, preguntarle:</p><ul><li>¿Dónde está tu padre, tu hijo, tu marido, tu amigo o la persona que murió?</li><li>¿Dónde está aquí y ahora, en este momento?</li></ul><p><strong>Importante</strong></p><p>Si responde que está aquí, conmigo, junto a mí o una respuesta similar, proceder al análisis de conciencias perdidas.</p><p>Si existen dudas, realizar las comprobaciones necesarias para determinar si puede haber alguna conciencia presente en su campo vibratorio.</p>",
+          "links": []
+        }
+      ]
+    },
+    {
+      "id": "s5",
+      "name": "A Distancia y Protección",
+      "type": "apendice",
+      "titleBarColor": "#5AA0B0",
+      "folios": [
+        {
+          "id": "s5f1",
+          "title": "Análisis a distancia",
+          "guion": "<p><strong>ACCESO AL CAMPO VIBRATORIO</strong></p><ul><li>¿Estás dispuesto a observar cómo se encuentra el campo vibratorio de (...)?</li><li>Voy a contar hasta tres y a la cuenta de tres, vas a dirigirte a la Conciencia Superior de (...). 1.2.3.</li><li>Muy bien. Ahora pídele permiso a la CONCIENCIA SUPERIOR o NO LOCAL de (…) para que te permita visualizar su campo vibratorio y así poder comprobar en qué estado se encuentra.</li></ul><p>Si dice SI, continuamos. Si dice NO, no insistimos.</p><p><strong>OBSERVACIÓN Y ANÁLISIS</strong></p><p>Permite que aparezca la información necesaria y observa aquello que se muestra.</p><ul><li>¿Cómo percibes el campo vibratorio de (...)?</li><li>¿Hay alguna alteración, bloqueo, energía, conflicto o información relevante?</li></ul><p><strong>OPCIONES DE TRABAJO</strong></p><ul><li>Si deseamos trabajar un problema concreto, nos dirigiremos al origen de dicho problema para analizarlo.</li><li>Si observamos una energía adherida la trabajaremos siguiendo el protocolo de Conciencia Perdida.</li></ul><p><strong>FINALIZACIÓN</strong></p><p>Una vez concluido el análisis, pediremos al analizado que agradezca la colaboración recibida. Da las gracias a la Conciencia Superior de (...) por haberte permitido visualizar y analizar su campo vibratorio. Agradece toda la información recibida y permite que el proceso quede completado de la mejor manera posible.</p>",
+          "links": []
+        },
+        {
+          "id": "s5f2",
+          "title": "Pedir a la luz",
+          "guion": "<ul><li>PEDIR A LA LUZ PARA FAVORECER SU MARCHA. Pido a la Conciencia Universal que envuelva a este ser con su luz divina y le muestre con claridad el camino de vuelta a casa. Percibe cómo una luz llena de paz, amor y comprensión se acerca hasta ti. No tienes nada que temer. No hay juicio. No hay exigencias. Solo amor, comprensión y acogida. Siente cómo esa luz te envuelve suavemente y disuelve toda confusión, todo miedo y toda carga que ya no necesitas llevar. Y mientras la observas, date cuenta de que no viene sola. Percibe cómo, desde esa luz, comienzan a acercarse aquellos seres que más amor pueden ofrecerte en este momento. Seres que te conocen, te comprenden y te aman profundamente. Observa sus rostros, su presencia y su energía. Reconoce la paz, la familiaridad y la seguridad que transmiten. Siente cómo su amor te envuelve y te recuerda que nunca has estado solo. Permítete acercarte a ellos. Permítete recibir su amor, su ayuda y su guía. Ellos conocen el camino. Han venido a acompañarte. Confía en la luz. Confía en quienes han venido a recibirte. Y, cuando estés preparado, ve con ellos. Permíteles guiarte hacia ese lugar de paz, amor y comprensión que te espera. Todo está bien. Puedes regresar en paz.</li><li>LIBERARSE DE UNA CONCIENCIA PERDIDA SI NO SE QUIERE IR.</li></ul><p>Pido a la Conciencia Universal y a la Luz Divina que activen la energía luminosa que hay en mí y me ayuden a liberar de mi campo vibratorio toda energía, presencia o conciencia que no me pertenece. Pido que todo vínculo que ya haya cumplido su propósito quede ahora liberado en armonía y para el mayor bien de todos los implicados. A la Luz Divina, te pido que envuelvas a esta conciencia o ser con tu amor, tu comprensión y tu luz, y le muestres con claridad el camino que le corresponde seguir. Que toda confusión se disuelva. Que todo miedo quede atrás. Que encuentre la paz, la comprensión y la ayuda que necesita para continuar su camino. Pido a los Seres de Luz que le acompañen, le guíen y le asistan hasta el lugar que le corresponde. Con amor y respeto, queda libre para seguir su camino y alcanzar la Luz.</p>",
+          "links": []
+        },
+        {
+          "id": "s5f3",
+          "title": "Arcángel Miguel",
+          "guion": "<p><strong>CORTAR CADENAS</strong></p><p>Arcángel Miguel, humildemente te pido que me ayudes a realizar el trabajo que tengo que hacer. Humildemente te pido que me prestes tu espada de Luz para que yo pueda romper y deshacer este trabajo que me han hecho.</p><ul><li>Coge la espada del Arcángel Miguel y a la cuenta de 3, cortarás las cadenas. 1.2.3.</li></ul><p><strong>ROMPER Y ANULAR</strong></p><p>Por el poder de mi voluntad y por el poder que me otorga la espada del Arcángel Miguel, rompo y anulo este trabajo de (magia, brujería, etc.) que me han hecho, y queda roto y anulado para toda la eternidad (repetir 3 veces).</p><p>YO SOY YO, PROFUNDAMENTE YO, Y EN MI CUERPO FÍSICO, EN MI CAMPO EMOCIONAL, EN MI CAMPO MENTAL Y EN MI CAMPO VIBRATORIO MANDO SOLO YO</p>",
+          "links": []
+        }
+      ]
+    }
+  ]
+}

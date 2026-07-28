@@ -1,0 +1,484 @@
+{
+  "name": "Módulo 2",
+  "sections": [
+    {
+      "id": "s1",
+      "name": "Análisis de la Conciencia",
+      "type": "flujo",
+      "titleBarColor": "#3F6FA6",
+      "folios": [
+        {
+          "id": "s1f1",
+          "title": "Inducción",
+          "guion": "<p>Ahora... túmbate... y asegúrate de estar en una posición cómoda...</p><p>Cierra suavemente los ojos... Y deja que tu cuerpo se acomode...</p><p>Sin ningún esfuerzo...</p><p><span style=\"color: rgb(224, 147, 11);\"><em>Dirige toda tu atención al cuerpo</em></span>... Eso es…</p><p>No necesitas hacer nada... No necesitas cambiar nada...</p><p>Yo voy a estar todo el tiempo a tu lado… acompañándote…</p><p>Ahora vas a inhalar por la nariz en 6 tiempos... sostendrás el aire 6 segundos... y exhalarás en 6 tiempos lentamente...</p><p>Comenzamos...</p><p></p><p>Inhalando por la nariz... en seis tiempos... 1... 2... 3... 4... 5… 6…</p><p>Sosteniendo el aire... 1... 2... 3... 4... 5… 6…</p><p>Exhalando muy lentamente... 6... 5... 4... 3... 2... 1...</p><p>(Repite 3 veces este ciclo de respiración)</p>",
+          "links": []
+        },
+        {
+          "id": "s1f2",
+          "title": "Introducción",
+          "guion": "<p><span style=\"color: rgb(59, 130, 246);\"><strong>1. IDENTIFICACIÓN</strong></span></p><p>¿Qué es lo que gustaría trabajar?</p><p>¿Qué estás sintiendo?</p><p>¿Hay algo en tu vida que te perturbe o incomode?</p><p>Una emoción… Un síntoma… Una sensación... Un pensamiento…</p><p></p><p><span style=\"color: rgb(90, 92, 224);\"><strong>2. DESCRIPCIÓN</strong></span></p><p>Eso que sientes… ¿cómo es? ¿Cómo lo sientes? Descríbemelo…</p><p>Si tuvieras que poner en palabras a eso que sientes ¿cómo la describirías?</p><p>¿Si pudieras describir esa angustia, dolor, pena, cómo sería?</p><p></p><p><span style=\"color: rgb(148, 177, 58);\"><strong>3. LOCALIZACIÓN</strong></span></p><p>¿Dónde sientes lo que sientes? ¿En qué parte del cuerpo lo sientes?</p><p>Si tuvieras que ubicarla en una parte de tu cuerpo, ¿cuál sería?</p><p></p><p><span style=\"color: rgb(233, 61, 130);\"><strong>4. PROFUNDIZACIÓN</strong></span></p><p>Siéntelo; en la medida que tú puedas, lo más profundamente posible.</p><p>¿Qué notas ahora mismo en el cuerpo?</p><p>¿Qué cambia en tu respiración cuando conectas con esto?</p><p>¿Qué pasa dentro de ti cuando sientes esto?</p><p>¿Qué ocurre dentro de ti cuando realmente te permites sentir esto?</p><p></p><p><span style=\"color: rgb(16, 160, 181);\"><strong>5. FORMA</strong></span></p><p>Eso que estas sintiendo es… ¿Cómo si fuera que cosa?</p><p>Si tuvieras que darle forma a esa tristeza, ¿cómo sería? ¿A qué se parece?</p><p></p><p><span style=\"color: rgb(171, 79, 196);\"><strong>6. LUGAR</strong></span></p><p>¿Dónde estás cuando sientes esa culpa en esa parte de tu cuerpo que tiene la forma de…?</p><p>¿Cómo si estuvieras donde?</p><p>¿Dónde estás cuando sientes lo que sientes? ¿Cómo si estuvieras dónde?</p>",
+          "links": []
+        },
+        {
+          "id": "s1f4",
+          "title": "Miedo y Control",
+          "guion": "<p><strong>RESISTENCIA</strong></p><p>Cuento hasta 3 y a la cuenta de 3 me dirás lo primero que te venga a la mente, lo primero que se te ocurra, aunque parezca un disparate. 1.2.3.</p><p>Voy a contar hasta 3 y a la cuenta de 3, compartirás conmigo esa emoción, sensación, síntoma, pensamiento. 1.2.3</p><p></p><p><strong>MIEDO A LA EXPERIENCIA.</strong></p><p>¿Qué te hace hacer ese miedo? ¿Qué es lo peor que podría pasar si trabajaras? ¿Qué sería lo peor que podrías descubrir?</p><p></p><p><strong>EL CONTROL</strong></p><p>¿Qué pasaría si perdieras el control? ¿Qué es lo peor que podría pasar si perdieras el control?</p><p></p><p><strong>LOS BLOQUEOS.</strong></p><p>¿Dónde sientes el bloqueo? ¿A qué se parece el bloqueo?</p>",
+          "links": []
+        },
+        {
+          "id": "s1f5",
+          "title": "Desarrollo",
+          "guion": "<p>Dejar que cuente la experiencia por sí solo, acompañándolo en todo momento.</p><p>Si, sigue, eso es, muy bien, continúa, avanza un poco más, etc.</p><p>Si no lo tiene claro o veis que necesita saber dónde se encuentra o quien es.</p><p></p><p><span style=\"color: rgb(224, 147, 11);\"><strong>UBICACIÓN</strong></span></p><p>Voy a contar hasta 3 y a la cuenta de 3 me dirás </p><p>DÓNDE TE ENCUENTRAS? 1, 2, 3</p><ul><li><p>   ¿Dónde estás?</p></li><li><p>   ¿Qué está pasando?</p></li></ul><p></p>",
+          "links": []
+        },
+        {
+          "id": "s1f6",
+          "title": "Consignas del desarrollo",
+          "guion": "<p>Cuando lo consideremos y según las circunstancias. Si durante la experiencia algo no tenemos claro, podemos dirigirla como creamos conveniente.</p><p>Voy a contar hasta 3 y a la cuenta de 3, irás AL INICIO de esta experiencia. 1.2.3.</p><p>Voy a contar hasta 3 y a la cuenta de 3, AVANZARÁS o RETROCEDERÁS en esta experiencia. 1.2.3.</p><p>Voy a contar hasta 3 y a la cuenta de 3 irás al momento más TRAUMÁTICO o TERRIBLE de esta experiencia. 1.2.3.</p><p>¿Dónde estás? ¿Qué está pasando? ¿Qué estas viendo?</p><p><em>(Y continúo con el desarrollo de la experiencia)</em></p>",
+          "links": []
+        },
+        {
+          "id": "s1f7",
+          "title": "Origen",
+          "guion": "<p>Voy a contar hasta 3 y a la cuenta de 3…</p><p>IRÁS AL ORIGEN DE ESTA EMOCIÓN, SINTOMA O SITUACIÓN</p><p>IRÁS A LA CAUSA ORIGINAL QUE TE LLEVO A PASAR POR ESTA EXPERIENCIA.</p><p>A LA CAUSA ORIGINAL QUE PROVOCO ESTE CONFLICTO.</p><p>Imagina, si hubiese una experiencia que lo originó, ¿cuál sería? Inventa una historia.</p>",
+          "links": []
+        },
+        {
+          "id": "s1f8",
+          "title": "FEM / AHI",
+          "guion": "<p style=\"text-align: center;\"><span style=\"font-size: 1.25em; color: rgb(239, 116, 32);\"><strong>FEM</strong></span></p><p>HASTA AQUI, ¿CUÁL ES EL MOMENTO MAS TERRIBLE DE ESTA EXPERIENCIA?</p><p style=\"text-align: center;\"><span style=\"font-size: 0.85em; color: rgb(124, 130, 141);\"><em>Reacciones Físicas</em></span><br>Y en este momento… ¿Qué le esta pasando al cuerpo?</p><p style=\"text-align: center;\"><span style=\"font-size: 0.85em; color: rgb(124, 130, 141);\"><em>Reacciones Emocionales</em></span><span style=\"color: rgb(124, 130, 141);\"><br></span>Y al sentir todo esto… ¿Qué estas sintiendo?</p><p style=\"text-align: center;\"><span style=\"font-size: 0.85em; color: rgb(124, 130, 141);\"><em>Reacciones Mentales</em></span><span style=\"color: rgb(124, 130, 141);\"><br></span>Y cuando sientes … ¿Qué estas pensando?</p><p></p><p style=\"text-align: center;\"><span style=\"font-size: 1.25em; color: rgb(90, 92, 224);\"><strong>AHI</strong></span></p><p>AHORA FIJATE DE QUE MANERA TODAS ESTAS SENSACIONES ESTÁN AFECTANDO A TU VIDA COMO… TODO ESTO DE...</p><p style=\"text-align: center;\">¿Qué te hace hacer en tu vida como?</p><p style=\"text-align: center;\">¿Y qué te impide hacer en tu vida como?</p>",
+          "links": []
+        },
+        {
+          "id": "s1f9",
+          "title": "HIP",
+          "guion": "<p>HIP (Herida · Identidad · Protección)</p><p>Ahora vuelve a ese momento terrible… donde sentiste todo esto… (se las leo)</p><p>Obsérvate profundamente y dime…</p><p>H. ¿Qué ocurrió dentro de ti?</p><p>I. ¿Qué empezaste a creer sobre ti?</p><p>I. ¿Qué te has repetido una y otra vez desde entonces?</p><p>P. ¿Qué tuviste que hacer para sobrevivir?</p><p></p><p>Hacer un AHÍ de la Herida</p><p>Hacer un AHÍ de la Identidad</p><p>Hacer un AHÍ de la Protección</p>",
+          "links": []
+        },
+        {
+          "id": "s1f10",
+          "title": "Ab-reacción",
+          "guion": "<p>Voy a contar hasta tres, y a la cuenta de tres irás al instante antes de que te <span style=\"color: rgb(59, 130, 246);\"><strong>violen, maltraten, maten</strong>, <strong>etc </strong></span>  1, 2, 3</p><p style=\"text-align: center;\">¿Qué está pasando?</p><p style=\"text-align: center;\"></p><p>Voy a contar hasta tres, y a la cuenta de tres <span style=\"color: rgb(59, 130, 246);\"><strong>voy a tocar tu cuerpo</strong></span> y sentirás el golpe más profundamente. Y dejarás que tu cuerpo haga lo que tenga que hacer para acabar con esta experiencia para siempre. 1, 2, 3</p><ul><li><p style=\"text-align: left;\">¿Qué siente el cuerpo cuando te golpean?</p></li><li><p style=\"text-align: left;\">¿Qué sienten los músculos?</p></li><li><p style=\"text-align: left;\">¿Qué les pasa a tus pulmones?</p></li><li><p style=\"text-align: left;\">¿Y a tu corazón?</p></li><li><p style=\"text-align: left;\">¿Qué es lo último que alcanzas a pensar?</p></li><li><p style=\"text-align: left;\">¿Y esto qué te hace hacer en tu vida como <span style=\"font-size: 0.85em; color: rgb(124, 130, 141);\"><em>[nombre del analizado o en su momento presente]</em></span>?</p></li></ul><p></p>",
+          "links": [
+            {
+              "id": "0cc14047-33fa-4753-a627-7feeba111e13",
+              "label": "FEM/AHI",
+              "target": {
+                "kind": "folio",
+                "id": "s1f8"
+              }
+            }
+          ]
+        },
+        {
+          "id": "s1f11",
+          "title": "Resolución",
+          "guion": "<p><span style=\"color: rgb(59, 130, 246);\"><strong>DECIR Y NO GUARDARSE NADA</strong></span></p><p>¿Hay algo que quisieras decir a alguien y no pudiste decir en esta experiencia?</p><p></p><p><span style=\"color: rgb(59, 130, 246);\"><strong>ENERGÍA</strong></span></p><p>Si fue víctima, recoger la energía; si fue victimario, devolverla.</p><p></p><p><span style=\"color: rgb(59, 130, 246);\"><strong>RECONOCIMIENTO</strong></span> <span style=\"color: rgb(124, 130, 141);\"><em>(Mirar a los ojos)</em></span></p><p>¿Lo reconoces? ¿Cómo es esa mirada? ¿Dónde más has visto esa mirada? ¿Reconoces a alguien en esa mirada?</p><p></p><p><span style=\"color: rgb(59, 130, 246);\"><strong>PERDONAR O PEDIR PERDÓN</strong></span></p><p>¿Quieres perdonar, pedir perdón o perdonarte?</p><p></p><p><span style=\"color: rgb(59, 130, 246);\"><strong>DESPEDIRSE</strong></span></p><p>Si tiene que despedirse de alguien, que lo haga ahora.</p><p></p><p><span style=\"color: rgb(59, 130, 246);\"><strong>PROPÓSITO Y APRENDIZAJE</strong></span></p><p>¿Qué es lo que tu alma estaba tratando de aprender con este hecho terrible?</p><p>¿Qué es lo que tu alma estaba tratando de aprender en esta experiencia que terminas de revivir?</p>",
+          "links": []
+        },
+        {
+          "id": "s1f12",
+          "title": "Desidentificación",
+          "guion": "<p>Ahora mira tu cuerpo muerto, ¿lo ves?</p><p>Toma conciencia de que ese cuerpo se murió, y al morir ese cuerpo, esa experiencia ya no te pertenece ni te corresponde.</p><p>Quiero que seas plenamente consciente de tu muerte en esa experiencia de vida, y que todas las emociones y sensaciones negativas adquiridas durante esa experiencia que acabas de revivir se queden en ese cuerpo.</p><p>Levanta los brazos y asegúrate de recoger toda tu energía de ese cuerpo.</p><p>Ahora vas a salir de allí, alejándote de ese cuerpo, alejándote de ese lugar, alejándote de esa experiencia, y llevarás esa parte de tu alma hacia la luz.</p><p>Siente la luz. Percíbela. Obsérvala. Conéctate con ella.</p><p>Avísame cuando estés allí.</p>",
+          "links": []
+        },
+        {
+          "id": "s1f13",
+          "title": "Reprogramación consciente (REP)",
+          "guion": "<p>Y ahora que ya eres consciente de que manera todo esto te está afectando y que te hace hacer y que te impide hacer en tu vida presente.</p><ul><li><p style=\"text-align: left;\"><span>¿Qué vas a hacer a partir de hoy en tu presente, para no seguir?</span><span style=\"color: rgb(59, 130, 246);\"> </span><span style=\"color: rgb(124, 130, 141);\">(le leo todo lo que le hace hacer y le impide hacer)</span></p></li><li><p>¿Y no te vas a quedar más en silencio y paralizado?</p></li><li><p>¿Qué pasaba cuando antes te callabas y te quedabas paralizado?</p></li><li><p>¿Y si no sentías?</p></li><li><p>¿Y tú́ quieres seguir paralizado y sin sentir?</p></li><li><p>Repíteme eso: ¿Qué vas a hacer?</p></li><li><p><strong>Dímelo más alto</strong></p></li><li><p>¿Y qué pasará a partir de ahora cuando sientas?</p></li><li><p>¿Y todo eso es lo que realmente quieres hacer?</p></li></ul><p></p><p style=\"text-align: center;\"><span style=\"font-size: 1.25em;\">Pues que así sea, y así será a partir de ahora. </span></p><p style=\"text-align: center;\"><span style=\"font-size: 1.25em;\"><strong>Toma conciencia</strong></span></p><p></p>",
+          "links": []
+        },
+        {
+          "id": "s1f14",
+          "title": "Armonización",
+          "guion": "<p>Ahora, quiero que respires profundamente y visualices el color de la energía que necesitas para darle una nueva vibración a tu vida como…</p><p style=\"text-align: center;\">¿Qué color has elegido?</p><p></p><p>Bien, visualiza cómo ese color…. te envuelve desde la cabeza hasta los pies, penetrando cada célula y órgano, llevándote calma, equilibrio y vitalidad.</p><p></p><p>Siente cómo este color disuelve todo peso del pasado, conectándote con la vida presente y con la sensación de estar plenamente vivo/a.</p><p></p><p>Ahora quiero que respires profundamente, sintiéndote bien, muy bien, con mucha calma y serenidad.</p><p></p><p>Y vuelvas a la conciencia de tu vida presente como ___, siendo hoy ___ de _____ de 20, y seas consciente de que te encuentras aquí y ahora conmigo. </p><p>De forma relajada y sin prisas, ve abriendo tus ojos y volviendo al momento presente de tu vida.</p>",
+          "links": []
+        },
+        {
+          "id": "s1f15",
+          "title": "Armonización metafísica",
+          "guion": "<p>Yo soy… Yo soy yo. Profundamente yo. Y en mi cuerpo físico, en mi campo emocional, en mi campo mental, y en mi campo vibratorio, mando solo yo. (3 veces).</p><p></p><p><span style=\"color: rgb(59, 130, 246);\"><strong>PERDÓN</strong></span>  Pido perdón de corazón y alma, a la Luz y a todos los seres, por todo el mal que haya podido causar intencionadamente o sin intención, de forma consciente o inconsciente, a quien, o a lo que sea, durante toda mi existencia, con amor, pido perdón y me perdono, liberándolos y liberándome para siempre.</p><p></p><p><span style=\"color: rgb(59, 130, 246);\"><strong>GRATITUD</strong></span>  Doy gracias por existir, y ser parte de la luz y el amor, doy gracias por todo lo que la vida me ha ofrecido y me ofrece, ahora soy consciente de que todo forma parte de mi evolución. Gracias, gracias, gracias.</p><p></p><p><span style=\"color: rgb(59, 130, 246);\"><strong>EL COLOR DE LA ENERGÍA</strong></span>  Ahora, quiero que respires profundamente y visualices el color de la energía que necesitas para darle una nueva vibración a tu vida como… ¿Qué color has elegido?</p><p>Bien, ahora visualiza y siente la energía del color… envolviendo todo tu cuerpo intensamente, desde la cabeza hasta los pies… respira de nuevo la energía de color…. y siente como entra por tu cabeza… bajando lentamente por todos y cada uno de tus músculos y huesos hasta los pies …</p><p></p><p>Ahora, respira profundamente llenando tus pulmones con esta energía sanadora de color… y siente como se extiende por todos tus órganos, como esa energía de color… envuelve tu corazón, siente la energía en cada pulsación, eso es… siente como esa energía de color… llega a cada parte, partícula y célula de tu cuerpo, eso es...</p><p></p><p>Respira profundamente, y siente como esa energía de color… se lleva todo tu dolor físico y psíquico, y como va limpiando y eliminando todos los residuos físicos y energéticos, de emociones, pensamientos, sentimientos, sensaciones, síntomas y energías extrañas, eso es…</p><p></p><p>Respira profundamente la energía de color… y siente esta energía como envuelve todo tu cuerpo, creando una barrera energética de protección y cerrando tu campo vibratorio, dándole una nueva vibración a tu vida, y trayendo la calma y el sosiego a todo cuerpo y ser. Eso es…</p><p></p><p>Y vuelvas a la conciencia de tu momento presente como… siendo hoy…. de… 202… y seas consciente que te encuentras aquí́ y ahora conmigo y de forma relajada y sin prisas vayas abriendo tus ojos, y volviendo al momento presente de tu vida.</p>",
+          "links": []
+        }
+      ]
+    },
+    {
+      "id": "s3",
+      "name": "Mentes Racionales",
+      "type": "flujo",
+      "titleBarColor": "#C0873E",
+      "folios": [
+        {
+          "id": "s3f1",
+          "title": "Método Blasco",
+          "guion": "<p>Muy bien ahora voy a contar hasta 3 y a la cuenta de 3 iras a una experiencia anterior donde hayas experimentado esta misma sensación o emoción. <br>1, 2, 3</p><p>Muy bien ahora voy a contar hasta 3 y a la cuenta de 3 iras a otra experiencia anterior donde hayas experimentado esta misma sensación o emoción. <br>1, 2, 3</p><p>Muy bien ahora voy a contar hasta 3 y a la cuenta de 3 iras a otra experiencia anterior donde hayas experimentado esta misma sensación o emoción.<br>1, 2, 3</p><p>Muy bien ahora voy a contar hasta 3 y a la cuenta de 3 iras a otra experiencia anterior donde hayas experimentado esta misma sensación o emoción. <br>1, 2, 3</p><p>Muy bien ahora voy a contar hasta 3 y a la cuenta de 3 iras a otra experiencia anterior donde hayas experimentado esta misma sensación o emoción.<br>1, 2, 3</p><p>Muy bien ahora voy a contar hasta 3 y a la cuenta de 3 iras al origen donde experimentaste por primera vez esta sensación o emoción.<br>1, 2, 3</p>",
+          "links": []
+        },
+        {
+          "id": "s3f2",
+          "title": "Inventar una experiencia",
+          "guion": "<p>Te vas a permitir inventar o imaginar una experiencia relacionada con el origen de tu emoción o síntoma, sin pensar si es real o no. Deja que surja. Yo te voy a acompañar.</p><p>Muy bien, voy a contar hasta tres y, a la cuenta de tres, quiero que me digas dónde estás. No lo pienses... di lo primero que te venga. 1.2.3.</p><p>Muy bien, voy a contar hasta tres y, a la cuenta de tres, quiero que me digas qué edad tienes. 1.2.3.</p><p>Muy bien, ahora dime si estás solo o acompañado.</p><p>Muy bien, quiero que observes qué está sucediendo a tu alrededor.</p><p>Ahora dime qué estás haciendo tú en este momento.</p><p>Muy bien, ahora dime qué estás sintiendo, que estás pensando.</p><p>Permite que la experiencia se desarrolle...</p><p>Muy bien... sigue inventando.</p><p>Y ahora... voy a contar hasta tres y, a la cuenta de tres, vas a ir al</p><p>momento más intenso o significativo de esta experiencia. 1.2.3.</p><p>Si surge emoción real, abandona el método y sigues con el Análisis.</p>",
+          "links": []
+        },
+        {
+          "id": "s3f3",
+          "title": "Mente Racional",
+          "guion": "<p>Este método se usa con analizados que no están en contacto con emociones, cuando el Analista tiene dificultad para llevarlo a la experiencia de forma directa.</p><p>Voy a contar hasta 3 y al contar hasta 3 irás a la última vez en la cual experimentaste esto o algo parecido…1, 2, 3. Momento más difícil + <a data-kind=\"folio\" data-id=\"s1f8\" class=\"internal-link\">FEM</a></p><p>Voy a contar hasta 3 y al contar hasta 3 irás a la vez en la que experimentaste esto más fuerte…1,2,3.</p><p>Momento más difícil + <a data-kind=\"folio\" data-id=\"s1f8\" class=\"internal-link\">FEM</a></p><p>Voy a contar hasta 3 y al contar hasta 3 irás a la primera vez en la que experimentaste esto o algo parecido…1,2,3.</p><p>Momento más difícil + <a data-kind=\"folio\" data-id=\"s1f8\" class=\"internal-link\">FEM</a></p><p>Voy a contar hasta 3 y al contar hasta 3 irás al momento de tu nacimiento…1,2,3.</p><p>Momento más difícil + <a data-kind=\"folio\" data-id=\"s1f8\" class=\"internal-link\">FEM + AHI</a></p><p>Voy a contar hasta 3 y al contar hasta 3 irás a una experiencia anterior en la que experimentaste esta sensación o algo parecido…1,2,3.</p><p>Momento más difícil + <a data-kind=\"folio\" data-id=\"s1f8\" class=\"internal-link\">FEM + AHI</a></p>",
+          "links": []
+        }
+      ]
+    },
+    {
+      "id": "s7",
+      "name": "Vida Presente",
+      "type": "flujo",
+      "titleBarColor": "#8A6EA8",
+      "folios": [
+        {
+          "id": "s7f1",
+          "title": "Análisis de origen",
+          "guion": "<p>ENFERMEDAD. SUFRIMIENTO. DEPRESIÓN. ADICCIÓN. PERDIDA. ETC.</p><p><strong>VIDA PRESENTE</strong></p><p>ANÁLISIS ORIGEN</p><p>¿Cuál dirías que fue el hecho desencadenante de esta situación?</p><p>¿Si la enfermedad, el sufrimiento, la depresión te sirviera para algo, para que te serviría?</p><p>Voy a contar hasta 3 y a la cuenta de 3, me describirás como es tu sufrimiento.1.2.3.</p><p>¿Qué emociones te produce este sufrimiento?</p><p>De estas emociones, ¿cuál es la más fuerte?</p><p>¿Qué le hace esta emoción a tu cuerpo?</p><p>¿Qué te obliga a hacer esta emoción o experiencia que no hubieras hecho de otra manera?</p><p>¿Qué te impide hacer?</p><p>¿Para qué necesitaría tu alma pasar por esta experiencia?</p><p>Si tuvieras que darle forma a esa enfermedad… ¿cómo sería?</p><p>Y en ese momento, donde estarías. Como si supieras…</p>",
+          "links": []
+        },
+        {
+          "id": "s7f2",
+          "title": "Maltrato en la infancia",
+          "guion": "<p>Relato de la experiencia.</p><p>¿Había algo que pudieras hacer?  ¿Podías evitarlo?</p><p><strong>2.  Momento más terrible. FEM + AHÍ</strong></p><p>Abreacción.</p><p>Quitarse al maltratador de encima.</p><p>Importante.</p><p>Energía.</p><p>Decir todo lo que necesite decir.</p><p>Cambio de rol.</p><p>Perdonar y perdonarse.</p><p>Mandatos.</p><p>Culpa.</p><p>Fragmentación.</p><p>¿Qué llevó a tu alma a tener que vivir esta infancia? = Origen / Causa original.</p>",
+          "links": []
+        },
+        {
+          "id": "s7f3",
+          "title": "Suicidio en vida presente · experiencia",
+          "guion": "<p>Experiencia.</p><p>Voy a contar hasta 3 y a la cuenta de 3 irás a un momento de tu vida presente, donde hayas sentido, pensado o intentado quitarte la vida. 1.2.3.</p><p>¿Qué estás pensando en ese momento?</p><p>¿Qué te lleva a tomar esa decisión?</p><p>¿Qué estas sintiendo?</p><p>Momento más terrible. FEM + AHÍ + HIP.</p><p>Importante:</p><p>Resolución</p><p>Fragmentación</p><p>Mandatos.</p><p>Perdonarse.</p><p>Culpa.</p>",
+          "links": []
+        },
+        {
+          "id": "s7f4",
+          "title": "Suicidio en vida presente · liberación",
+          "guion": "<p>Energía. Indicar al analizado que repita mientras reclama su energía.</p><p>• Recupero el derecho a existir. Recupero mi cuerpo. Recupero mi voz.</p><p>• Recupero mi dignidad. Recupero mi autenticidad. Recupero mi valor.</p><p>• Recupero mi paz. Recupero mi energía. Recupero mi fuerza.</p><p>• Recupero mi libertad emocional. Recupero mi poder personal.</p><p>• Recupero las partes de mí que quedaron apagadas, rendidas o fragmentadas.</p><p>• Vuelvo a mí.</p><p>Liberación. Arrancar el deseo de morir y el sufrimiento y repita estas frases y al terminar arrancar el sufrimiento.</p><p>• Esa experiencia ocurrió… pero no define quién soy.</p><p>• Me libero de este sufrimiento.</p><p>• Rompo la desesperanza, el dolor y la oscuridad que quedaron atrapados en mí.</p><p>• Recupero mis ganas de vivir y mi conexión con la vida.</p><p>• Ya no necesito seguir castigándome o renunciando a mí.</p><p>• Me permito volver a sentir esperanza, presencia y sentido.</p><p>• Recupero mi fuerza, mi paz y mi capacidad de seguir adelante.</p><p>• Me libero y vuelvo a la vida profundamente.</p><p>• Y me libero para siempre.</p><p>• 1.2.3 Arrancar el sufrimiento y el deseo de morir.</p><p>Aprendizaje.  ¿Qué aprendizaje había detrás de esta experiencia?</p>",
+          "links": []
+        },
+        {
+          "id": "s7f5",
+          "title": "Análisis de herida profunda",
+          "guion": "<p>Hecho traumático de la vida presente que le género mucho sufrimiento. Profundizar en el sufrimiento. Análisis de la conciencia.</p><p>Ir a una experiencia anterior donde haya sufrido o experimentado este mismo sufrimiento.</p><p>IMPORTANTE: Que sea consciente de si ese hecho traumático de su vida presente es la repetición de esa experiencia revivida, y no superada. (Análisis de la conciencia + comprensión de ambas experiencias y su relación).</p><p>Ir al origen de este sufrimiento. (Análisis de la conciencia + comprensión de donde comenzó todo).</p><p>En la luz tiene que decir cuantas vidas de sufrimiento ha experimentado sobre este mismo  sufrimiento).</p><p>Volver al hecho traumático de su vida presente y que vea como lo ve y lo siente ahora.</p><p>Trasladarlo a una experiencia futura diez años después, y que vea y sienta como lo ve y se siente en ese momento sobre la emoción que le hacía sufrir.</p>",
+          "links": []
+        }
+      ]
+    },
+    {
+      "id": "s8",
+      "name": "Vida Intrauterina",
+      "type": "flujo",
+      "titleBarColor": "#C77B4A",
+      "folios": [
+        {
+          "id": "s8f1",
+          "title": "En la Luz",
+          "guion": "<p>¿Qué está pasando?  ¿Describe que estas experimentando con detalle?</p><p>En ese lugar donde estas ahora, hay seres de luz. Ahora puedes comunicarte con un ser de luz, y lo haces a través de las palabras, de símbolos, de imágenes, de pensamientos o de sentimientos, eso no importa.</p><p>Tú te vas a encontrar con un ser de luz... Cuando te encuentres con uno de ellos, házmelo saber.</p><p>Quizás lo veas... Quizás lo escuches... o lo percibas... o lo imagines... o lo sientas... Cuando te encuentres con un ser de luz quiero que me avises, porque hay dos preguntas que deseo hacerle...</p><p>¿Sabes con quién te has reunido? ¿Sabes quién es?  ¿Te es familiar de otras ocasiones?</p><p>¿quiero que le preguntes, cual era la lección o misión de vida que tenia … para aprender?</p><p>¿De qué le va a servir a … haber visitado hoy esta vida de …?</p><p>Quiero entonces, que antes de despedirnos de … le de un mensaje a “analizado”.</p><p>A esta que ella misma va a ser dentro de muchos años... Quiero que … le de un mensaje a “analizado”, antes de despedirnos de ...     Darle las gracias, o continuar a seres queridos.</p><p>¿Hay alguien con quien te gustaría hablar? ¿o ver?</p>",
+          "links": []
+        },
+        {
+          "id": "s8f2",
+          "title": "De la luz al nacimiento",
+          "guion": "<p>• Voy a contar hasta 3 y a la cuenta de 3, irás al punto cuando te encontrabas preparando tu descenso para esta existencia de vida, antes de nacer, antes de tu concepción física como “analizado actual”. 1.2.3.</p><p>- ¿Donde te encuentras?</p><p>- ¿Qué estas sintiendo?</p><p>- ¿Cómo es ese lugar?</p><p>- ¿Cómo te ves tu?</p><p>- ¿Fíjate como eres, que aspecto tienes?</p><p>- ¿Tienes cuerpo?</p><p>- ¿Hay algún ser de luz ahí contigo?</p>",
+          "links": []
+        },
+        {
+          "id": "s8f3",
+          "title": "Encarnación",
+          "guion": "<p>¿Esto de encarnar es decisión tuya o es aceptación?</p><p>¿Quién te aconseja que encarnes?</p><p>¿Por qué en España? ¿Y Castellón?</p><p>¿Eliges tú a tu mamá o te lo aconseja alguien?</p><p>¿A qué se debe que la elijas a esa mujer como mamá y no a otra?</p><p>¿Quién te está aconsejando esto? ¿A qué se debe?</p><p>¿Sabes cuál es la misión y aprendizaje que vienes a realizar?</p><p>¿Qué vienes a aprender de tus padres?</p><p>¿Qué vienes a enseñar a tus padres?</p><p>¿Cómo haces para llegar al interior de tu mamá?</p><p>¿Vienes solo? ¿o te acompaña alguien?</p><p>¿Sientes si eres deseado por tus padres?</p><p>Esta pregunta es muy importante y se hace a todos</p>",
+          "links": []
+        },
+        {
+          "id": "s8f4",
+          "title": "Vientre materno",
+          "guion": "<p>Voy a contar hasta tres y a la cuenta de tres, irás dentro del vientre de mamá. 1.2.3.</p><p>¿Qué está pasando? ¿Qué estás sintiendo? ¿Cómo es estar ahí?</p><p>¿Fíjate bien, estas solo o acompañado? ¿Sientes o percibes a alguien mas ahí contigo?</p><p>Voy a contar hasta tres y a la cuenta de tres, y te vas a situar un momento antes en el que mamá se entera que está embarazada de ti. 1.2.3.</p><p>¿Qué está pasando? ¿Qué estás sintiendo?</p><p>¿Qué dice mamá? ¿Qué dice papá?</p><p>¿Qué sientes tú cuando mamá dice o siente que estas dentro de ella?</p><p>¿Quién es la primera persona a la que mamá le dice que está embarazada?</p><p>Voy a contar hasta tres y a la cuenta de tres, iras al momento mas terrible dentro del vientre de mamá. 1.2.3.   <a data-kind=\"folio\" data-id=\"s1f8\" class=\"internal-link\">FEM + AHI</a> + <a data-kind=\"folio\" data-id=\"s1f9\" class=\"internal-link\">HIP</a>.</p>",
+          "links": []
+        },
+        {
+          "id": "s8f5",
+          "title": "Contracciones",
+          "guion": "<p>Voy a contar a tres y a la cuenta de tres, irás al momento en el que tu mamá empieza con los dolores, cuando empieza el parto. 1.2.3.</p><p>¿Qué está pasando?  ¿Qué estás sintiendo?  ¿Tú quieres nacer?  ¿Qué esta diciendo tu mamá?</p><p>Voy a contar a tres y a la cuenta de tres, voy a colocar un cojín en tu cuerpo y te permitirás vivir tus contracciones y revivir tu nacimiento paso a paso. 1.2.3. Cojín de lado a lado.</p><p>¿Que pasa ahí dentro cuando empiezan las contracciones?</p><p>¿Qué dice mamá?</p><p>¿Qué dicen por ahí fuera?</p><p>¿Que parte de tu cuerpo va a salir primero?</p><p>¿Tú quieres nacer?</p>",
+          "links": []
+        },
+        {
+          "id": "s8f6",
+          "title": "Nacimiento",
+          "guion": "<p><strong>Voy a contar hasta tres y, a la cuenta de tres, vas a empezar a nacer. 1.2.3.</strong></p><ul><li><p>Cojín en la cabeza... puedes decirme qué sientes en estos momentos...</p></li><li><p>Sigue... sigue... ¡¡Eso es!! Ahora respira.</p></li></ul><p></p><p><strong>Y fíjate, en este momento de tu nacimiento...</strong></p><ul><li><p>¿Cuál es tu primer pensamiento?</p></li><li><p>¿Qué sientes en este instante?</p></li><li><p>¿Cuál es la lección de tu alma al venir como “(nombre del analizado)?</p></li></ul><p></p><p><strong>Ahora quiero que me digas...</strong></p><ul><li><p>¿Qué has sentido y experimentado cuando pasabas por el canal del parto?</p></li><li><p>¿Cómo te has sentido al llegar al mundo físico?</p></li></ul><p></p><p><strong>Cuando tu mamá te ve por primera vez...</strong></p><ul><li><p>¿Qué es lo primero que dice?</p></li><li><p>¿Qué percibes de ella?</p></li><li><p>¿Qué te transmite?</p></li></ul><p></p><p><strong>Cuando tu papá te ve...</strong></p><ul><li><p>¿Cómo percibes su energía?</p></li><li><p>¿Qué sientes de él?</p></li><li><p>¿Sientes que eres deseado por tus padres?</p></li></ul><p></p><p>¿Qué dice la comadrona?</p><p>¿Qué dicen los médicos?</p>",
+          "links": []
+        },
+        {
+          "id": "s8f8",
+          "title": "Cortar el cordón",
+          "guion": "<p><span style=\"color: rgb(239, 116, 32);\"><strong>¿Qué te parece si cortamos el cordón energético?</strong></span></p><p>Lo que vamos a hacer ahora es muy importante: tú y tu madre sois dos seres diferentes. Tú eres tú, con tu propia esencia, tu propio destino y tu propia misión en esta vida. Esto no tiene nada que ver con el amor que le tengas a ella, ni lo pone en duda, ni lo disminuye. Cuando cortemos este cordón, podrás reconocerte como un ser completo, auténtico y libre, capaz de caminar por la vida desde tu propia fuerza interior y tu verdad más profunda.</p><p style=\"text-align: center;\">Ahora dime... ¿Lo cortamos? Señálame con un dedo donde está tu ombligo</p><p style=\"text-align: center;\"></p><p><strong>• Voy a colocar mi mano sobre tú ombligo. Contare hasta 3 y a la cuenta de 3, voy a cortar el cordón umbilical.1,2, 3</strong></p><p></p><p style=\"text-align: center;\"><strong>TERMINA DE SALIR DE ALLI DEFINITIVAMENTE Y EMPIEZA A RESPIRAR</strong></p><p>¡Toma conciencia de que al cortar el cordón saliste definitivamente del vientre de mamá; ya no estás allí!</p><p>Al cortar el cordón cortaste con la fuente de donde venias, este instante es tu nacimiento a la libertad, has dejado atrás todo lo que no era tuyo, ya nada de eso te pertenece.</p><p style=\"text-align: center;\"><span style=\"color: rgb(233, 61, 130);\"><strong>Ahora eres un ser propio: completo, libre y auténtico</strong></span></p>",
+          "links": []
+        },
+        {
+          "id": "s8f9",
+          "title": "Cesárea · Incubadora",
+          "guion": "<p>Voy a contar hasta 3 y a la cuenta de 3, voy a colocar un cojín sobre tu cuerpo y sentirás la cesárea que le hicieron a mamá para sacarte de su interior 1,2,3</p><p style=\"text-align: center;\"><span style=\"color: rgb(59, 130, 246);\"><em>¿Que sientes cuando abro la barriga de mama? ¿Que dice el medico? ¿De donde te cogen?</em></span></p><p>Voy a contar hasta 3 y a la cuenta de 3 sentirás más profundamente la salida. 1,2,3</p><p style=\"text-align: center;\"><span style=\"color: rgb(59, 130, 246);\"><em>¿Que sientes? ¿Que experimentas? ¿Como esta mamá?</em></span></p><p style=\"text-align: center;\"><span style=\"color: rgb(59, 130, 246);\"><em>¿Que sientes cuando te separan de mamá? ¿Que pasa cuando la anestesia llega a tu cuerpo?</em></span></p><p style=\"text-align: center;\"></p><p style=\"text-align: left;\"><span style=\"font-size: 0.85em;\"><strong>Nota: </strong></span><span style=\"font-size: 0.85em; color: rgb(229, 72, 77);\"><strong>Si nació con anestesia general, tendrá que vomitarla</strong></span></p><p></p><p></p><p style=\"text-align: center;\"><span style=\"color: rgb(46, 162, 95);\"><strong>INCUBADORA</strong></span></p><p>¿Que pasa? ¿Que sientes? ¿Que experimentas? ¿Que es lo mas difícil de estar en la incubadora?</p><p>¿Que su mamá le entregue la energía que no le pudo dar?</p><p>¿Que le entregue la energía que no le dio en su primer abrazo?</p><p></p><p style=\"text-align: center;\"><span style=\"color: rgb(90, 92, 224);\"><strong>POSIBLE FRAGMENTACIÓN</strong></span></p><p style=\"text-align: center;\"><span style=\"color: rgb(229, 72, 77);\"><strong>Que sea consciente que su mamá estaba dormida cuando los separaron</strong></span></p>",
+          "links": []
+        },
+        {
+          "id": "s8f10",
+          "title": "Aborto",
+          "guion": "<ol><li><p>Revivir la experiencia del aborto</p></li><li><p>Momento más terrible    <a data-kind=\"folio\" data-id=\"s1f8\" class=\"internal-link\">FEM + AHI</a></p></li><li><p>Hablar con el alma del bebé no nacido y explicarle las circunstancias</p></li><li><p>Devolverle la energía que no pudo darle</p></li><li><p>Pedir perdón y perdonarse</p></li><li><p>Mandatos</p></li><li><p>Culpa</p></li></ol><p></p><p><span style=\"font-size: 1.25em; color: rgb(227, 87, 68);\"><strong>Que la madre le diga al Alma del bebe</strong></span></p><ul><li><p>Te veo</p></li><li><p>Te honro</p></li><li><p>Siempre tendrás un lugar en mi corazón</p></li><li><p>Gracias por enseñarme, por acompañarme y por existir</p></li><li><p>Te dejo ir con amor</p></li><li><p>Ahora puedes ir en paz hacia la Luz</p></li></ul><p></p>",
+          "links": []
+        },
+        {
+          "id": "s8f11",
+          "title": "Gemelo acompañante",
+          "guion": "<ol><li><p>Saber si viene solo o acompañado</p></li><li><p>Saber cuántos vienen</p></li><li><p>Identificación del alma acompañante. Gemelo, mellizos, trillizos, un guía, una energía.</p></li><li><p>Saber el motivo del porque está ahí.</p></li><li><p>Si es un hermano fallecido, saber las causas de su fallecimiento.</p></li><li><p>Momento más terrible  <a data-kind=\"folio\" data-id=\"s1f8\" class=\"internal-link\">FEM + AHI</a></p></li><li><p>Culpa.</p></li><li><p>Mandatos.</p></li></ol><p></p><p><span style=\"font-size: 1.25em; color: rgb(233, 61, 130);\"><strong>Si la energía de su hermano sigue con él</strong></span></p><p><span style=\"color: rgb(124, 130, 141);\"><strong><em>Antes de decirle que vaya a la Luz, que el analizado le diga:</em></strong></span></p><ul><li><p>Hermano, te veo y te reconozco</p></li><li><p>Siempre tendrás un lugar en mi corazón</p></li><li><p>Gracias por acompañarme</p></li><li><p>Ahora puedes ir a la luz en paz</p></li></ul><p></p>",
+          "links": []
+        }
+      ]
+    },
+    {
+      "id": "s2",
+      "name": "Inducción Blasco I",
+      "type": "apendice",
+      "titleBarColor": "#4E9E8F",
+      "folios": [
+        {
+          "id": "s2f1",
+          "title": "Inducción Blasco I · 1",
+          "guion": "<p>Túmbate y encuentra una postura cómoda.</p><p>Cierra los ojos suavemente...</p><p>Haz tres respiraciones profundas...</p><p>No busques relajarte, sino estar presente...</p><p>Permite que tu atención se dirija completamente hacia ti... Tu experiencia, aquí y ahora...</p><p><span style=\"font-size: 0.85em; color: rgb(59, 130, 246);\"><em>(Pausa de 15 segundos)</em></span></p><p></p><p>Lleva tu atención a la respiración... se consciente de tu respiración...</p><p>Solo observa y se consciente de tu respiración; no la controles...</p><p>Observa el aire entrar por la nariz... y salir lentamente por la boca o la nariz. No cambies nada...</p><p>Solo observa cómo sucede la respiración por sí misma...</p><p>Nota la temperatura, la textura, el recorrido...</p><p>Inhala... siente el movimiento interno...</p><p>Exhala... observa cómo el cuerpo se suelta un poco...</p><p><span style=\"font-size: 0.85em; color: rgb(59, 130, 246);\"><em>(Pausa de 15 segundos)</em></span></p><p></p><p>Si aparece un pensamiento, no lo sigas. Solo date cuenta: “esto es un pensamiento”.</p><p>Obsérvalo y déjalo pasar...</p><p>Y vuelve, una y otra vez, a la respiración...</p><p><span style=\"font-size: 0.85em; color: rgb(59, 130, 246);\"><em>(Pausa de 20 segundos)</em></span></p>",
+          "links": []
+        },
+        {
+          "id": "s2f2",
+          "title": "Inducción Blasco I · 2",
+          "guion": "<p>Siente que la respiración es como una ola.</p><p>Va y viene.</p><p>Va y viene.</p><p>Y tú estás completamente dentro de ese movimiento... </p><p><span style=\"font-size: 0.85em; color: rgb(59, 130, 246);\"><em>(Pausa de 40 segundos)</em></span></p><p></p><p>Sigue respirando... solo observando... hasta que la respiración ocupe toda tu atención...</p><p><span style=\"font-size: 0.85em; color: rgb(59, 130, 246);\"><em>(Pausa de 30 segundos)</em></span></p><p></p><p>Ahora, lleva tu atención al cuerpo...</p><p>Se consciente de tu cuerpo...</p><p>El cuerpo es el campo donde se manifiesta la vida.</p><p>Obsérvalo sin juicio... Siente el peso de tu cuerpo sobre la cama...</p><p>Siente los puntos de contacto.</p><p>Siente la temperatura, las pulsaciones.</p><p><span style=\"font-size: 0.85em; color: rgb(59, 130, 246);\"><strong><em>(Pausa de 15 segundos)</em></strong></span></p><p></p><p>Haz un recorrido suave con tu atención...</p><p>Cabeza... rostro... cuello... hombros... brazos... manos... Tronco... espalda... abdomen...</p><p>Caderas... piernas... pies... No cambies nada…</p><p>Solo siente... Solo observa...</p><p>Siente el cuerpo como una sola unidad viva...</p><p><span style=\"font-size: 0.85em; color: rgb(59, 130, 246);\"><em>(Pausa de 20 segundos)</em></span></p>",
+          "links": []
+        },
+        {
+          "id": "s2f3",
+          "title": "Inducción Blasco I · 3",
+          "guion": "<p>Ahora une ambas atenciones...</p><p>Se consciente de tu cuerpo y de tu respiración simultáneamente, en un solo campo de conciencia...</p><p>Siente el cuerpo que respira...</p><p>El aire entra... el cuerpo se expande...</p><p>El aire sale... el cuerpo se recoge...</p><p>Respiración y cuerpo son un solo movimiento.</p><p><span style=\"font-size: 0.85em; color: rgb(59, 130, 246);\"><em>(Pausa de 30 segundos)</em></span></p><p></p><p>Observa cómo el cuerpo respira solo... No haces nada... solo observas...</p><p><span style=\"font-size: 0.85em; color: rgb(59, 130, 246);\"><em>(Pausa de 10 segundos)</em></span></p><p></p><p>Observa los pensamientos como nubes que pasan en el cielo de tu conciencia. Nota los pensamientos que aparecen.</p><p>No los juzgues ni los sigas...</p><p>No los rechaces...</p><p>Observa cómo surgen, se mantienen y se disuelven...</p><p>Tú no eres el pensamiento... solo el espacio donde aparece...</p><p>Solo observa y vuelve al cuerpo que respira.</p><p><span style=\"font-size: 0.85em; color: rgb(59, 130, 246);\"><em>(Pausa de 40 segundos)</em></span></p>",
+          "links": []
+        },
+        {
+          "id": "s2f4",
+          "title": "Inducción Blasco I · 4",
+          "guion": "<p>Mientras sigues consciente de tu respiración y cuerpo...</p><p>Observa si hay alguna emoción presente….</p><p>Tal vez calma... tal vez tensión... tal vez tristeza... tal vez miedo...tal vez ansiedad... tal vez nada...</p><p>Sea lo que sea… permite que esté.</p><p>No la analices.</p><p>Solo siéntela.</p><p>Obsérvala como parte del cuerpo que siente…</p><p>Localiza dónde se manifiesta en tu cuerpo.</p><p>Observa su intensidad, su cambio, su vibración…</p><p><span style=\"font-size: 0.85em; color: rgb(59, 130, 246);\"><em>(Pausa de 20 segundos)</em></span></p><p></p><p>Si surgen pensamientos, también obsérvalos.</p><p>No los alimentes.</p><p>No los empujes.</p><p>Solo déjalos pasar, como nubes moviéndose en el cielo.</p><p>Y cada vez que te pierdas... vuelve a la respiración... vuelve al cuerpo...</p><p><span style=\"font-size: 0.85em; color: rgb(59, 130, 246);\"><em>(Pausa de 40 segundos)</em></span></p><p></p><p>Ahora percibe todo al mismo tiempo... La respiración...</p><p>El cuerpo... Los pensamientos...</p><p>Las sensaciones... Las emociones...</p><p>Todo sucede dentro del mismo espacio de conciencia.</p><p><span style=\"font-size: 0.85em; color: rgb(59, 130, 246);\"><em>(Pausa de 15 segundos)</em></span></p><p></p>",
+          "links": []
+        },
+        {
+          "id": "s2f5",
+          "title": "Inducción Blasco I · 5",
+          "guion": "<p>No te identifiques con nada de eso...</p><p>Siente que tú no eres nada de eso, sino la presencia que observa.</p><p>Observa la totalidad de tu experiencia como un solo campo consciente.</p><p>Esa presencia es total…</p><p>Solo observa.</p><p>Solo es.</p><p>Permanece aquí, en pura atención silenciosa, en pura presencia.</p><p>Sin forma... sin juicio... sin nombre...</p><p>Solo conciencia... siendo conciencia.</p><p><span style=\"font-size: 0.85em; color: rgb(59, 130, 246);\"><em>(Pausa de 20 segundos)</em></span></p><p></p><p>Permanece sintiendo esta amplitud interna...</p><p>Y desde este espacio de presencia...</p><p>Permite que emerja con suavidad... aquello que tu conciencia necesite mostrarte ahora...</p><p>Sin perder la calma...</p><p>Comienzas a observar el contenido que habita en ti...</p><p>Lo que pide ser comprendido...</p><p><span style=\"font-size: 0.85em; color: rgb(59, 130, 246);\"><em>(Pausa de 15 segundos)</em></span></p>",
+          "links": []
+        },
+        {
+          "id": "s2f6",
+          "title": "Emergente e Identificación",
+          "guion": "<p>Tal vez haya algo que tu ser desea trabajar o liberar... siéntelo y dime...</p><p>¿Hay algo que te gustaría resolver en tu vida?</p><p>¿Hay algo que te perturbe o incomode?<br><span style=\"font-size: 0.85em; color: rgb(59, 130, 246);\"><em>(Pausa de 15 segundos)</em></span></p><p></p><p>Observa qué aparece cuando te haces consciente de estas preguntas...</p><p>Permite que surja... sin forzarlo...</p><p>Podría manifestarse como una emoción... miedo... pena... rabia... culpa... tristeza...</p><p>O tal vez como un síntoma físico... una sensación... un pensamiento... una imagen... Simplemente observa lo que aparece dentro de ti... y cuando lo sientas me lo dirás…</p><p></p><p><span style=\"color: rgb(239, 116, 32);\"><strong>IDENTIFICACIÓN</strong></span></p><p>¿Qué estás sintiendo?</p><p></p><p><span style=\"color: rgb(171, 79, 196);\"><strong>DESCRIPCIÓN</strong></span></p><p>Cuéntame... Eso que sientes... ¿cómo es? Descríbemelo...</p><p>Si tuvieras que poner en palabras esa tristeza, culpa, rabia, ¿cómo la describirías?</p><p>¿Si pudieras describir esa angustia, dolor, pena, cómo sería?</p><p></p><p><span style=\"color: rgb(90, 92, 224);\"><strong>LOCALIZACIÓN</strong></span></p><p>¿Dónde sientes lo que sientes? Si tuvieras que ubicarla en una parte de tu cuerpo... ¿cuál sería?</p><p>¿En qué parte de tu cuerpo dirías que lo sientes? como si lo supieras...</p><p></p><p><span style=\"color: rgb(18, 163, 137);\"><strong>PROFUNDIZACIÓN</strong></span></p><p>Siéntelo en la medida que puedas más profundamente...</p><p></p><p><span style=\"color: rgb(204, 165, 15);\"><strong>FORMA</strong></span></p><p>Eso que estas sintiendo en esa parte de tu cuerpo ... ¿Es como si fuera que cosa?</p><p>Si tuvieras que darle forma a esa tristeza...</p><p>¿Cómo sería? ¿A qué se parece?</p><p></p><p><span style=\"color: rgb(46, 162, 95);\"><strong>LUGAR</strong></span></p><p>¿Dónde estás cuando sientes esa culpa en esa parte de tu cuerpo que tiene la forma de?</p><p>¿Cómo si estuvieras dónde?</p><p>¿Dónde estás cuando sientes lo que sientes?</p><p>¿Cómo si estuvieras dónde?</p><p></p><p>ANÁLISIS DE LA CONCIENCIA</p><p></p>",
+          "links": []
+        }
+      ]
+    },
+    {
+      "id": "s4",
+      "name": "Muertes",
+      "type": "apendice",
+      "titleBarColor": "#A24E5E",
+      "folios": [
+        {
+          "id": "s4f1",
+          "title": "Ahogado",
+          "guion": "<p>Hay dos momentos importantes: cuando entra el agua y el hundimiento.</p><p style=\"text-align: left;\">Confirmar que muere ahogado y no por fractura al chocar.</p><p style=\"text-align: left;\"></p><p><span style=\"color: rgb(224, 147, 11);\"><strong>PRIMERO</strong></span></p><p>Voy a contar hasta 3 y a la cuenta de 3, irás al instante en el que tocas el agua y sentirás como el agua empieza a entrar en tu cuerpo. 1.2.3.</p><p>¿Que esta pasando? Dejar un rato.</p><p></p><p><span style=\"color: rgb(224, 147, 11);\"><strong>SEGUNDO</strong></span></p><p>Voy a contar hasta 3 y a la cuenta de 3 tocaré tu cuerpo para que experimentes más profundamente el agua en tu cuerpo.1.2.3.</p><p>¿Qué pasa cuando el agua llega a la boca?</p><p>¿Qué pasa cuando el agua llega a la garganta?</p><p>¿Qué pasa cuando los pulmones empiezan a llenarse de agua?</p><p>¿Qué pasa cuando el estómago empieza a llenarse de agua?</p><p>¿Qué le pasa al corazón cuando los pulmones se llenan de agua?</p><p>¿Qué siente el cuerpo cuando se va hundiendo?</p><p>¿Qué es lo último que alcanzas a pensar?</p><p>Vomitar agua antes de que vaya a la luz.</p>",
+          "links": []
+        },
+        {
+          "id": "s4f2",
+          "title": "Arma blanca",
+          "guion": "<p>(Espada, puñal, flecha, lanza...)</p><p><strong>PRIMERO.</strong></p><p>Voy a contar hasta 3 y al contar a 3 irás al instante en el que te clavan la espada/daga/lanza para sentir más profundamente la experiencia. (le pregunto dónde).</p><p>Dejar un rato.</p><p><strong>SEGUNDO.</strong></p><p>Voy a contar hasta 3 y al contar hasta 3 tocaré tu cuerpo para que lo sientas más intensamente.1,2,3.</p><p>¿Qué siente la piel?</p><p>¿Qué sienten los músculos?</p><p>¿Qué le pasa al corazón cuando le atraviesa la lanza/espada?</p><p>¿Qué le pasa al estómago cuando le atraviesa la lanza?</p><p>¿Hasta dónde llega la espada/lanza?</p><p>¿Qué les pasa a los pulmones cuando empiezas a perder sangre?</p><p>¿Qué le pasa al corazón cuando empiezas a perder sangre?</p><p>¿Qué es lo último que alcanzas a pensar?</p><p>Al final del trabajo, en la armonizaciónð¡ª coser las heridas del pasado.</p><p>Si fueron heridas cortantes quedaron improntas que cortan el flujo de la energía.</p>",
+          "links": []
+        },
+        {
+          "id": "s4f3",
+          "title": "Arma de fuego",
+          "guion": "<p>(Bala, bola de cañón, escopeta…)</p><p>Si muere por bala.</p><p><strong>PRIMERO.</strong></p><p>Voy a contar hasta 3 y al contar hasta 3 retrocederás al momento en el que te toca la bala.</p><p><strong>SEGUNDO.</strong></p><p>Voy a contar hasta 3 y al contar hasta 3 voy a tocar tu cuerpo para que lo experimentes más profundamente. (golpecito).</p><p>¿Qué siente el cráneo cuando entra la bala?</p><p>¿Qué les pasa a tus pensamientos cuando entra la bala?</p><p>¿Qué le pasa al pecho cuando entra la bala?</p><p>¿Qué le pasa a los pulmones cuando entra la bala?</p><p>¿Qué le pasa al corazón cuando entra la bala?...</p><p>Granada (desintegración).</p><p>¿Qué siente el cuerpo cuando se desmiembra/estalla?</p><p>¿Qué es lo último que alcanzas a pensar?</p><p>En armonización cerrar herida de bala o si estalló colocar la mano en el cuerpo</p><p>para que focalice la energía allí, se cierre la herida y la energía fluya libremente.</p>",
+          "links": []
+        },
+        {
+          "id": "s4f4",
+          "title": "Caída",
+          "guion": "<p>(Precipicio, torre, balcón…)</p><p>Dos momentos: caída e impacto, ayudar al analizado a revivir ambos (ab-reacción doble).</p><p><strong>PRIMERO CAÍDA.</strong></p><p>Voy a contar hasta 3 y al contar hasta 3 tocaré tu cuerpo y te permitirás sentir la caída más profundamente. 1.2.3.</p><p>¿Qué siente el cuerpo cuando está cayendo?  ¿Qué le pasa al estómago cuando estás cayendo?  ¿Qué le pasa a los pulmones cuando estás cayendo? ¿Qué le pasa al corazón cuando estás cayendo?  ¿Qué le pasa al cerebro cuando estás cayendo? ¿En qué piensas?</p><p><strong>SEGUNDO IMPACTO.</strong></p><p>Voy a contar hasta 3 y al contar hasta 3 tocaré tu cuerpo y te permitirás sentir el impacto en tu cuerpo más profundamente. 1.2.3.</p><p>¿Qué siente el cráneo al impactar?   ¿Qué siente la columna vertebral al impactar?  ¿Qué siente la médula espinal? (desconexión)  ¿Qué sienten los pulmones al impactar?   ¿Qué siente el corazón al impactar?  ¿Qué siente el cerebro al impactar?  ¿Qué es lo último que alcanzas a pensar</p><p>También es posible que el alma se salga antes del impacto.</p>",
+          "links": []
+        },
+        {
+          "id": "s4f5",
+          "title": "Congelado · Anestesia · Sobredosis",
+          "guion": "<p>Congelado – Anestesia – Sobredosis.</p><p>Con estas muertes se pierde la consciencia antes de morir y puede provocar confusión posterior.</p><p><strong>PRIMERO.</strong></p><p>Voy a contar a tres y a la cuenta de tres iras al instante antes de que empieces a morir Congelado, anestesia, sobredosis.</p><p>Es necesario traer la consciencia de la muerte.</p><p>¿Qué sienten los pies cuando empiezan a morir?</p><p>¿Qué sienten las piernas cuando empiezan a morir?</p><p>¿Qué sienten los músculos cuando empiezan a morir?</p><p>¿Qué sienten las manos cuando empiezan a morir?</p><p>¿Qué sienten los brazos cuando empiezan a morir?</p><p>¿Qué sienten los pulmones cuando empiezan a morir?</p><p>¿Qué siente el corazón cuando empieza a morir?</p><p>¿Qué siente el cerebro cuando empieza a morir?</p><p>¿Y qué es lo último que alcanzas a pensar mientras el cerebro estaba despierto?</p><p>Al no haber consciencia puede convertirse en un alma perdida.</p>",
+          "links": []
+        },
+        {
+          "id": "s4f6",
+          "title": "Decapitación",
+          "guion": "<p>Se produce una desconexión total.  Tengo que reproducir la decapitación con la mano o el boli tocarle el cuello.</p><p>Lo más terrible de una decapitación es la espera.</p><p><strong>PRIMERO.</strong></p><p>Voy a contar hasta 3 y al contar hasta 3 retrocederás al momento en el que te colocan en posición para decapitarte. 1,2,3.</p><p>¿Qué estas sintiendo? ¿Qué estas pensando?</p><p><strong>SEGUNDO.</strong></p><p>Voy a contar hasta 3 y al contar hasta 3 voy a tocar tu cuello para que lo experimentes más profundamente cuando te cortan la cabeza. 1,2,3.</p><p>¿Qué sientes antes de caer el hacha?  ¿Qué siente tu cuerpo?  ¿Qué dice el verdugo? ¿Qué siente la piel cuando es cortada? ¿Qué sienten los músculos al ser cortados? ¿Qué sienten las venas?  ¿Qué sienten las arterias?</p><p>¿Qué sienten las cervicales? ¿Qué siente la médula espinal? ¿Qué es lo último que alcanzas a pensar?</p><p>¿Qué siente la cabeza cuando está separada del cuerpo?  ¿Qué siente el cuerpo cuando está separado de la cabeza?</p><p>¿Qué le pasa a tu alma cuando se separan cabeza y cuerpo?  ¿Dónde está tu alma?</p><p>Puede que una parte del alma se vaya con la cabeza o el cuerpo o toda el alma con la cabeza o toda con el cuerpo.</p><p>Consecuenciasð¡ª en esta vida puede ser una persona o muy mental o muy emocional (desconexión de ambas partes).</p><p>Pedirle que recoja toda su energía de la cabeza y toda su energía del cuerpo, que la reunifique y la integre en la luz.</p>",
+          "links": []
+        },
+        {
+          "id": "s4f7",
+          "title": "Enterrado vivo",
+          "guion": "<p>(Enterrado vivo, emparedado, derrumbamiento de tierra…)</p><p><strong>ENTERRADO VIVO</strong></p><p>Voy a contar hasta 3 y al contar hasta 3 retrocederás al momento en el que te entierran vivo. 1,2,3.</p><p>Voy a contar hasta 3 y al contar hasta 3 voy a tocarte para que lo experimentes más profundamente como te entierran vivo. 1,2,3.</p><p>¿Qué le pasa al cuerpo cuando empieza a faltar el aire?  ¿Qué le pasa a los pulmones cuando empieza a faltar el aire?</p><p>¿Qué le pasa al corazón cuando empieza a faltar el aire? ¿Qué le pasa a tus pensamientos cuando no llega el oxígeno? ¿Qué es lo último que alcanzas a pensar?</p><p><strong>DERRUMBAMIENTO.</strong></p><p>Voy a contar hasta 3 y al contar hasta 3 sentirás cuando empieza a caerte la tierra encima.</p><p>Cuando cuente hasta 3 te tocaré y sentirás más profundamente en tu cuerpo esta experiencia.</p><p>¿Qué le pasa al cuerpo cuando empieza a faltar el aire?  ¿Qué le pasa a los pulmones cuando empieza a faltar el aire?</p><p>¿Qué le pasa al corazón cuando empieza a faltar el aire? ¿Qué le pasa a tus pensamientos cuando no llega el oxígeno? ¿Qué es lo último que alcanzas a pensar?</p><p>Si tragó tierra es necesario que la vomite.</p>",
+          "links": []
+        },
+        {
+          "id": "s4f8",
+          "title": "Hambre",
+          "guion": "<p>La muerte por hambre es durísima, agonía prolongada. Debilitamiento muscular (hay que experimentarlo).</p><p><span style=\"color: rgb(227, 87, 68);\"><strong>PRIMERO</strong></span></p><p>Voy a contar hasta 3 y al contar hasta 3 retrocederás al momento en el que empiezas a morir de hambre. 1,2,3.</p><p><span style=\"color: rgb(227, 87, 68);\"><strong>SEGUNDO</strong></span></p><p>Voy a contar hasta 3 y al contar hasta 3 voy a tocar tu cuerpo para que lo experimentes más profundamente cuando empiezas a morir de hambre. 1,2,3.</p><p>¿Qué siente el estómago al no recibir alimento? ¿Qué le pasa al cuerpo? ¿qué les pasa a tus pensamientos cuando el cerebro entra en confusión?</p><p>Uno puede quedar atrapado en la confusión y traerla en la vida actual o reproducirla mediante drogas. Es necesario que el paciente vomite los tóxicos generados por el hambre.</p>",
+          "links": []
+        },
+        {
+          "id": "s4f9",
+          "title": "Hoguera",
+          "guion": "<p>Resulta terrible el pánico previo y el público presente.</p><p><span style=\"color: rgb(227, 87, 68);\"><strong>PRIMERO</strong></span></p><p>Voy a contar hasta 3 y al contar hasta 3 iras al momento en el que empiezas a sentir el fuego y a quemarte vivo. 1,2,3.</p><p>¿Dónde esta tu alma mientras te quemas?</p><p><span style=\"color: rgb(227, 87, 68);\"><strong>SEGUNDO</strong></span></p><p>Voy a contar hasta 3 y al contar hasta 3 voy a tocar tu cuerpo para que lo experimentes más profundamente cuando empiezas a quemarte vivo. 1,2,3.</p><p>(tocarle).</p><p>¿Qué siente la piel cuando le alcanza el fuego? (muerte por asfixia) ¿Qué sienten los músculos cuando les alcanza el fuego? ¿Qué sienten los tendones cuando les alcanza el fuego? ¿Qué sienten las articulaciones cuando les alcanza el fuego? ¿Qué sienten los huesos cuando les alcanza el fuego? ¿Qué sienten los pulmones cuando les alcanza el fuego?</p><p>¿Qué sienten el corazón cuando le alcanza el fuego? ¿Qué es lo último en que piensas? (Posible mandato)</p><p>Ayudar al analizado a sentir el fuego. Muchas veces el alma se sale del cuerpo para no sentir, pero el cuerpo registra todo.</p><p>De no querer entrar en el cuerpo de ninguna manera.</p><p>Voy a contar hasta 3 y al contar a 3 me dirás lo que siente el cuerpo mientras tú estás fuera…1,2,3.</p>",
+          "links": []
+        },
+        {
+          "id": "s4f10",
+          "title": "Suicidio (vida pasada)",
+          "guion": "<p><span style=\"color: rgb(227, 87, 68);\"><strong>PRIMERO</strong></span></p><p>Voy a contar a 3 y a la cuenta de 3 iras un momento antes de que te suicides. 1,2,3.</p><p>¿Qué estás pensando antes del suicidio? ¿Qué te lleva a tomar esa decisión?</p><p><span style=\"color: rgb(227, 87, 68);\"><strong>SEGUNDO</strong></span></p><p>Voy a contar hasta 3 y al contar hasta 3 me mostrarás cómo te pegas un tiro/ te cortas las venas. 1,2,3.</p><p><span style=\"color: rgb(227, 87, 68);\"><strong>TERCERO</strong></span></p><p>Voy a contar hasta 3 y a la cuenta de 3, tocare tu cuerpo y sentirás más profundamente cuando te __. 1,2,3.</p><p><span style=\"color: rgb(227, 87, 68);\"><strong>CUARTO</strong></span></p><p>Desidentificación del cuerpo que recoja la energía.</p><p>Voy a contar hasta 3 y al contar hasta 3 vas a avanzar y buscar la luz…”no veo nada” Avanza un poco más, Le acompaño hasta que esté en la luz.</p><p>El Alma por el suicidio puede estar perdida, se pudo fragmentar, puede tener culpa.</p>",
+          "links": []
+        },
+        {
+          "id": "s4f11",
+          "title": "Tóxicos",
+          "guion": "<p>Veneno – gas – mordedura araña, serpiente…</p><p></p><p><span style=\"color: rgb(59, 130, 246);\"><strong>PRIMERO</strong></span><br>Voy a contar hasta 3 y al contar hasta 3 iras al momento en el que entra el veneno, gas, en tu cuerpo. 1,2,3.</p><p></p><p><span style=\"color: rgb(59, 130, 246);\"><strong>SEGUNDO</strong></span><br>Voy a contar hasta 3 y al contar hasta 3 voy a tocar tu cuerpo para que lo experimentes más profundamente cuando empieza a entrar el veneno en tu cuero. 1,2,3.</p><p></p><p><span style=\"color: rgb(139, 92, 246);\"><strong>VENENO</strong></span></p><p>¿Qué sientes cuando el veneno entra en la boca? </p><p>¿Qué sabor tiene? ¿Qué siente el esófago cuando llega el veneno? </p><p>¿Qué siente el estómago cuando llega el veneno? </p><p>¿Qué sienten los intestinos cuando llega el veneno?</p><p>¿Qué siente la sangre cuando llega el veneno? </p><p>¿Qué sienten los músculos cuando llega el veneno? </p><p>¿Qué sienten los pulmones cuando llega el veneno? </p><p>¿Qué siente el corazón cuando llega el veneno? </p><p>¿Qué siente el cerebro cuando llega el veneno?</p><p></p><p><span style=\"color: rgb(90, 92, 224);\"><strong>MORDEDURA SERPIENTE/ARAÑA,ETC</strong></span></p><p>¿Qué siente la sangre cuando llega el veneno? </p><p>¿Qué sienten los músculos cuando llega el veneno? </p><p>¿Qué sienten los pulmones cuando llega el veneno? </p><p>¿Qué siente el corazón cuando llega el veneno? </p><p>¿Qué siente el cerebro cuando llega el veneno? </p><p>¿Qué es lo último que alcanzas a pensar?</p><p></p><p><span style=\"color: rgb(90, 92, 224);\"><strong>INHALACIÓN GASES</strong></span></p><p>¿Qué sienten los pulmones cuando llega el gas? </p><p>¿Qué sienten la piel cuando al tocar el veneno? </p><p>¿Qué siente el cuerpo cuando el veneno es absorbido?</p><p></p><p><span style=\"color: rgb(233, 61, 130);\"><em>NOTA</em></span>: Vomitar el veneno. Gas, etc.</p>",
+          "links": []
+        }
+      ]
+    },
+    {
+      "id": "s5",
+      "name": "Resolución · herramientas",
+      "type": "apendice",
+      "titleBarColor": "#6E8B4F",
+      "folios": [
+        {
+          "id": "s5f1",
+          "title": "Victimario · toma de conciencia",
+          "guion": "<p>Experiencia + FEM + AHÍ + HIP</p><p>Toma de conciencia</p><p>¿Qué sentiste al tomar conciencia del daño causado?</p><p>¿Cuántos años o vidas de sufrimiento llevas por esta razón?</p><p>¿Y cuántos años o vidas más son necesarias para acabar con esto?</p><p>Fragmentación</p><p>¿Sientes o percibes que una parte de ti quedó atrapada en ese lugar o en esa experiencia?</p><p>Resolución</p><p>Ahora vas a hablar con todas esas almas a las que causaste dolor y les dirás todo lo que necesites para estar en paz.  Reconocer el daño causado . Decir todo lo que necesite decir.</p><p>Indicar al analizado que repita:</p><p>Divina Presencia, reconozco el daño causado.</p><p>Pido perdón desde la conciencia y desde el alma.</p><p>Me permito aprender y evolucionar a través de esta experiencia.</p><p>Ya no deseo sostener más sufrimiento ni más condena.</p><p>Transformo este dolor en conciencia.</p><p>Lo siento. Perdóname. Gracias.</p>",
+          "links": []
+        },
+        {
+          "id": "s5f2",
+          "title": "Victimario · energía y aprendizaje",
+          "guion": "<p>Si aparece culpa o condena: Trabajar la culpa y arrancarla.</p><p>Energía. Devolver la energía.</p><p>Devuelvo la energía, el dolor y el sufrimiento que causé.</p><p>Reconozco el daño causado.</p><p>Me abro a comprender y aprender de esta experiencia.</p><p>Permito que cada alma recupere lo que le pertenece.</p><p>Ya no deseo sostener más dolor ni más condena.</p><p>Me libero del auto-castigo eterno.</p><p>Recupero mi conciencia.</p><p>Recupero mi humanidad.</p><p>Recupero mi capacidad de amar.</p><p>Recupero mi paz.</p><p>Me permito evolucionar.</p><p>Transformo esta experiencia en conciencia.</p><p>Me libero y os libero para siempre.</p><p>Vuelvo a mí.</p><p>Aprendizaje</p><p>¿Qué aprendizaje había detrás de esta experiencia?</p>",
+          "links": []
+        },
+        {
+          "id": "s5f3",
+          "title": "Culpa · toma de conciencia",
+          "guion": "<p>Experiencia + FEM + AHÍ + HIP</p><p>Toma de conciencia</p><p>¿Qué necesitarías hacer para terminar con esta culpa, rabia o venganza?</p><p>¿Cuántos años o vidas llevas arrastrando este sufrimiento?</p><p>¿Cuántos años o vidas más serán necesarios?</p><p>Fragmentación</p><p>¿Sientes o percibes que una parte de ti quedó atrapada en ese lugar</p><p>Resolución</p><p>Decir todo lo que necesite decir.</p><p>Energía. Indicar al analizado que repita mientras reclama su energía.</p><p>Recupero el derecho a existir.</p><p>Recupero mi cuerpo. Mi voz. Mi dignidad. Mi autenticidad.</p><p>Recupero mi valor. Mi paz.</p><p>Recupero mi energía. Mi fuerza.</p><p>Recupero mi libertad emocional. Mi poder personal.</p><p>Recupero las partes de mí que quedaron escondidas, atrapadas o fragmentadas.</p><p>Vuelvo a mí.</p>",
+          "links": []
+        },
+        {
+          "id": "s5f4",
+          "title": "Culpa · liberación",
+          "guion": "<p>El perdón</p><p>Perdonar y perdonarse.</p><p>Liberación Arrancar la culpa</p><p>Indicar al analizado que repita estas frases y al terminar arrancar la culpa.</p><p>Me libero de esta culpa.</p><p>Ya no necesito seguir castigándome.</p><p>Me permito aprender sin seguir sufriendo.</p><p>Me permito soltar esta culpa, rabia, etc.</p><p>Rompo lo que me mantenía atrapado/a.</p><p>Devuelvo el dolor que no me pertenece.</p><p>Elijo la paz y me libero para siempre</p><p>Me permito vivir sin castigo.</p><p>Y me libero para siempre.</p><p>1.2.3. Arrancar la culpa.</p><p>Aprendizaje</p><p>¿Qué aprendizaje había detrás de esta experiencia?</p>",
+          "links": []
+        },
+        {
+          "id": "s5f5",
+          "title": "Fragmentación",
+          "guion": "<p>Terminar con el evento traumático</p><p>Volver al momento traumático.</p><p>Que se fije bien,  si allí, ve, siente o percibe una parte de su alma o energía.</p><p>¿Dónde está tu energía?</p><p><strong>HABLAR AL ALMA FRAGMENTADA</strong></p><p>Ponte frente a ella y mírale a los ojos, y dile con amor...</p><p>Qué feliz me hace de encontrarte de nuevo... sentía tu ausencia como un eco en mi alma.</p><p>¿Sabes una cosa? Tú y yo somos el mismo ser, la misma alma, lo que pasa es que tú te quedaste aquí atrapada en el miedo, en el asco, en el dolor, en la tristeza, etc.</p><p>Pero todo eso ya paso, ahora es seguro. Lo oscuro ya se fue ahora llega la luz.</p><p>Yo te voy a proteger, te voy a ayudar, te voy a cuidar, y no voy a permitir que nadie te haga daño. Te necesito para estar completa con toda mi energía y mi poder.   Vuelve conmigo.</p><p>Abre tus brazos... siente cómo ese fragmento de alma vuelve a entrar en ti... y susúrrale:</p><p>Ya estás conmigo y te recibo con amor profundo.</p>",
+          "links": []
+        },
+        {
+          "id": "s5f6",
+          "title": "Violación · abreacción",
+          "guion": "<p>Experiencia +  FEM + AHÍ + HIP.</p><p>Abreacción</p><p>¿Sientes al violador o violadores contigo?</p><p>¿Cómo es vivir con alguien encima?</p><p>Te robó tu integridad, tu alegría, tus ilusiones y tu poder.</p><p>¿Quieres quitártelo de encima?</p><p>Voy a contar hasta 3 y a la cuenta de 3 voy a colocar un cojín sobre tu cuerpo y vas a hacer todo lo necesario para quitarte a esa persona de encima, decirle todo lo que necesites decirle y acabar con todo esto para siempre. 1.2.3.</p><p>Sácalo de encima.</p><p>Dile todo lo que nunca pudiste decir.</p><p>Si no puede quitárselo.</p><p>Voy a contar hasta 3 y a la cuenta de 3 voy a colocar mis manos en tu cabeza y voy a transmitirte la fuerza necesaria para que puedas quitártelo de encima. 1.2.3.</p><p>Fragmentación</p><p>¿Sientes o percibes que una parte de ti quedó atrapada en ese lugar?</p>",
+          "links": []
+        },
+        {
+          "id": "s5f7",
+          "title": "Violación · resolución",
+          "guion": "<p>Resolución. Decir todo lo que necesite decir.</p><p>Recuperación de la energía.</p><p>Indicar al analizado que repita mientras reclama su energía.</p><p>Recupero el derecho a existir. Recupero mi cuerpo. Recupero mi voz.</p><p>Recupero mi dignidad. Recupero mi autenticidad. Recupero mi valor.</p><p>Recupero mi paz. Recupero mi energía. Recupero mi fuerza.</p><p>Recupero mi libertad emocional. Recupero mi poder personal.</p><p>Recupero las partes de mí que quedaron escondidas, atrapadas o fragmentadas.</p><p>Vuelvo a mí.</p><p>Perdón: Perdonar y perdonarse.</p><p>Arrancar la culpa y la vergüenza</p><p>Indicar al analizado que repita mientras arrancas la culpa, la vergüenza o el dolor.</p><p>Esa experiencia ocurrió… pero no define quién soy. Hice lo que pude para sobrevivir.</p><p>Me libero de esta culpa y esta vergüenza. Devuelvo lo que no me pertenece.</p><p>Recupero mi dignidad y mi autenticidad. Ya no necesito seguir escondiéndome.</p><p>Elijo recuperar mi vida, mi paz y mi poder. Y me libero para siempre.</p><p>Arranca la culpa y la vergüenza de su cuerpo.</p><p>Aprendizaje</p><p>¿Qué aprendizaje había detrás de esta experiencia?</p>",
+          "links": []
+        },
+        {
+          "id": "s5f8",
+          "title": "Romper mandatos",
+          "guion": "<p>MANDATOS: hacerlos conscientes: AHÍ</p><p>Yo... por el poder de mi voluntad rompo y anulo y quedan rotos y anulados todos los mandatos que consciente o inconscientemente he pronunciado durante esta vida o experiencia que acabo de revivir.</p><p>Yo... por el poder de mi voluntad rompo y anulo y quedan rotos y anulados definitivamente y para siempre todos los mandatos que consciente o inconscientemente he pronunciado durante esta vida o experiencia que acabo de revivir.</p><p>Yo... por el poder de mi voluntad rompo y anulo y quedan rotos y anulados para toda la eternidad todos los mandatos que consciente o inconscientemente he pronunciado durante esta vida o experiencia que acabo de revivir, y me libero para siempre y recupero mi energía y mi poder.</p>",
+          "links": []
+        },
+        {
+          "id": "s5f9",
+          "title": "Cambio de rol",
+          "guion": "<p>Voy a contar a tres y vas a entrar en la conciencia de tu agresor, padre, y me dirás que está sintiendo, que le estaba ocurriendo, Y vas a saber lo que piensa y siente en ese momento, sabrás el porqué de sus actos, y cuál era su nivel de conciencia en ese momento 1.2.3.</p><p>¿Qué está pensando?</p><p>¿Qué está sintiendo?</p><p>¿A qué se debe que haga tal cosa?</p><p>Del 1 al 10, ¿cuál dirías que es el nivel de evolución de su conciencia?</p><p>Y del 1 al 10, ¿Cuál es tu nivel?</p><p>¿Puedes entender el porqué de sus actos?</p><p>¿y qué has entendido con este cambio de perspectiva?</p><p>¿Y qué piensas hacer ahora?</p>",
+          "links": []
+        },
+        {
+          "id": "s5f10",
+          "title": "Perdonar",
+          "guion": "<p>Ahora quédate mirando fijamente a quien necesites perdonar.</p><p>Y si desde lo más profundo de tu corazón realmente lo sientes y eres capaz de hacerlo, perdónalo por lo que te hizo.</p><p>Háblale directamente, con tus propias palabras, permitiendo que se exprese todo lo que nazca desde tu corazón.</p><p>¿Deseas perdonarlo?</p><p>Entonces repite en voz alta:</p><p>Te perdono y me perdono.</p><p>Te perdono y me perdono de corazón.</p><p>Te perdono por todo el daño que me has causado.</p><p>Te perdono y me perdono con amor, liberándome y liberándote para siempre.</p>",
+          "links": []
+        },
+        {
+          "id": "s5f11",
+          "title": "Pedir perdón · perdonarse",
+          "guion": "<p><strong>PEDIR PERDÓN</strong></p><p>Permite que el analizado exprese lo que sienta decir desde su interior.</p><p>Te pido perdón, te pido perdón por todo el mal que te he causado, intencionadamente o sin intención. Te pido perdón de corazón, liberándote y liberándome. Con amor, lo siento, perdóname, gracias, te amo.</p><p><strong>PERDONARSE A SÍ MISMO</strong></p><p>VÍCTIMA: Me perdono, me perdono porque no era consciente, me perdono porque no lo merezco, porque no soy responsable del daño que me han causado, me perdono porque quiero vivir en paz, en armonía y en amor.</p><p>VICTIMARIO: Me perdono por mis acciones negativas, por todo el daño que he causado intencionadamente o sin intención, me perdono de corazón y alma, liberándome para siempre.</p><p>Elijo aprender, sanar y transformar todo en Luz y Amor.</p>",
+          "links": []
+        },
+        {
+          "id": "s5f12",
+          "title": "Aprendizaje",
+          "guion": "<p>¿Qué crees que esta experiencia te ha hecho hacer que no hubieras hecho de otra manera?</p><p>¿Y qué te ha impedido hacer?</p><p>¿Qué has aprendido de esta experiencia?</p><p>¿Qué cambios ha producido en ti?</p><p>¿Qué dirías que has aprendido sobre ti mismo o sobre la vida a partir de lo vivido en esta experiencia?</p><p>¿Qué cambios internos has notado en ti en tus emociones, tu forma de pensar o tus relaciones después de esta experiencia?</p><p>¿Si intentaras encontrar un aprendizaje o crecimiento derivado de lo que viviste, ¿cuál sería?</p>",
+          "links": []
+        },
+        {
+          "id": "s5f13",
+          "title": "Aceptación",
+          "guion": "<p>Voy a contar a tres y vas a entrar en la conciencia de tu agresor, padre, y me dirás que está sintiendo, que le estaba ocurriendo, sabrás el porqué de sus actos, y cuál es su nivel de conciencia en ese momento. 1.2.3.</p><p>¿Que está sintiendo?</p><p>¿Qué le está ocurriendo?</p><p>¿Cuál fue el motivo de sus actos?</p><p>¿Lo entiendes ahora?</p><p>¿Lo aceptas?</p><p>¿Cuál es su nivel de conciencia?</p><p>¿Para qué podría necesitar tu alma, pasar por esta experiencia?</p><p>¿Aceptas esta situación desde lo más profundo de tu alma?</p>",
+          "links": []
+        },
+        {
+          "id": "s5f14",
+          "title": "Gratitud",
+          "guion": "<p>¿Puedes reconocer hoy algún aprendizaje valioso que esta experiencia haya traído a tu vida?</p><p>¿De qué manera sientes que esta experiencia contribuyó a tu crecimiento como persona y alma?</p><p>¿Puedes permitirte, poco a poco, agradecer no el sufrimiento en sí, sino lo que tú transformaste a través de él?</p><p>¿Qué parte de ti se fortaleció gracias a esta experiencia que atravesaste?</p><p>Si hoy pudieras agradecer algo de esta vivencia por mínimo que sea ¿qué sería?</p><p>Agradecer el aprendizaje que trae un trauma no significa minimizarlo ni justificarlo. Es más bien un acto de liberación: dejar de resistirnos al pasado, encontrar significado en la experiencia y permitir que ese significado nos guíe hacia una vida más plena.</p>",
+          "links": []
+        }
+      ]
+    },
+    {
+      "id": "s6",
+      "name": "Protección y Limpieza",
+      "type": "apendice",
+      "titleBarColor": "#5AA0B0",
+      "folios": [
+        {
+          "id": "s6f1",
+          "title": "Coser heridas · quitar la causa",
+          "guion": "<p><strong>AGUA - HUMO - TIERRA - VENENO - TÓXICOS</strong></p><p>Escúchame atentamente voy a colocar un pañuelo en tu mano y te vas a colocar de lado, te voy a ayudar y vas a expulsar todo/a _______ que tragaste, hasta que sientas que tus pulmones están limpios. Con la mano frotamos su espalda. No hay vomito real, es un vómito energético.</p><p><strong>QUITAR LA CAUSA DE LA MUERTE SI ESTA CLAVADA</strong></p><p>Voy a contar hasta 3 y a la cuenta de 3 tocare tu cuerpo y vas a visualizar como voy te quito la espada, la daga, el pincho, etc. 1.2.3.</p><p><strong>COSER HERIDAS</strong></p><p>Voy a contar hasta 3 y a la cuenta de 3 tocare tu cuerpo y vas a visualizar como voy a coser tus heridas y mientras lo hago concentra toda tu energía en estas heridas para que queden totalmente cerradas y reparadas. Y CON ELLO CERRANDO TU CAMPO VIBRATORIO.</p>",
+          "links": []
+        },
+        {
+          "id": "s6f2",
+          "title": "Decreto de protección con la luz",
+          "guion": "<p>Yo soy……, y mi naturaleza es la Luz, y mi propósito hoy con la Luz es que me proteja de cualquier energía extraña.</p><p>Yo soy……, yo soy yo, profundamente yo, y en mi cuerpo físico, en mi campo emocional, en mi campo mental, y en mi campo vibratorio mando solo yo.</p><p>Por el poder de mi voluntad me envuelvo en esta esfera azul donde ningún error, ningún ser, ningún pensamiento o energía puede entrar en mi cuerpo físico o campo vibratorio.</p><p>Queda terminantemente prohibido tomar de mi energía o la de cualquier miembro de mi familia.</p><p>Queda terminantemente prohibido entrar en mi campo vibratorio o en el de cualquier miembro de mi familia.</p><p>Queda terminantemente prohibido permanecer en mi campo vibratorio o en el de cualquier miembro de mi familia.</p><p>Queda terminantemente prohibido experimentar conmigo o con cualquier miembro de mi familia.</p><p>Desde este mismo instante mi familia y yo, estamos protegidos e iluminados por la Luz Pura de amor infinito, rodeado en un círculo de luz azul y sobre mí la Luz Divina. Estoy protegido.</p>",
+          "links": []
+        },
+        {
+          "id": "s6f3",
+          "title": "Limpieza energética con péndulo",
+          "guion": "<p>Ir con el péndulo al baño, abrir el grifo y cogerlo con la mano izquierda y con la derecha se sujeta el péndulo.</p><p>Yo soy……, y mi naturaleza es la Luz y el amor, y mi propósito con la Luz y el amor hoy es,</p><p>que todas las energías de personas muertas, conciencias perdidas, obsesores, energías oscuras, fuerzas del mal, energías psíquicas proyectadas, energías extraterrestres, energías transgeneracionales, pensamientos negativos y energías provenientes de todas las personas que me envidian, me celan o me guardan rencor, pensamientos y energías de todos los analizados con los que trabajé este día, pensamientos y energías de todas las personas que hayan jugado algún papel en mi vida, familiares, amigos, etc.</p><p>Que todas estas energías sean extraídas de mi cuerpo físico, de mi campo emocional, de mi campo mental y de mi campo vibratorio ahora y regresados a la fuente de la luz.</p><p>Le pido a la Luz. Que así sea. Y así es.</p><p>Se deja girar el péndulo hasta que pare solo.</p>",
+          "links": []
+        },
+        {
+          "id": "s6f4",
+          "title": "Limpieza energética sin péndulo",
+          "guion": "<p>Yo soy……, y mi naturaleza es la Luz y el amor, y mi propósito con la Luz y el amor hoy es,</p><p>que todas las energías de personas muertas, conciencias perdidas, obsesores, energías oscuras, fuerzas del mal, energías psíquicas proyectadas, energías extraterrestres, energías transgeneracionales, pensamientos negativos y energías provenientes de todas las personas que me envidian, me celan o me guardan rencor, pensamientos y energías de todos los analizados con los que trabajé este día, pensamientos y energías de todas las personas que hayan jugado algún papel en mi vida, familiares, amigos, etc.</p><p>Que todas estas energías sean extraídas de mi cuerpo físico, de mi campo emocional, de mi campo mental y de mi campo vibratorio ahora y regresados a la fuente de la luz.</p><p>Le pido a la Luz. Que así sea. Y así es.</p>",
+          "links": []
+        }
+      ]
+    }
+  ],
+  "folderId": null,
+  "id": "g-99utzv3boxr1",
+  "createdAt": "2026-07-28T13:48:54.109Z",
+  "updatedAt": "2026-07-28T17:04:42.763Z"
+}
