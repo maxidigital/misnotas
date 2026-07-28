@@ -56,6 +56,22 @@ export function EditorView({ guideId }: { guideId: string }) {
     };
   }, [state]);
 
+  // Persist open tabs per guide so they survive leaving and returning to the editor.
+  useEffect(() => {
+    if (state !== 'ready') return;
+    const save = (s: ReturnType<typeof useEditorStore.getState>) => {
+      const id = s.activeProjectId;
+      if (!id) return;
+      try {
+        localStorage.setItem('editor.tabs:' + id, JSON.stringify({ open: s.openFolioIds, active: s.selection.folioId ?? null }));
+      } catch {
+        /* ignore */
+      }
+    };
+    save(useEditorStore.getState());
+    return useEditorStore.subscribe(save);
+  }, [state]);
+
   if (state === 'loading')
     return <div className="flex h-full items-center justify-center text-muted-foreground">Cargando guía…</div>;
 
