@@ -43,6 +43,7 @@ function pageLabel(hash){
 }
 function pushHist(hash){
   hash = hash || '#/';
+  if(hash==='#/' || hash==='#') return;   // no guardar Inicio en la sesión
   HIST = HIST.filter(function(h){ return h.hash!==hash; });
   HIST.unshift({ hash: hash, label: pageLabel(hash) });
   if(HIST.length>50) HIST.length=50;
