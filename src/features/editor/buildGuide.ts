@@ -80,20 +80,25 @@ var treeOpen = {};
 function renderTree(){
   if(!histPanel) return;
   var cur = currentFolioId();
-  var html = '<div class="hist-title">\\u00cdndice</div><div class="hist-list">';
-  GUIDE.sections.forEach(function(s){
+  function row(s){
     var open = !!treeOpen[s.id];
-    html += '<button class="tree-sec" data-sec="'+s.id+'">'
+    var h = '<button class="tree-sec" data-sec="'+s.id+'">'
       + '<span class="tree-chevron">'+(open?'\\u25be':'\\u25b8')+'</span>'
       + '<span class="tree-dot band-'+s.id+'"></span>'
       + '<span class="tree-name">'+esc(s.name)+'</span>'
       + '<span class="tree-count">'+s.folios.length+'</span></button>';
     if(open){
-      html += s.folios.map(function(f){
+      h += s.folios.map(function(f){
         return '<button class="tree-folio'+(cur===f.id?' cur':'')+'" data-go="#/f/'+f.id+'">'+esc(f.title||'(sin t\\u00edtulo)')+'</button>';
       }).join('');
     }
-  });
+    return h;
+  }
+  var main = GUIDE.sections.filter(function(s){ return s.type!=='apendice'; });
+  var apx = GUIDE.sections.filter(function(s){ return s.type==='apendice'; });
+  var html = '<div class="hist-title">\\u00cdndice</div><div class="hist-list">';
+  html += main.map(row).join('');
+  if(apx.length){ html += '<div class="tree-group">Ap\\u00e9ndices</div>' + apx.map(row).join(''); }
   html += '</div>';
   histPanel.innerHTML = html;
 }
@@ -445,6 +450,7 @@ function css(width: string): string {
   }
   .tree-folio:hover { background: var(--hover); }
   .tree-folio.cur { font-weight: 700; background: var(--hover); box-shadow: inset 3px 0 0 var(--link); }
+  .tree-group { font-size: .72rem; text-transform: uppercase; letter-spacing: .5px; opacity: .55; padding: 12px 10px 4px; margin-top: 6px; border-top: 1px solid var(--bar-bd); }
   .hist-title { flex-shrink: 0; font-size: .82rem; text-transform: uppercase; letter-spacing: .5px; opacity: .55; padding: 8px 10px 4px; }
   .hist-list { flex: 1; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; }
   .hist-item {
