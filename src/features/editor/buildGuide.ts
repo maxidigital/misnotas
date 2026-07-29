@@ -444,12 +444,13 @@ function css(width: string): string {
   /* Táctil (mobile/tablet): sin flechitas, se usa el tap kindle (arriba Índice / abajo Sesión);
      el backdrop cierra al tocar afuera. Desktop: flechitas y el panel queda abierto hasta cerrarlo. */
   @media (hover: none) and (pointer: coarse) {
-    .toggles { display: none; }
+    :root:not([data-mode="guiada"]) .toggles { display: none; }
     .hist-backdrop { display: block; }
-    /* Modo Guiada: pestañas laterales visibles y con etiqueta */
-    :root[data-mode="guiada"] .toggles { display: flex; width: 92px; }
-    :root[data-mode="guiada"] .tog { justify-content: flex-start; gap: 6px; padding: 0 8px; }
-    :root[data-mode="guiada"] .tog-label { display: block; }
+    /* Guiada: pestañas verticales, sin flechita; el contenido se corre para no taparlo */
+    :root[data-mode="guiada"] .tog svg { display: none; }
+    :root[data-mode="guiada"] .tog-label { display: block; writing-mode: vertical-rl; letter-spacing: .5px; opacity: .85; padding: 6px 0; }
+    :root[data-mode="guiada"] .toggles { width: 26px; }
+    :root[data-mode="guiada"] .viewport { margin-left: 26px; }
   }
   /* El selector de Vista solo tiene sentido en táctil */
   @media (hover: hover) and (pointer: fine) { .set-vista { display: none; } }
@@ -564,13 +565,11 @@ function css(width: string): string {
   .pageacts .linkbtn { flex: 0 1 auto; min-width: 110px; max-width: 240px; padding: 10px 16px; font-size: 1rem; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   /* Táctil (sin mouse): se navega con swipe → sin flechas; los botones ocupan el ancho */
   @media (hover: none) and (pointer: coarse) {
-    .pagenav .nav-side, .pagenav .nav-next { display: none; }
-    .pagenav:not(.has-acts) { display: none; }
+    /* Limpia: sin flechas (solo swipe). Guiada: se muestran, como en desktop. */
+    :root:not([data-mode="guiada"]) .pagenav .nav-side, :root:not([data-mode="guiada"]) .pagenav .nav-next { display: none; }
+    :root:not([data-mode="guiada"]) .pagenav:not(.has-acts) { display: none; }
     .pageacts { flex: 1; }
     .pageacts .linkbtn { flex: 1 1 0; min-width: 0; }
-    /* Modo Guiada: mostrar las flechas Ant/Sig como en desktop */
-    :root[data-mode="guiada"] .pagenav .nav-side, :root[data-mode="guiada"] .pagenav .nav-next { display: flex; }
-    :root[data-mode="guiada"] .pagenav:not(.has-acts) { display: flex; }
   }
 `;
 }
