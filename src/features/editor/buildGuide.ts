@@ -279,10 +279,19 @@ window.addEventListener('resize', function(){
 var root = document.documentElement;
 var FZ = 1;
 function currentTheme(){ return root.getAttribute('data-theme') || 'auto'; }
+function currentMode(){ return root.getAttribute('data-mode')||'guiada'; }
 function syncSettings(){
   if(!settings) return;
   var t=currentTheme(), bs=settings.querySelectorAll('[data-theme]');
   for(var i=0;i<bs.length;i++){ bs[i].classList.toggle('active', bs[i].getAttribute('data-theme')===t); }
+  var m=currentMode(), ms=settings.querySelectorAll('[data-mode]');
+  for(var j=0;j<ms.length;j++){ ms[j].classList.toggle('active', ms[j].getAttribute('data-mode')===m); }
+}
+function applyMode(m){
+  if(m!=='limpia') m='guiada';
+  root.setAttribute('data-mode', m);
+  try{ localStorage.setItem('reader.mode', m); }catch(e){}
+  syncSettings();
 }
 function applyTheme(t){
   if(t==='light'||t==='dark'){ root.setAttribute('data-theme', t); } else { root.removeAttribute('data-theme'); t='auto'; }
@@ -296,12 +305,14 @@ function applyFZ(v){
 }
 try{ var _t=localStorage.getItem('reader.theme'); if(_t==='light'||_t==='dark') root.setAttribute('data-theme', _t); }catch(e){}
 try{ var _f=parseFloat(localStorage.getItem('reader.fz')); if(_f) applyFZ(_f); }catch(e){}
+try{ var _m=localStorage.getItem('reader.mode'); root.setAttribute('data-mode', _m==='limpia'?'limpia':'guiada'); }catch(e){ root.setAttribute('data-mode','guiada'); }
 syncSettings();
 if(brandLogo) brandLogo.addEventListener('click', function(e){ e.stopPropagation(); if(settings){ settings.hidden=!settings.hidden; syncSettings(); } });
 if(settings) settings.addEventListener('click', function(e){
   e.stopPropagation();
   var t=e.target.closest('[data-theme]'); if(t){ applyTheme(t.getAttribute('data-theme')); return; }
   var f=e.target.closest('[data-fs]'); if(f){ applyFZ(FZ + (f.getAttribute('data-fs')==='+'?0.1:-0.1)); return; }
+  var md=e.target.closest('[data-mode]'); if(md){ applyMode(md.getAttribute('data-mode')); return; }
 });
 /* listeners directos, a prueba de balas, para A- / A+ */
 var fzMinus=document.getElementById('fzMinus'), fzPlus=document.getElementById('fzPlus');
@@ -425,6 +436,7 @@ function css(width: string): string {
   .tog:first-child { border-radius: 0 10px 0 0; }
   .tog:last-child { border-radius: 0 0 10px 0; border-top: none; }
   .tog svg { pointer-events: none; opacity: .7; transition: transform .24s ease; }
+  .tog-label { display: none; font-size: .72rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .histwrap.open.view-index .tog-index svg { transform: rotate(180deg); }
   .histwrap.open.view-session .tog-session svg { transform: rotate(180deg); }
   .hist-backdrop { display: none; position: absolute; inset: 0; z-index: 15; background: rgba(0,0,0,.35); opacity: 0; pointer-events: none; transition: opacity .24s; }
@@ -434,7 +446,13 @@ function css(width: string): string {
   @media (hover: none) and (pointer: coarse) {
     .toggles { display: none; }
     .hist-backdrop { display: block; }
+    /* Modo Guiada: pestañas laterales visibles y con etiqueta */
+    :root[data-mode="guiada"] .toggles { display: flex; width: 92px; }
+    :root[data-mode="guiada"] .tog { justify-content: flex-start; gap: 6px; padding: 0 8px; }
+    :root[data-mode="guiada"] .tog-label { display: block; }
   }
+  /* El selector de Vista solo tiene sentido en táctil */
+  @media (hover: hover) and (pointer: fine) { .set-vista { display: none; } }
   /* Índice (árbol) */
   .tree-sec {
     display: flex; align-items: center; gap: 6px; width: 100%; cursor: pointer;
@@ -550,6 +568,9 @@ function css(width: string): string {
     .pagenav:not(.has-acts) { display: none; }
     .pageacts { flex: 1; }
     .pageacts .linkbtn { flex: 1 1 0; min-width: 0; }
+    /* Modo Guiada: mostrar las flechas Ant/Sig como en desktop */
+    :root[data-mode="guiada"] .pagenav .nav-side, :root[data-mode="guiada"] .pagenav .nav-next { display: flex; }
+    :root[data-mode="guiada"] .pagenav:not(.has-acts) { display: flex; }
   }
 `;
 }
@@ -608,14 +629,19 @@ export function renderGuideHtml(project: Project): string {
           '<button id="fzMinus" data-fs="-" aria-label="Achicar">A−</button>' +
           '<button id="fzPlus" data-fs="+" aria-label="Agrandar">A+</button>' +
         '</div>' +
+        '<div class="set-label set-vista">Vista</div>' +
+        '<div class="set-row set-vista">' +
+          '<button data-mode="guiada">Guiada</button>' +
+          '<button data-mode="limpia">Limpia</button>' +
+        '</div>' +
       '</div>' +
     '</div>\n' +
     '<div class="stage">' +
       '<div class="histwrap" id="histWrap">' +
         '<aside class="history" id="history"></aside>' +
         '<div class="toggles">' +
-          '<button class="tog tog-index" id="togIndex" aria-label="Índice"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg></button>' +
-          '<button class="tog tog-session" id="togSession" aria-label="Sesión"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg></button>' +
+          '<button class="tog tog-index" id="togIndex" aria-label="Índice"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg><span class="tog-label">Índice</span></button>' +
+          '<button class="tog tog-session" id="togSession" aria-label="Historial"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg><span class="tog-label">Historial</span></button>' +
         '</div>' +
       '</div>' +
       '<div class="viewport"><div class="track" id="track"></div></div>' +
