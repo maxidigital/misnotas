@@ -171,8 +171,8 @@ function renderFolio(id){
   setFolioTriple(gi);
   var prev = gi>0 ? FLAT[gi-1].f : null;
   var next = gi<FLAT.length-1 ? FLAT[gi+1].f : null;
-  var chevL = '<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>';
-  var chevR = '<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>';
+  var chevL = '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>';
+  var chevR = '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>';
   var prevBtn = '<button class="nav-side" aria-label="Anterior" '+(prev?'data-go="#/f/'+prev.id+'"':'disabled')+'>'+chevL+'</button>';
   var nextBtn = '<button class="nav-next" aria-label="Siguiente" '+(next?'data-go="#/f/'+next.id+'"':'disabled')+'>'+chevR+'</button>';
   var links = (f.links||[]).slice(0,3);
@@ -544,7 +544,7 @@ function css(width: string): string {
   /* Barra inferior: flechas (desktop) + botones personalizados del folio */
   .pagenav {
     flex-shrink: 0; display: flex; align-items: center; justify-content: center; gap: 8px;
-    padding: 10px 16px; padding-bottom: calc(10px + env(safe-area-inset-bottom));
+    padding: 6px 16px; padding-bottom: calc(6px + env(safe-area-inset-bottom));
     background: var(--bar); border-top: 1px solid var(--bar-bd);
   }
   .pagenav:empty { display: none; }
@@ -552,7 +552,7 @@ function css(width: string): string {
   .pagenav button {
     cursor: pointer; display: flex; align-items: center; justify-content: center;
     border: 1px solid var(--btn-bd); background: var(--btn); color: inherit;
-    border-radius: 12px; padding: 8px; min-height: 54px;
+    border-radius: 10px; padding: 5px; min-height: 40px;
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
   .pagenav button:not(:disabled):hover { border-color: var(--btn-bd-strong); }
@@ -560,9 +560,9 @@ function css(width: string): string {
   .nav-side, .nav-next { flex: 1; max-width: calc(${width} / 2); }
   .nav-next { font-weight: 700; border-color: var(--btn-bd-strong); }
   /* Con botones personalizados: flechas compactas pegadas al grupo, todo centrado */
-  .pagenav.has-acts .nav-side, .pagenav.has-acts .nav-next { flex: 0 0 auto; width: 56px; max-width: 56px; }
+  .pagenav.has-acts .nav-side, .pagenav.has-acts .nav-next { flex: 0 0 auto; width: 46px; max-width: 46px; }
   .pageacts { min-width: 0; display: flex; justify-content: center; gap: 8px; }
-  .pageacts .linkbtn { flex: 0 1 auto; min-width: 110px; max-width: 240px; padding: 10px 16px; font-size: 1rem; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .pageacts .linkbtn { flex: 0 1 auto; min-width: 110px; max-width: 240px; padding: 7px 16px; font-size: .95rem; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   /* Táctil (sin mouse): se navega con swipe → sin flechas; los botones ocupan el ancho */
   @media (hover: none) and (pointer: coarse) {
     /* Limpia: sin flechas (solo swipe). Guiada: se muestran, como en desktop. */
