@@ -124,7 +124,7 @@ function renderFav(){
       return '<button class="hist-item'+(id===cur?' cur':'')+'" data-go="#/f/'+id+'">'+esc(r.folio.title||'(sin t\\u00edtulo)')+'</button>';
     }).join('') + '</div>';
   } else {
-    html += '<div class="fav-empty">Para agregar un folio a favoritos, entr\\u00e1 al men\\u00fa principal \\u2699 y toc\\u00e1 \\u201cMarcar como favorito\\u201d.</div>';
+    html += '<div class="fav-empty">Para a\\u00f1adir un folio a favoritos, entra en el men\\u00fa principal \\u2699 y toca \\u00abMarcar como favorito\\u00bb.</div>';
   }
   favPanel.innerHTML = html;
 }
@@ -433,6 +433,20 @@ if(installBtn) installBtn.addEventListener('click', function(e){
 });
 window.addEventListener('appinstalled', function(){ if(installBtn) installBtn.hidden=true; });
 
+/* ---- aviso "Añadir a inicio" en iOS (Safari no dispara beforeinstallprompt) ---- */
+(function(){
+  var iosEl = document.getElementById('iosInstall');
+  if(!iosEl) return;
+  var ua = navigator.userAgent || '';
+  var isIOS = /iphone|ipad|ipod/i.test(ua) || (/(macintosh)/i.test(ua) && 'ontouchend' in document);
+  var standalone = false;
+  try{ standalone = (navigator.standalone === true) || (!!window.matchMedia && window.matchMedia('(display-mode: standalone)').matches); }catch(e){}
+  var dismissed = false; try{ dismissed = localStorage.getItem('reader.iosInstall')==='1'; }catch(e){}
+  if(isIOS && !standalone && !dismissed){ setTimeout(function(){ iosEl.hidden=false; }, 1800); }
+  var x = document.getElementById('iosInstallClose');
+  if(x) x.addEventListener('click', function(){ iosEl.hidden=true; try{ localStorage.setItem('reader.iosInstall','1'); }catch(e){} });
+})();
+
 /* ---- aviso de versión nueva (si se publicó algo mientras la guía estaba abierta) ---- */
 var updbar=document.getElementById('updbar'), updbtn=document.getElementById('updbtn');
 if(updbtn) updbtn.addEventListener('click', function(){ hardReload(); });
@@ -552,6 +566,22 @@ function css(width: string): string {
     cursor: pointer; border: none; background: var(--selected); color: #fff;
     border-radius: 999px; padding: 8px 14px; font-family: inherit; font-size: .9rem; font-weight: 600;
   }
+  /* Aviso para añadir a la pantalla de inicio (iOS) */
+  .ios-install {
+    position: fixed; left: 12px; right: 12px;
+    bottom: calc(14px + env(safe-area-inset-bottom)); z-index: 60;
+    display: flex; align-items: center; gap: 10px;
+    background: var(--bar); border: 1px solid var(--bar-bd); color: inherit;
+    border-radius: 14px; padding: 12px 14px; box-shadow: 0 6px 20px rgba(0,0,0,.28);
+    font-size: .92rem; line-height: 1.35;
+  }
+  .ios-install[hidden] { display: none; }
+  .ios-install .ios-msg { flex: 1; min-width: 0; }
+  .ios-install .ios-x {
+    flex: 0 0 auto; cursor: pointer; border: none; background: transparent; color: inherit;
+    font-size: 1.1rem; line-height: 1; padding: 4px 6px; opacity: .6;
+  }
+  @media (min-width: 560px) { .ios-install { left: 50%; right: auto; transform: translateX(-50%); max-width: 480px; } }
   .set-row.set-fs button { flex: 0 0 auto; width: 46px; font-size: 1.05rem; }
 
   /* Stage: panel de historial + viewport */
@@ -840,6 +870,7 @@ export function renderGuideHtml(project: Project): string {
     '</div>\n' +
     '<div class="pagenav" id="pagenav"></div>\n' +
     '<div class="updbar" id="updbar" hidden><span>Hay una versión nueva</span><button id="updbtn">Actualizar</button></div>\n' +
+    '<div class="ios-install" id="iosInstall" hidden><span class="ios-msg">A\\u00f1ade esta gu\\u00eda a tu pantalla de inicio: pulsa <b>Compartir</b> y luego <b>\\u00abA\\u00f1adir a pantalla de inicio\\u00bb</b>.</span><button class="ios-x" id="iosInstallClose" aria-label="Cerrar">\\u2715</button></div>\n' +
     '<script>\nvar GUIDE = ' + json + ';\nvar LOGO = ' + JSON.stringify(LOGO) + ';\nvar GUIDE_VER = ' + JSON.stringify(guideVer) + ';\n' + RUNTIME + '\n</script>\n' +
     '</body>\n</html>';
 
