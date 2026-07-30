@@ -338,7 +338,7 @@ function css(width: string): string {
     --card:#FEFCF7; --card-bd:rgba(120,105,80,.20); --card-bd-h:rgba(120,105,80,.42);
     --card-sh:0 4px 14px rgba(70,55,30,.10);
     --btn:#FBF7EE; --btn-bd:rgba(120,105,80,.28); --btn-bd-strong:rgba(120,105,80,.5);
-    --link:#4A6B57; --logo-invert:0; --fz:1; --histw:min(80vw, 300px);
+    --link:#4A6B57; --logo-invert:0; --fz:1; --histw:min(80vw, 300px); --selected:#4692F2;
   }
   /* variables de tema oscuro (reutilizadas por auto y por override manual) */
   @media (prefers-color-scheme: dark) {
@@ -407,7 +407,7 @@ function css(width: string): string {
     cursor: pointer; border: 1px solid var(--btn-bd); background: var(--btn); color: inherit;
     border-radius: 8px; padding: 8px 10px; font-family: inherit; font-size: .95rem; flex: 1;
   }
-  .settings button.active { border-color: var(--btn-bd-strong); font-weight: 700; }
+  .settings button.active { border-color: var(--selected); box-shadow: inset 0 0 0 1px var(--selected); font-weight: 700; }
   .set-row.set-fs button { flex: 0 0 auto; width: 46px; font-size: 1.05rem; }
 
   /* Stage: panel de historial + viewport */
@@ -472,7 +472,7 @@ function css(width: string): string {
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
   .tree-folio:hover { background: var(--hover); }
-  .tree-folio.cur { font-weight: 700; background: var(--hover); box-shadow: inset 3px 0 0 var(--link); }
+  .tree-folio.cur { font-weight: 700; background: var(--hover); box-shadow: inset 3px 0 0 var(--selected); }
   .tree-group { font-size: .72rem; text-transform: uppercase; letter-spacing: .5px; opacity: .55; padding: 12px 10px 4px; margin-top: 6px; border-top: 1px solid var(--bar-bd); }
   .hist-title { flex-shrink: 0; font-size: .82rem; text-transform: uppercase; letter-spacing: .5px; opacity: .55; padding: 8px 10px 4px; }
   .hist-list { flex: 1; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; }
@@ -483,7 +483,7 @@ function css(width: string): string {
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
   .hist-item:hover { background: var(--hover); }
-  .hist-item.cur { font-weight: 700; }
+  .hist-item.cur { font-weight: 700; box-shadow: inset 3px 0 0 var(--selected); }
   .hist-clear {
     flex-shrink: 0; margin-top: 6px; cursor: pointer;
     border: 1px solid var(--btn-bd); background: var(--btn); color: inherit;
