@@ -351,6 +351,20 @@ if(installBtn) installBtn.addEventListener('click', function(e){
 });
 window.addEventListener('appinstalled', function(){ if(installBtn) installBtn.hidden=true; });
 
+/* ---- aviso de versión nueva (si se publicó algo mientras la guía estaba abierta) ---- */
+var updbar=document.getElementById('updbar'), updbtn=document.getElementById('updbtn');
+if(updbtn) updbtn.addEventListener('click', function(){ location.reload(); });
+function checkUpdate(){
+  try{
+    fetch(location.pathname, { cache:'no-store' }).then(function(r){ return r.ok ? r.text() : ''; }).then(function(t){
+      var m = t.match(/GUIDE_VER\\s*=\\s*"([^"]+)"/);
+      if(m && m[1] && m[1] !== GUIDE_VER && updbar) updbar.hidden=false;
+    }).catch(function(){});
+  }catch(e){}
+}
+setTimeout(checkUpdate, 4000);
+document.addEventListener('visibilitychange', function(){ if(document.visibilityState==='visible') checkUpdate(); });
+
 window.addEventListener('hashchange', render);
 render();
 `;
@@ -439,6 +453,20 @@ function css(width: string): string {
   .settings button.active { border-color: var(--selected); box-shadow: inset 0 0 0 1px var(--selected); font-weight: 700; }
   .settings .set-install { flex: 0 0 auto; margin-top: 2px; }
   .set-install[hidden] { display: none; }
+  /* Aviso de versión nueva */
+  .updbar {
+    position: fixed; left: 50%; transform: translateX(-50%);
+    bottom: calc(14px + env(safe-area-inset-bottom)); z-index: 60;
+    display: flex; align-items: center; gap: 10px;
+    background: var(--bar); border: 1px solid var(--bar-bd); color: inherit;
+    border-radius: 999px; padding: 8px 8px 8px 16px; box-shadow: 0 6px 20px rgba(0,0,0,.28);
+    font-size: .95rem;
+  }
+  .updbar[hidden] { display: none; }
+  .updbar button {
+    cursor: pointer; border: none; background: var(--selected); color: #fff;
+    border-radius: 999px; padding: 8px 14px; font-family: inherit; font-size: .9rem; font-weight: 600;
+  }
   .set-row.set-fs button { flex: 0 0 auto; width: 46px; font-size: 1.05rem; }
 
   /* Stage: panel de historial + viewport */
@@ -638,6 +666,10 @@ export function renderGuideHtml(project: Project): string {
   };
   // Escape "<" so nothing (e.g. "</script>" inside body HTML) can break out of the script.
   const json = JSON.stringify(data).replace(/</g, '\\u003c');
+  // Versión del contenido, para avisar si hay una publicación más nueva.
+  let vh = 5381;
+  for (let i = 0; i < json.length; i++) vh = ((vh << 5) + vh + json.charCodeAt(i)) >>> 0;
+  const guideVer = vh.toString(36);
 
   const nameEsc = (project.name || 'Guía').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   const html =
@@ -686,7 +718,8 @@ export function renderGuideHtml(project: Project): string {
       '<div class="hist-backdrop" id="histBackdrop"></div>' +
     '</div>\n' +
     '<div class="pagenav" id="pagenav"></div>\n' +
-    '<script>\nvar GUIDE = ' + json + ';\nvar LOGO = ' + JSON.stringify(LOGO) + ';\n' + RUNTIME + '\n</script>\n' +
+    '<div class="updbar" id="updbar" hidden><span>Hay una versión nueva</span><button id="updbtn">Actualizar</button></div>\n' +
+    '<script>\nvar GUIDE = ' + json + ';\nvar LOGO = ' + JSON.stringify(LOGO) + ';\nvar GUIDE_VER = ' + JSON.stringify(guideVer) + ';\n' + RUNTIME + '\n</script>\n' +
     '</body>\n</html>';
 
   return html;
