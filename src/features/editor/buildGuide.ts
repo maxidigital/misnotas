@@ -368,10 +368,10 @@ syncSettings();
 if(brandLogo) brandLogo.addEventListener('click', function(e){ e.stopPropagation(); if(settings){ settings.hidden=!settings.hidden; syncSettings(); updateFavBtn(); } });
 if(settings) settings.addEventListener('click', function(e){
   e.stopPropagation();
-  var t=e.target.closest('[data-theme]'); if(t){ applyTheme(t.getAttribute('data-theme')); return; }
-  var f=e.target.closest('[data-fs]'); if(f){ applyFZ(FZ + (f.getAttribute('data-fs')==='+'?0.1:-0.1)); return; }
-  var md=e.target.closest('[data-mode]'); if(md){ applyMode(md.getAttribute('data-mode')); return; }
   var fb=e.target.closest('#favBtn'); if(fb){ toggleFav(currentFolioId()); return; }
+  var t=e.target.closest('[data-theme]'); if(t && settings.contains(t)){ applyTheme(t.getAttribute('data-theme')); return; }
+  var f=e.target.closest('[data-fs]'); if(f && settings.contains(f)){ applyFZ(FZ + (f.getAttribute('data-fs')==='+'?0.1:-0.1)); return; }
+  var md=e.target.closest('[data-mode]'); if(md && settings.contains(md)){ applyMode(md.getAttribute('data-mode')); return; }
 });
 /* listeners directos, a prueba de balas, para A- / A+ */
 var fzMinus=document.getElementById('fzMinus'), fzPlus=document.getElementById('fzPlus');
@@ -795,6 +795,7 @@ export function renderGuideHtml(project: Project): string {
           '<button data-mode="guiada">Guiada</button>' +
           '<button data-mode="limpia">Limpia</button>' +
         '</div>' +
+        '<div class="set-label">Varios</div>' +
         '<button class="set-fav" id="favBtn" hidden></button>' +
         '<button class="set-refresh" id="refreshBtn">Actualizar</button>' +
         '<button class="set-install" id="installBtn" hidden>Instalar en el dispositivo</button>' +
