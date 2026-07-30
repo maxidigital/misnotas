@@ -135,7 +135,7 @@ function updateStar(){
   var wrap = page ? page.querySelector('.wrap') : null; if(!wrap) return;
   var ex = wrap.querySelector('.favstar');
   if(isFav(cur)){
-    if(!ex){ var b=document.createElement('button'); b.className='favstar'; b.setAttribute('data-favtoggle', cur); b.setAttribute('aria-label','Quitar de favoritos'); b.title='Quitar de favoritos'; b.textContent='\\u2605'; wrap.appendChild(b); }
+    if(!ex){ var b=document.createElement('span'); b.className='favstar'; b.setAttribute('aria-hidden','true'); b.title='Favorito'; b.textContent='\\u2605'; wrap.appendChild(b); }
   } else if(ex){ ex.remove(); }
 }
 function updateFavBtn(){
@@ -186,7 +186,7 @@ function sectionInner(s){
     + '<div class="grid">' + s.folios.map(function(f){ return scard('#/f/'+f.id, f.title||'(sin t\\u00edtulo)'); }).join('') + '</div>';
 }
 function folioInner(f, s){
-  var star = isFav(f.id) ? '<button class="favstar" data-favtoggle="'+f.id+'" aria-label="Quitar de favoritos" title="Quitar de favoritos">\\u2605</button>' : '';
+  var star = isFav(f.id) ? '<span class="favstar" title="Favorito" aria-hidden="true">\\u2605</span>' : '';
   return star + '<h1 class="band band-'+s.id+'">'+esc(f.title||'')+'</h1>'
     + '<div class="body">'+(f.body||'')+'</div>';
 }
@@ -261,8 +261,6 @@ if(histPanel) histPanel.addEventListener('click', function(e){
   if(e.target.closest('.hist-clear')){ e.stopPropagation(); clearHist(); }
 });
 document.addEventListener('click', function(e){
-  var fv = e.target.closest('[data-favtoggle]');
-  if(fv){ e.preventDefault(); e.stopPropagation(); toggleFav(fv.getAttribute('data-favtoggle')); return; }
   var g = e.target.closest('[data-go]');
   if(g){ location.hash = g.getAttribute('data-go'); if(isTouch()){ closePanel(); closeFav(); } return; }
   var a = e.target.closest('a.internal-link, [data-kind][data-id]');
@@ -357,7 +355,7 @@ function applyTheme(t){
   syncSettings();
 }
 function applyFZ(v){
-  FZ = Math.max(0.8, Math.min(2.2, Math.round(v*10)/10));
+  FZ = Math.max(0.8, Math.min(1.4, Math.round(v*10)/10));
   root.style.setProperty('--fz', String(FZ));
   try{ localStorage.setItem('reader.fz', String(FZ)); }catch(e){}
 }
@@ -374,9 +372,10 @@ if(settings) settings.addEventListener('click', function(e){
   var md=e.target.closest('[data-mode]'); if(md && settings.contains(md)){ applyMode(md.getAttribute('data-mode')); return; }
 });
 /* listeners directos, a prueba de balas, para A- / A+ */
-var fzMinus=document.getElementById('fzMinus'), fzPlus=document.getElementById('fzPlus');
+var fzMinus=document.getElementById('fzMinus'), fzPlus=document.getElementById('fzPlus'), fzReset=document.getElementById('fzReset');
 if(fzMinus) fzMinus.addEventListener('click', function(e){ e.stopPropagation(); applyFZ(FZ-0.1); });
 if(fzPlus) fzPlus.addEventListener('click', function(e){ e.stopPropagation(); applyFZ(FZ+0.1); });
+if(fzReset) fzReset.addEventListener('click', function(e){ e.stopPropagation(); applyFZ(1); });
 document.addEventListener('click', function(e){
   if(settings && !settings.hidden && e.target!==brandLogo && !settings.contains(e.target)) settings.hidden=true;
 });
@@ -648,12 +647,10 @@ function css(width: string): string {
     box-shadow: var(--sheet-sh);
   }
   .favstar {
-    position: absolute; top: 6px; right: 8px; z-index: 3;
-    border: none; background: transparent; cursor: pointer;
-    color: #F5B301; font-size: 20px; line-height: 1; padding: 4px;
+    position: absolute; top: 8px; right: 10px; z-index: 3;
+    pointer-events: none; color: #F5B301; font-size: 20px; line-height: 1;
     filter: drop-shadow(0 1px 1px rgba(0,0,0,.28));
   }
-  .favstar:hover { transform: scale(1.12); }
 
   .menuhead { text-align: center; margin: 4px 0 24px; }
   .menu-logo { height: 84px; width: 84px; object-fit: contain; filter: invert(var(--logo-invert)); }
@@ -788,6 +785,7 @@ export function renderGuideHtml(project: Project): string {
         '<div class="set-label">Texto</div>' +
         '<div class="set-row set-fs">' +
           '<button id="fzMinus" data-fs="-" aria-label="Achicar">A−</button>' +
+          '<button id="fzReset" aria-label="Tamaño normal" title="Tamaño normal">A</button>' +
           '<button id="fzPlus" data-fs="+" aria-label="Agrandar">A+</button>' +
         '</div>' +
         '<div class="set-label set-vista">Vista</div>' +
