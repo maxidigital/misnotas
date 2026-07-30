@@ -254,17 +254,29 @@ app.delete('/api/folders/:id', requireAuth, async (req, res) => {
 
 /* ---------- service worker de las guías (PWA / offline), scope /p/ ---------- */
 const SW_JS = `
-const CACHE = 'guia-v1';
+const CACHE = 'guia-v2';
 self.addEventListener('install', function(){ self.skipWaiting(); });
-self.addEventListener('activate', function(e){ e.waitUntil(self.clients.claim()); });
+self.addEventListener('activate', function(e){
+  e.waitUntil(
+    caches.keys().then(function(keys){
+      return Promise.all(keys.filter(function(k){ return k !== CACHE; }).map(function(k){ return caches.delete(k); }));
+    }).then(function(){ return self.clients.claim(); })
+  );
+});
+self.addEventListener('message', function(e){
+  if(e.data === 'skipWaiting') self.skipWaiting();
+  if(e.data === 'clearCache'){ caches.keys().then(function(ks){ ks.forEach(function(k){ caches.delete(k); }); }); }
+});
 self.addEventListener('fetch', function(e){
   var req = e.request;
   if(req.method !== 'GET') return;
   var url = new URL(req.url);
   if(url.origin !== self.location.origin) return;
   if(url.pathname.indexOf('/p/') !== 0 || url.pathname === '/p/sw.js') return;
+  // Network-first bypassing the HTTP cache (iOS standalone la cachea agresivamente);
+  // la copia offline vive solo en CacheStorage.
   e.respondWith(
-    fetch(req).then(function(res){
+    fetch(url.pathname, { cache: 'no-store', credentials: 'same-origin' }).then(function(res){
       try { var copy = res.clone(); caches.open(CACHE).then(function(c){ c.put(req, copy); }); } catch(_){}
       return res;
     }).catch(function(){ return caches.match(req); })
@@ -273,6 +285,7 @@ self.addEventListener('fetch', function(e){
 `;
 app.get('/p/sw.js', (_req, res) => {
   res.set('Service-Worker-Allowed', '/p/');
+  res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
   res.type('application/javascript').send(SW_JS);
 });
 
@@ -281,7 +294,8 @@ app.get('/p/:slug', async (req, res) => {
   if (!validId(req.params.slug)) return res.status(400).send('bad slug');
   const file = pubFileFor(req.params.slug);
   if (!existsSync(file)) return res.status(404).send('Publicación no encontrada');
-  res.type('html').sendFile(file);
+  res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.type('html').sendFile(file, { cacheControl: false, etag: false, lastModified: false });
 });
 
 /* ---------- SPA estática ---------- */

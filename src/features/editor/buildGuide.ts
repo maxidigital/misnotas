@@ -402,7 +402,18 @@ try {
 } catch(e){}
 if('serviceWorker' in navigator){ navigator.serviceWorker.register('/p/sw.js').catch(function(){}); }
 var refreshBtn=document.getElementById('refreshBtn');
-if(refreshBtn) refreshBtn.addEventListener('click', function(e){ e.stopPropagation(); location.reload(); });
+if(refreshBtn) refreshBtn.addEventListener('click', function(e){
+  e.stopPropagation();
+  try{
+    if('serviceWorker' in navigator && navigator.serviceWorker.controller){ navigator.serviceWorker.controller.postMessage('clearCache'); }
+    if(window.caches && caches.keys){
+      caches.keys().then(function(ks){ return Promise.all(ks.map(function(k){ return caches.delete(k); })); })
+        .then(function(){ location.reload(); });
+      return;
+    }
+  }catch(_){}
+  location.reload();
+});
 var deferredPrompt=null, installBtn=document.getElementById('installBtn');
 window.addEventListener('beforeinstallprompt', function(e){ e.preventDefault(); deferredPrompt=e; if(installBtn) installBtn.hidden=false; });
 if(installBtn) installBtn.addEventListener('click', function(e){
