@@ -343,6 +343,8 @@ try {
   document.head.appendChild(_ml);
 } catch(e){}
 if('serviceWorker' in navigator){ navigator.serviceWorker.register('/p/sw.js').catch(function(){}); }
+var refreshBtn=document.getElementById('refreshBtn');
+if(refreshBtn) refreshBtn.addEventListener('click', function(e){ e.stopPropagation(); location.reload(); });
 var deferredPrompt=null, installBtn=document.getElementById('installBtn');
 window.addEventListener('beforeinstallprompt', function(e){ e.preventDefault(); deferredPrompt=e; if(installBtn) installBtn.hidden=false; });
 if(installBtn) installBtn.addEventListener('click', function(e){
@@ -452,7 +454,7 @@ function css(width: string): string {
     border-radius: 8px; padding: 8px 10px; font-family: inherit; font-size: .95rem; flex: 1;
   }
   .settings button.active { border-color: var(--selected); box-shadow: inset 0 0 0 1px var(--selected); font-weight: 700; }
-  .settings .set-install { flex: 0 0 auto; margin-top: 2px; }
+  .settings .set-install, .settings .set-refresh { flex: 0 0 auto; margin-top: 2px; }
   .set-install[hidden] { display: none; }
   /* Aviso de versión nueva */
   .updbar {
@@ -706,6 +708,7 @@ export function renderGuideHtml(project: Project): string {
           '<button data-mode="guiada">Guiada</button>' +
           '<button data-mode="limpia">Limpia</button>' +
         '</div>' +
+        '<button class="set-refresh" id="refreshBtn">Actualizar</button>' +
         '<button class="set-install" id="installBtn" hidden>Instalar en el dispositivo</button>' +
       '</div>' +
     '</div>\n' +
