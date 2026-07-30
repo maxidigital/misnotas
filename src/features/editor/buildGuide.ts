@@ -56,7 +56,7 @@ function hashResolves(hash){
 }
 function pushHist(hash){
   hash = hash || '#/';
-  if(hash==='#/' || hash==='#') return;   // no guardar Inicio en la sesión
+  if(hash.indexOf('#/f/')!==0) return;   // solo folios en la sesión (ni Inicio ni secciones)
   HIST = HIST.filter(function(h){ return h!==hash; });
   HIST.unshift(hash);
   if(HIST.length>50) HIST.length=50;
@@ -66,7 +66,7 @@ function clearHist(){ HIST=[]; saveHist(); renderHistory(); }
 function renderHistory(){
   if(!histPanel) return;
   var cur = location.hash || '#/';
-  var items = HIST.filter(hashResolves);
+  var items = HIST.filter(function(h){ return h.indexOf('#/f/')===0 && hashResolves(h); });
   var html = '<div class="hist-title">Sesi\\u00f3n</div>';
   html += '<div class="hist-list">' + items.map(function(h){
     return '<button class="hist-item'+(h===cur?' cur':'')+'" data-go="'+h+'">'+esc(pageLabel(h))+'</button>';
