@@ -486,7 +486,10 @@ function css(width: string): string {
   }
   .histwrap.open .history { box-shadow: 0 0 40px rgba(0,0,0,.28); }
   /* Dos flechitas apiladas: arriba = Índice, abajo = Sesión */
-  .toggles { align-self: stretch; flex-shrink: 0; width: 24px; display: flex; flex-direction: column; box-shadow: 2px 0 8px rgba(0,0,0,.12); }
+  .toggles { align-self: stretch; flex-shrink: 0; width: 24px; display: none; flex-direction: column; box-shadow: 2px 0 8px rgba(0,0,0,.12); }
+  /* Pestañas: visibles en desktop y en modo Guiada; escondidas en Limpia (táctil) */
+  @media (hover: hover) and (pointer: fine) { .toggles { display: flex; } }
+  :root[data-mode="guiada"] .toggles { display: flex; }
   .tog {
     flex: 1; cursor: pointer; padding: 0;
     display: flex; align-items: center; justify-content: center;
@@ -504,7 +507,6 @@ function css(width: string): string {
   /* Táctil (mobile/tablet): sin flechitas, se usa el tap kindle (arriba Índice / abajo Sesión);
      el backdrop cierra al tocar afuera. Desktop: flechitas y el panel queda abierto hasta cerrarlo. */
   @media (hover: none) and (pointer: coarse) {
-    :root:not([data-mode="guiada"]) .toggles { display: none; }
     .hist-backdrop { display: block; }
     /* Guiada: pestañas verticales, sin flechita; el contenido se corre para no taparlo */
     :root[data-mode="guiada"] .tog svg { display: none; }
