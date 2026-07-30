@@ -16,6 +16,9 @@ var settings = document.getElementById('settings');
 var histWrap = document.getElementById('histWrap');
 var togIndex = document.getElementById('togIndex');
 var togSession = document.getElementById('togSession');
+var favWrap = document.getElementById('favWrap');
+var favPanel = document.getElementById('favpanel');
+var favTog = document.getElementById('favTog');
 function esc(t){ return (t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function sectionById(id){ for(var i=0;i<GUIDE.sections.length;i++){ if(GUIDE.sections[i].id===id) return GUIDE.sections[i]; } return null; }
 function findFolio(id){
@@ -103,7 +106,51 @@ function renderTree(){
   histPanel.innerHTML = html;
 }
 function renderPanel(){ if(panelView==='index') renderTree(); else renderHistory(); }
+/* ---- favoritos (persistidos por guía) ---- */
+var FAV = [];
+function favKey(){ return 'reader.fav:' + location.pathname; }
+try{ var _fv=JSON.parse(localStorage.getItem(favKey())||'[]'); if(_fv && _fv.length) FAV=_fv.filter(function(x){ return typeof x==='string'; }); }catch(e){}
+function saveFav(){ try{ localStorage.setItem(favKey(), JSON.stringify(FAV)); }catch(e){} }
+function isFav(id){ return !!id && FAV.indexOf(id)!==-1; }
+function toggleFav(id){ if(!id) return; if(isFav(id)){ FAV=FAV.filter(function(x){ return x!==id; }); } else { FAV.unshift(id); } saveFav(); updateFavUI(); }
+function renderFav(){
+  if(!favPanel) return;
+  var cur = currentFolioId();
+  var items = FAV.filter(function(id){ return !!findFolio(id); });
+  var html = '<div class="hist-title">Favoritos</div>';
+  if(items.length){
+    html += '<div class="hist-list">' + items.map(function(id){
+      var r = findFolio(id);
+      return '<button class="hist-item'+(id===cur?' cur':'')+'" data-go="#/f/'+id+'">'+esc(r.folio.title||'(sin t\\u00edtulo)')+'</button>';
+    }).join('') + '</div>';
+  } else {
+    html += '<div class="fav-empty">Toc\\u00e1 la estrella \\u2605 arriba de un folio para guardarlo ac\\u00e1.</div>';
+  }
+  favPanel.innerHTML = html;
+}
+function updateStar(){
+  var cur = currentFolioId(); if(!cur || !track) return;
+  var pages = track.querySelectorAll('.page');
+  var page = pages.length>1 ? pages[1] : pages[0];
+  var wrap = page ? page.querySelector('.wrap') : null; if(!wrap) return;
+  var ex = wrap.querySelector('.favstar');
+  if(isFav(cur)){
+    if(!ex){ var b=document.createElement('button'); b.className='favstar'; b.setAttribute('data-favtoggle', cur); b.setAttribute('aria-label','Quitar de favoritos'); b.title='Quitar de favoritos'; b.textContent='\\u2605'; wrap.appendChild(b); }
+  } else if(ex){ ex.remove(); }
+}
+function updateFavBtn(){
+  var b = document.getElementById('favBtn'); if(!b) return;
+  var cur = currentFolioId();
+  if(!cur){ b.hidden=true; return; }
+  b.hidden=false;
+  b.textContent = isFav(cur) ? '\\u2605 Quitar de favoritos' : '\\u2606 Marcar como favorito';
+  b.classList.toggle('on', isFav(cur));
+}
+function updateFavUI(){ updateStar(); updateFavBtn(); renderFav(); }
+function openFav(){ if(histWrap) histWrap.classList.remove('open'); if(favWrap) favWrap.classList.add('open'); if(histBackdrop) histBackdrop.classList.add('open'); renderFav(); }
+function closeFav(){ if(favWrap) favWrap.classList.remove('open'); if(histBackdrop && !(histWrap && histWrap.classList.contains('open'))) histBackdrop.classList.remove('open'); }
 function openPanel(view){
+  if(favWrap) favWrap.classList.remove('open');
   panelView = view;
   if(view==='index'){ var cur=currentFolioId(); if(cur){ var r=findFolio(cur); if(r) treeOpen[r.section.id]=true; } }
   if(histWrap){ histWrap.classList.remove('view-index','view-session'); histWrap.classList.add('view-'+view); }
@@ -139,7 +186,8 @@ function sectionInner(s){
     + '<div class="grid">' + s.folios.map(function(f){ return scard('#/f/'+f.id, f.title||'(sin t\\u00edtulo)'); }).join('') + '</div>';
 }
 function folioInner(f, s){
-  return '<h1 class="band band-'+s.id+'">'+esc(f.title||'')+'</h1>'
+  var star = isFav(f.id) ? '<button class="favstar" data-favtoggle="'+f.id+'" aria-label="Quitar de favoritos" title="Quitar de favoritos">\\u2605</button>' : '';
+  return star + '<h1 class="band band-'+s.id+'">'+esc(f.title||'')+'</h1>'
     + '<div class="body">'+(f.body||'')+'</div>';
 }
 function pageFolio(item){ return '<div class="page">'+(item?'<div class="wrap">'+folioInner(item.f,item.s)+'</div>':'')+'</div>'; }
@@ -190,6 +238,7 @@ function renderFolio(id){
 function render(){
   pushHist(location.hash || '#/');
   renderPanel();
+  renderFav(); updateFavBtn();
   var parts = (location.hash||'').replace(/^#/,'').split('/').filter(Boolean);
   if(parts[0]==='f' && parts[1]) return renderFolio(parts[1]);
   if(parts[0]==='s' && parts[1]) return renderSection(parts[1]);
@@ -197,7 +246,8 @@ function render(){
 }
 
 /* ---- click navigation ---- */
-if(histBackdrop) histBackdrop.addEventListener('click', closePanel);
+if(histBackdrop) histBackdrop.addEventListener('click', function(){ closePanel(); closeFav(); });
+if(favTog) favTog.addEventListener('click', function(e){ e.stopPropagation(); if(favWrap && favWrap.classList.contains('open')) closeFav(); else openFav(); });
 function togHandler(view){ return function(e){
   e.stopPropagation();
   if(histWrap && histWrap.classList.contains('open') && panelView===view) closePanel();
@@ -211,17 +261,19 @@ if(histPanel) histPanel.addEventListener('click', function(e){
   if(e.target.closest('.hist-clear')){ e.stopPropagation(); clearHist(); }
 });
 document.addEventListener('click', function(e){
+  var fv = e.target.closest('[data-favtoggle]');
+  if(fv){ e.preventDefault(); e.stopPropagation(); toggleFav(fv.getAttribute('data-favtoggle')); return; }
   var g = e.target.closest('[data-go]');
-  if(g){ location.hash = g.getAttribute('data-go'); if(isTouch()) closePanel(); return; }
+  if(g){ location.hash = g.getAttribute('data-go'); if(isTouch()){ closePanel(); closeFav(); } return; }
   var a = e.target.closest('a.internal-link, [data-kind][data-id]');
   if(a){
     e.preventDefault();
     var k = a.getAttribute('data-kind'), id = a.getAttribute('data-id');
-    if(id){ location.hash = (k==='section'?'#/s/':'#/f/') + id; if(isTouch()) closePanel(); }
+    if(id){ location.hash = (k==='section'?'#/s/':'#/f/') + id; if(isTouch()){ closePanel(); closeFav(); } }
   }
 });
 document.addEventListener('keydown', function(e){
-  if(e.key==='Escape') closePanel();
+  if(e.key==='Escape'){ closePanel(); closeFav(); }
   if(!currentFolioId()) return;
   if(e.key==='ArrowLeft') goRel(-1);
   if(e.key==='ArrowRight') goRel(1);
@@ -229,7 +281,7 @@ document.addEventListener('keydown', function(e){
 
 /* ---- finger-following swipe carousel + tap "kindle" a la izquierda para el historial ---- */
 var sx=0, sy=0, W=0, axis=null, dragging=false, swipable=false, hasPrev=false, hasNext=false, gi0=0, pendingHash=null;
-var startLeft=false, startTop=false, moved=false;
+var startLeft=false, startRight=false, startTop=false, moved=false;
 function drawerMode(){ return window.matchMedia('(max-width: 899px)').matches; }
 viewport.addEventListener('touchstart', function(e){
   if(e.touches.length!==1){ swipable=false; return; }
@@ -238,6 +290,7 @@ viewport.addEventListener('touchstart', function(e){
   sx=e.touches[0].clientX; sy=e.touches[0].clientY;
   var vr=viewport.getBoundingClientRect();
   startLeft=(sx-vr.left) < Math.max(56, vr.width*0.18);
+  startRight=(sx-vr.left) > vr.width - Math.max(56, vr.width*0.18);
   startTop=(sy-vr.top) < vr.height/2;
   if(swipable){ gi0=flatIndex(id); hasPrev=gi0>0; hasNext=gi0<FLAT.length-1; W=viewport.clientWidth; track.classList.remove('anim'); }
 }, {passive:true});
@@ -256,6 +309,11 @@ viewport.addEventListener('touchend', function(e){
   if(!moved && startLeft && !(histWrap && histWrap.classList.contains('open'))
      && !e.target.closest('a, button')){
     openPanel(startTop ? 'index' : 'session'); dragging=false; return;
+  }
+  // tap en la banda derecha → Favoritos
+  if(!moved && startRight && !(favWrap && favWrap.classList.contains('open'))
+     && !e.target.closest('a, button')){
+    openFav(); dragging=false; return;
   }
   if(!swipable || !dragging){ dragging=false; return; }
   dragging=false;
@@ -307,12 +365,13 @@ try{ var _t=localStorage.getItem('reader.theme'); if(_t==='light'||_t==='dark') 
 try{ var _f=parseFloat(localStorage.getItem('reader.fz')); if(_f) applyFZ(_f); }catch(e){}
 try{ var _m=localStorage.getItem('reader.mode'); root.setAttribute('data-mode', _m==='limpia'?'limpia':'guiada'); }catch(e){ root.setAttribute('data-mode','guiada'); }
 syncSettings();
-if(brandLogo) brandLogo.addEventListener('click', function(e){ e.stopPropagation(); if(settings){ settings.hidden=!settings.hidden; syncSettings(); } });
+if(brandLogo) brandLogo.addEventListener('click', function(e){ e.stopPropagation(); if(settings){ settings.hidden=!settings.hidden; syncSettings(); updateFavBtn(); } });
 if(settings) settings.addEventListener('click', function(e){
   e.stopPropagation();
   var t=e.target.closest('[data-theme]'); if(t){ applyTheme(t.getAttribute('data-theme')); return; }
   var f=e.target.closest('[data-fs]'); if(f){ applyFZ(FZ + (f.getAttribute('data-fs')==='+'?0.1:-0.1)); return; }
   var md=e.target.closest('[data-mode]'); if(md){ applyMode(md.getAttribute('data-mode')); return; }
+  var fb=e.target.closest('#favBtn'); if(fb){ toggleFav(currentFolioId()); return; }
 });
 /* listeners directos, a prueba de balas, para A- / A+ */
 var fzMinus=document.getElementById('fzMinus'), fzPlus=document.getElementById('fzPlus');
@@ -454,8 +513,10 @@ function css(width: string): string {
     border-radius: 8px; padding: 8px 10px; font-family: inherit; font-size: .95rem; flex: 1;
   }
   .settings button.active { border-color: var(--selected); box-shadow: inset 0 0 0 1px var(--selected); font-weight: 700; }
-  .settings .set-install, .settings .set-refresh { flex: 0 0 auto; margin-top: 2px; }
+  .settings .set-install, .settings .set-refresh, .settings .set-fav { flex: 0 0 auto; margin-top: 2px; }
+  .settings .set-fav.on { border-color: #F5B301; color: #C98A00; font-weight: 700; }
   .set-install[hidden] { display: none; }
+  .set-fav[hidden] { display: none; }
   /* Aviso de versión nueva */
   .updbar {
     position: fixed; left: 50%; transform: translateX(-50%);
@@ -487,6 +548,24 @@ function css(width: string): string {
     overflow: hidden; display: flex; flex-direction: column; padding: 8px;
   }
   .histwrap.open .history { box-shadow: 0 0 40px rgba(0,0,0,.28); }
+  /* Panel de Favoritos (a la derecha, espejo del historial/índice) */
+  .favwrap {
+    position: absolute; z-index: 20; top: 0; bottom: 0; right: 0;
+    display: flex; align-items: stretch;
+    transform: translateX(var(--histw));
+    transition: transform .24s ease;
+  }
+  .favwrap.open { transform: translateX(0); }
+  .favpanel {
+    width: var(--histw);
+    background: var(--bar); border-left: 1px solid var(--bar-bd);
+    overflow: hidden; display: flex; flex-direction: column; padding: 8px;
+  }
+  .favwrap.open .favpanel { box-shadow: 0 0 40px rgba(0,0,0,.28); }
+  .fav-toggles { box-shadow: -2px 0 8px rgba(0,0,0,.12); }
+  .tog.fav-tog { border: 1px solid var(--bar-bd); border-right: none; border-radius: 10px 0 0 10px; }
+  .favwrap.open .fav-tog svg { transform: rotate(180deg); }
+  .fav-empty { padding: 14px 12px; opacity: .6; font-size: .95rem; line-height: 1.45; }
   /* Dos flechitas apiladas: arriba = Índice, abajo = Sesión */
   .toggles { align-self: stretch; flex-shrink: 0; width: 24px; display: none; flex-direction: column; box-shadow: 2px 0 8px rgba(0,0,0,.12); }
   /* Pestañas: visibles en desktop y en modo Guiada; escondidas en Limpia (táctil) */
@@ -514,7 +593,7 @@ function css(width: string): string {
     :root[data-mode="guiada"] .tog svg { display: none; }
     :root[data-mode="guiada"] .tog-label { display: block; writing-mode: vertical-rl; letter-spacing: .5px; opacity: .85; padding: 6px 0; }
     :root[data-mode="guiada"] .toggles { width: 26px; }
-    :root[data-mode="guiada"] .viewport { margin-left: 26px; }
+    :root[data-mode="guiada"] .viewport { margin-left: 26px; margin-right: 26px; }
   }
   /* El selector de Vista solo tiene sentido en táctil */
   @media (hover: hover) and (pointer: fine) { .set-vista { display: none; } }
@@ -563,10 +642,18 @@ function css(width: string): string {
 
   /* Reading sheet (card) */
   .wrap {
+    position: relative;
     max-width: ${width}; margin: 6px auto; min-height: calc(100% - 12px); padding: 30px 34px 40px;
     background: var(--sheet); border: 1px solid var(--sheet-bd); border-radius: 8px;
     box-shadow: var(--sheet-sh);
   }
+  .favstar {
+    position: absolute; top: 6px; right: 8px; z-index: 3;
+    border: none; background: transparent; cursor: pointer;
+    color: #F5B301; font-size: 20px; line-height: 1; padding: 4px;
+    filter: drop-shadow(0 1px 1px rgba(0,0,0,.28));
+  }
+  .favstar:hover { transform: scale(1.12); }
 
   .menuhead { text-align: center; margin: 4px 0 24px; }
   .menu-logo { height: 84px; width: 84px; object-fit: contain; filter: invert(var(--logo-invert)); }
@@ -708,6 +795,7 @@ export function renderGuideHtml(project: Project): string {
           '<button data-mode="guiada">Guiada</button>' +
           '<button data-mode="limpia">Limpia</button>' +
         '</div>' +
+        '<button class="set-fav" id="favBtn" hidden></button>' +
         '<button class="set-refresh" id="refreshBtn">Actualizar</button>' +
         '<button class="set-install" id="installBtn" hidden>Instalar en el dispositivo</button>' +
       '</div>' +
@@ -721,6 +809,12 @@ export function renderGuideHtml(project: Project): string {
         '</div>' +
       '</div>' +
       '<div class="viewport"><div class="track" id="track"></div></div>' +
+      '<div class="favwrap" id="favWrap">' +
+        '<div class="toggles fav-toggles">' +
+          '<button class="tog fav-tog" id="favTog" aria-label="Favoritos"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg><span class="tog-label">Favoritos</span></button>' +
+        '</div>' +
+        '<aside class="favpanel" id="favpanel"></aside>' +
+      '</div>' +
       '<div class="hist-backdrop" id="histBackdrop"></div>' +
     '</div>\n' +
     '<div class="pagenav" id="pagenav"></div>\n' +
