@@ -212,7 +212,7 @@ export function RichTextField({ value, onChange, minHeight = '100%', className, 
       title={title}
       onMouseDown={(e) => e.preventDefault()}
       onClick={onClick}
-      className={cn(active && 'bg-accent text-accent-foreground')}
+      className={cn(active && 'border border-selected bg-accent text-accent-foreground')}
     >
       {children}
     </Button>

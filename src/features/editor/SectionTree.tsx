@@ -97,7 +97,7 @@ function SortableSection({ section }: { section: Section }) {
       <div
         className={cn(
           'group flex items-center gap-1 rounded-lg px-2 py-2 transition-colors',
-          selected ? 'bg-primary/12' : 'hover:bg-accent/60'
+          selected ? 'bg-selected/10 ring-1 ring-inset ring-selected' : 'hover:bg-accent/60'
         )}
       >
         <button
@@ -178,7 +178,7 @@ function SortableFolio({ folio, sectionId }: { folio: Folio; sectionId: string }
       <div
         className={cn(
           'group flex items-center gap-1 rounded-lg px-2 py-0 transition-colors',
-          selected ? 'bg-primary/12 font-medium text-primary' : 'hover:bg-accent/60'
+          selected ? 'bg-selected/10 font-medium text-foreground ring-1 ring-inset ring-selected' : 'hover:bg-accent/60'
         )}
       >
         <button

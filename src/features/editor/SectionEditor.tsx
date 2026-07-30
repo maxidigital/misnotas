@@ -26,9 +26,9 @@ export function SectionEditor({ section }: { section: Section }) {
               type="button"
               onClick={() => update(section.id, { type: t.value })}
               className={cn(
-                'rounded-lg border px-3.5 py-2 text-sm transition-colors',
+                'rounded-lg border-2 px-3.5 py-2 text-sm transition-colors',
                 section.type === t.value
-                  ? 'border-primary/50 bg-primary/10 text-primary'
+                  ? 'border-selected bg-selected/10 text-foreground'
                   : 'border-border hover:bg-accent'
               )}
             >
@@ -51,7 +51,7 @@ export function SectionEditor({ section }: { section: Section }) {
                 onClick={() => update(section.id, { titleBarColor: c.value })}
                 className={cn(
                   'h-8 w-8 rounded-full border border-black/10 transition-transform hover:scale-110',
-                  selected && 'ring-2 ring-ring ring-offset-2 ring-offset-background'
+                  selected && 'ring-2 ring-selected ring-offset-2 ring-offset-background'
                 )}
                 style={{ background: c.value }}
               />

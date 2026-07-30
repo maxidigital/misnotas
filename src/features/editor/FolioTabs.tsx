@@ -35,7 +35,7 @@ export function FolioTabs() {
             className={cn(
               'group flex max-w-[15rem] shrink-0 cursor-pointer items-center gap-1.5 border-r border-border/40 border-t-2 px-3.5 py-2 text-sm transition-colors',
               active
-                ? 'border-t-primary bg-background font-medium text-foreground'
+                ? 'border-t-selected bg-background font-medium text-foreground'
                 : 'border-t-transparent text-muted-foreground hover:bg-background/60'
             )}
           >
