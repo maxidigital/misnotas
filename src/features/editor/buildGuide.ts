@@ -401,19 +401,30 @@ try {
   document.head.appendChild(_ml);
 } catch(e){}
 if('serviceWorker' in navigator){ navigator.serviceWorker.register('/p/sw.js').catch(function(){}); }
-var refreshBtn=document.getElementById('refreshBtn');
-if(refreshBtn) refreshBtn.addEventListener('click', function(e){
-  e.stopPropagation();
+/* Actualizar a prueba de balas: desregistra el SW, borra CacheStorage y recarga
+   con un parámetro anti-caché (esquiva el cacheo agresivo de iOS standalone). */
+function hardReload(){
+  var bust = location.pathname + '?v=' + Date.now() + (location.hash || '');
+  var done = false;
+  function finish(){ if(done) return; done = true; location.replace(bust); }
   try{
-    if('serviceWorker' in navigator && navigator.serviceWorker.controller){ navigator.serviceWorker.controller.postMessage('clearCache'); }
-    if(window.caches && caches.keys){
-      caches.keys().then(function(ks){ return Promise.all(ks.map(function(k){ return caches.delete(k); })); })
-        .then(function(){ location.reload(); });
-      return;
+    var tasks = [];
+    if('serviceWorker' in navigator && navigator.serviceWorker.getRegistrations){
+      tasks.push(navigator.serviceWorker.getRegistrations().then(function(rs){
+        return Promise.all(rs.map(function(r){ return r.unregister(); }));
+      }).catch(function(){}));
     }
+    if(window.caches && caches.keys){
+      tasks.push(caches.keys().then(function(ks){
+        return Promise.all(ks.map(function(k){ return caches.delete(k); }));
+      }).catch(function(){}));
+    }
+    if(tasks.length){ Promise.all(tasks).then(finish, finish); setTimeout(finish, 1500); return; }
   }catch(_){}
-  location.reload();
-});
+  finish();
+}
+var refreshBtn=document.getElementById('refreshBtn');
+if(refreshBtn) refreshBtn.addEventListener('click', function(e){ e.stopPropagation(); hardReload(); });
 var deferredPrompt=null, installBtn=document.getElementById('installBtn');
 window.addEventListener('beforeinstallprompt', function(e){ e.preventDefault(); deferredPrompt=e; if(installBtn) installBtn.hidden=false; });
 if(installBtn) installBtn.addEventListener('click', function(e){
@@ -424,7 +435,7 @@ window.addEventListener('appinstalled', function(){ if(installBtn) installBtn.hi
 
 /* ---- aviso de versión nueva (si se publicó algo mientras la guía estaba abierta) ---- */
 var updbar=document.getElementById('updbar'), updbtn=document.getElementById('updbtn');
-if(updbtn) updbtn.addEventListener('click', function(){ location.reload(); });
+if(updbtn) updbtn.addEventListener('click', function(){ hardReload(); });
 function checkUpdate(){
   try{
     fetch(location.pathname, { cache:'no-store' }).then(function(r){ return r.ok ? r.text() : ''; }).then(function(t){
