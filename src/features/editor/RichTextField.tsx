@@ -11,6 +11,7 @@ import {
   AlignRight,
   Bold,
   ChevronDown,
+  Code,
   Italic,
   Link2,
   List,
@@ -63,6 +64,11 @@ const TextStyleExtras = Extension.create({
             parseHTML: (el) => (el as HTMLElement).style.color || null,
             renderHTML: (attrs) => (attrs.color ? { style: `color: ${attrs.color}` } : {}),
           },
+          fontFamily: {
+            default: null,
+            parseHTML: (el) => (el as HTMLElement).style.fontFamily || null,
+            renderHTML: (attrs) => (attrs.fontFamily ? { style: `font-family: ${attrs.fontFamily}` } : {}),
+          },
         },
       },
     ];
@@ -76,6 +82,8 @@ const SIZES: { label: string; value: string | null }[] = [
   { label: 'Grande', value: '1.25em' },
   { label: 'Muy grande', value: '1.5em' },
 ];
+
+const MONO = "ui-monospace, SFMono-Regular, 'Roboto Mono', Menlo, Consolas, monospace";
 
 interface Props {
   value: string;
@@ -136,6 +144,7 @@ export function RichTextField({ value, onChange, minHeight = '100%', className, 
   const currentSize = editor.getAttributes('textStyle').fontSize ?? null;
   const currentSizeLabel = SIZES.find((s) => s.value === currentSize)?.label ?? 'Normal';
   const currentColor = (editor.getAttributes('textStyle').color as string | undefined) ?? null;
+  const isMono = !!editor.getAttributes('textStyle').fontFamily;
   const hasSelection = !editor.state.selection.empty;
 
   const selText = () => {
@@ -226,6 +235,13 @@ export function RichTextField({ value, onChange, minHeight = '100%', className, 
         </ToolBtn>
         <ToolBtn active={editor.isActive('italic')} title="Itálica" onClick={() => editor.chain().focus().toggleItalic().run()}>
           <Italic className="h-3.5 w-3.5" />
+        </ToolBtn>
+        <ToolBtn
+          active={isMono}
+          title="Monoespaciado (destacar instrucción)"
+          onClick={() => editor.chain().focus().setMark('textStyle', { fontFamily: isMono ? null : MONO }).run()}
+        >
+          <Code className="h-3.5 w-3.5" />
         </ToolBtn>
 
         <DropdownMenu>
