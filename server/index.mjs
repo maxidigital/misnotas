@@ -252,6 +252,30 @@ app.delete('/api/folders/:id', requireAuth, async (req, res) => {
   res.json({ ok: true });
 });
 
+/* ---------- service worker de las guías (PWA / offline), scope /p/ ---------- */
+const SW_JS = `
+const CACHE = 'guia-v1';
+self.addEventListener('install', function(){ self.skipWaiting(); });
+self.addEventListener('activate', function(e){ e.waitUntil(self.clients.claim()); });
+self.addEventListener('fetch', function(e){
+  var req = e.request;
+  if(req.method !== 'GET') return;
+  var url = new URL(req.url);
+  if(url.origin !== self.location.origin) return;
+  if(url.pathname.indexOf('/p/') !== 0 || url.pathname === '/p/sw.js') return;
+  e.respondWith(
+    fetch(req).then(function(res){
+      try { var copy = res.clone(); caches.open(CACHE).then(function(c){ c.put(req, copy); }); } catch(_){}
+      return res;
+    }).catch(function(){ return caches.match(req); })
+  );
+});
+`;
+app.get('/p/sw.js', (_req, res) => {
+  res.set('Service-Worker-Allowed', '/p/');
+  res.type('application/javascript').send(SW_JS);
+});
+
 /* ---------- publicación pública (sin auth): /p/<slug> ---------- */
 app.get('/p/:slug', async (req, res) => {
   if (!validId(req.params.slug)) return res.status(400).send('bad slug');

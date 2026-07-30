@@ -322,6 +322,35 @@ document.addEventListener('click', function(e){
   if(settings && !settings.hidden && e.target!==brandLogo && !settings.contains(e.target)) settings.hidden=true;
 });
 
+/* ---- PWA: manifest dinámico (conoce la URL final), service worker e instalar ---- */
+try {
+  var _mani = {
+    name: GUIDE.name || 'Gu\\u00eda',
+    short_name: (GUIDE.name || 'Gu\\u00eda').slice(0, 20),
+    start_url: location.pathname,
+    scope: location.pathname,
+    display: 'standalone',
+    background_color: '#ECE3D2',
+    theme_color: '#E3D8C4',
+    icons: [
+      { src: LOGO, sizes: '192x192', type: 'image/png', purpose: 'any' },
+      { src: LOGO, sizes: '512x512', type: 'image/png', purpose: 'maskable' }
+    ]
+  };
+  var _ml = document.createElement('link');
+  _ml.rel = 'manifest';
+  _ml.href = URL.createObjectURL(new Blob([JSON.stringify(_mani)], { type: 'application/manifest+json' }));
+  document.head.appendChild(_ml);
+} catch(e){}
+if('serviceWorker' in navigator){ navigator.serviceWorker.register('/p/sw.js').catch(function(){}); }
+var deferredPrompt=null, installBtn=document.getElementById('installBtn');
+window.addEventListener('beforeinstallprompt', function(e){ e.preventDefault(); deferredPrompt=e; if(installBtn) installBtn.hidden=false; });
+if(installBtn) installBtn.addEventListener('click', function(e){
+  e.stopPropagation();
+  if(deferredPrompt){ deferredPrompt.prompt(); deferredPrompt=null; installBtn.hidden=true; }
+});
+window.addEventListener('appinstalled', function(){ if(installBtn) installBtn.hidden=true; });
+
 window.addEventListener('hashchange', render);
 render();
 `;
@@ -408,6 +437,8 @@ function css(width: string): string {
     border-radius: 8px; padding: 8px 10px; font-family: inherit; font-size: .95rem; flex: 1;
   }
   .settings button.active { border-color: var(--selected); box-shadow: inset 0 0 0 1px var(--selected); font-weight: 700; }
+  .settings .set-install { flex: 0 0 auto; margin-top: 2px; }
+  .set-install[hidden] { display: none; }
   .set-row.set-fs button { flex: 0 0 auto; width: 46px; font-size: 1.05rem; }
 
   /* Stage: panel de historial + viewport */
@@ -608,11 +639,18 @@ export function renderGuideHtml(project: Project): string {
   // Escape "<" so nothing (e.g. "</script>" inside body HTML) can break out of the script.
   const json = JSON.stringify(data).replace(/</g, '\\u003c');
 
+  const nameEsc = (project.name || 'Guía').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   const html =
     '<!doctype html>\n<html lang="es">\n<head>\n<meta charset="utf-8">\n' +
     '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n' +
     '<link rel="icon" href="' + LOGO + '">\n' +
-    '<title>' + (project.name || 'Guía') + '</title>\n<style>' + css(width) + '\n' + bandCss + '</style>\n</head>\n<body>\n' +
+    '<meta name="theme-color" content="#E3D8C4">\n' +
+    '<meta name="mobile-web-app-capable" content="yes">\n' +
+    '<meta name="apple-mobile-web-app-capable" content="yes">\n' +
+    '<meta name="apple-mobile-web-app-status-bar-style" content="default">\n' +
+    '<meta name="apple-mobile-web-app-title" content="' + nameEsc + '">\n' +
+    '<link rel="apple-touch-icon" href="' + LOGO + '">\n' +
+    '<title>' + nameEsc + '</title>\n<style>' + css(width) + '\n' + bandCss + '</style>\n</head>\n<body>\n' +
     '<div class="topbar">' +
       '<img class="brand-logo" id="brandLogo" src="' + LOGO + '" alt="" title="Ajustes">' +
       '<nav class="crumbs" id="crumbs"></nav>' +
@@ -633,6 +671,7 @@ export function renderGuideHtml(project: Project): string {
           '<button data-mode="guiada">Guiada</button>' +
           '<button data-mode="limpia">Limpia</button>' +
         '</div>' +
+        '<button class="set-install" id="installBtn" hidden>Instalar en el dispositivo</button>' +
       '</div>' +
     '</div>\n' +
     '<div class="stage">' +
