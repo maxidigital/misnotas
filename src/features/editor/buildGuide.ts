@@ -158,7 +158,7 @@ function setFolioTriple(gi){
 }
 
 /* ---- render ---- */
-function renderMenu(){ crumbs.innerHTML = ''; setSingle(menuInner()); pagenav.className='pagenav'; pagenav.innerHTML=''; }
+function renderMenu(){ crumbs.innerHTML = '<span class="brand-name">Instituto Blasco</span>'; setSingle(menuInner()); pagenav.className='pagenav'; pagenav.innerHTML=''; }
 function renderSection(id){
   var s = sectionById(id); if(!s) return renderMenu();
   crumbs.innerHTML = crumbHome(false);
@@ -427,14 +427,15 @@ function css(width: string): string {
   .topbar .brand-logo { height: 26px; width: 26px; object-fit: contain; cursor: pointer; flex-shrink: 0; filter: invert(var(--logo-invert)); }
   .crumbs { flex: 1; min-width: 0; display: flex; align-items: center; gap: 4px; overflow: hidden; white-space: nowrap; }
   .crumb {
-    cursor: pointer; border: none; background: transparent; color: inherit;
+    cursor: pointer; border: none; background: transparent; color: var(--selected);
     font-size: 1rem; font-family: inherit; padding: 4px 8px; border-radius: 8px;
     max-width: 42vw; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
   .crumb:not(.cur):hover { background: var(--hover); }
   .crumb.cur { font-weight: 700; cursor: default; flex-shrink: 1; }
-  .crumb:not(.cur) { opacity: .82; flex-shrink: 0; }
+  .crumb:not(.cur) { flex-shrink: 0; }
   .csep { opacity: .4; font-size: 1rem; flex-shrink: 0; }
+  .brand-name { font-weight: 600; font-size: 1rem; }
 
   /* Menú de ajustes (tema + tamaño de letra) */
   .settings {
