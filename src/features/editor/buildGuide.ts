@@ -124,7 +124,7 @@ function renderFav(){
       return '<button class="hist-item'+(id===cur?' cur':'')+'" data-go="#/f/'+id+'">'+esc(r.folio.title||'(sin t\\u00edtulo)')+'</button>';
     }).join('') + '</div>';
   } else {
-    html += '<div class="fav-empty">Toc\\u00e1 la estrella \\u2605 arriba de un folio para guardarlo ac\\u00e1.</div>';
+    html += '<div class="fav-empty">Para agregar un folio a favoritos, entr\\u00e1 al men\\u00fa principal \\u2699 y toc\\u00e1 \\u201cMarcar como favorito\\u201d.</div>';
   }
   favPanel.innerHTML = html;
 }
