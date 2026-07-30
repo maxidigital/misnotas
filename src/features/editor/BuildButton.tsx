@@ -22,7 +22,7 @@ export function BuildButton() {
 
   return (
     <Button variant="outline" size="sm" onClick={onBuild} title="Ver la guía navegable (pestaña nueva, no publica)">
-      <Eye className="h-4 w-4" /> Vista previa
+      <Eye className="h-4 w-4" /> <span className="hidden sm:inline">Vista previa</span>
     </Button>
   );
 }

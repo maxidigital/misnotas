@@ -38,7 +38,7 @@ export function PublishButton() {
   return (
     <>
       <Button size="sm" onClick={() => setOpen(true)} title="Actualizar las publicaciones de esta guía">
-        <RefreshCw className="h-4 w-4" /> Actualizar
+        <RefreshCw className="h-4 w-4" /> <span className="hidden sm:inline">Actualizar</span>
       </Button>
 
       <Dialog open={open} onOpenChange={(o) => !busy && setOpen(o)}>

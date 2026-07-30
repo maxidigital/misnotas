@@ -8,19 +8,19 @@ export function SaveIndicator() {
   if (status === 'idle') return null;
   if (status === 'saving')
     return (
-      <span className="flex items-center gap-1 text-xs text-muted-foreground">
-        <Loader2 className="h-3.5 w-3.5 animate-spin" /> Guardando…
+      <span className="flex items-center gap-1 text-xs text-muted-foreground" title="Guardando…">
+        <Loader2 className="h-3.5 w-3.5 animate-spin" /> <span className="hidden sm:inline">Guardando…</span>
       </span>
     );
   if (status === 'error')
     return (
-      <span className="flex items-center gap-1 text-xs text-destructive">
-        <AlertCircle className="h-3.5 w-3.5" /> Error al guardar
+      <span className="flex items-center gap-1 text-xs text-destructive" title="Error al guardar">
+        <AlertCircle className="h-3.5 w-3.5" /> <span className="hidden sm:inline">Error al guardar</span>
       </span>
     );
   return (
-    <span className="flex items-center gap-1 text-xs text-muted-foreground">
-      <Check className="h-3.5 w-3.5 text-success" /> Guardado
+    <span className="flex items-center gap-1 text-xs text-muted-foreground" title="Guardado">
+      <Check className="h-3.5 w-3.5 text-success" /> <span className="hidden sm:inline">Guardado</span>
     </span>
   );
 }

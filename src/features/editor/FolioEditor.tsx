@@ -21,7 +21,7 @@ export function FolioEditor({ folio }: { folio: Folio }) {
   const titleBarColor = sections.find((s) => s.folios.some((f) => f.id === folio.id))?.titleBarColor;
 
   return (
-    <div className="mx-auto flex h-full max-w-3xl flex-col gap-5 p-6 md:p-8">
+    <div className="mx-auto flex h-full max-w-3xl flex-col gap-5 p-4 sm:p-6 md:p-8">
       <div className="shrink-0 space-y-2">
         <div className="flex items-center justify-between">
           <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Título del folio</label>
@@ -59,12 +59,12 @@ export function FolioEditor({ folio }: { folio: Folio }) {
           {folio.links.map((link, i) => {
             const { label, broken } = resolveTarget(sections, link.target);
             return (
-              <div key={link.id} className="flex items-center gap-2">
+              <div key={link.id} className="flex flex-wrap items-center gap-2">
                 <Input
                   value={link.label}
                   placeholder="Texto del botón (ej. Ver Muertes)"
                   onChange={(e) => updateLink(folio.id, link.id, { label: e.target.value })}
-                  className="flex-1"
+                  className="min-w-[7rem] flex-1"
                 />
                 <LinkTargetMenu
                   onPick={(target) => updateLink(folio.id, link.id, { target })}

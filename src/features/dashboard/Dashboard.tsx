@@ -514,8 +514,8 @@ export function Dashboard() {
   return (
     <DndContext sensors={sensors} onDragEnd={onDragEnd}>
       <div className="flex h-full">
-        {/* Sidebar de navegación */}
-        <aside className="flex w-56 shrink-0 flex-col bg-sidebar text-sidebar-foreground">
+        {/* Sidebar de navegación (desktop) */}
+        <aside className="hidden w-56 shrink-0 flex-col bg-sidebar text-sidebar-foreground md:flex">
           <div className="flex items-center gap-2.5 px-5 py-5">
             <img src="/blasco.png" alt="" className="h-7 w-7 object-contain [filter:invert(1)]" />
             <span className="text-lg font-semibold tracking-tight">Instituto Blasco</span>
@@ -552,11 +552,36 @@ export function Dashboard() {
 
         {/* Main */}
         <div className="flex min-w-0 flex-1 flex-col">
+          {/* Barra de navegación (mobile) */}
+          <div className="flex items-center gap-2 border-b border-border px-4 py-2.5 md:hidden">
+            <img src="/blasco.png" alt="" className="h-6 w-6 object-contain dark:invert" />
+            <div className="ml-auto flex rounded-lg bg-muted p-0.5">
+              {([
+                { key: 'guides', label: 'Guías', icon: Library },
+                { key: 'publications', label: 'Publicaciones', icon: Globe },
+              ] as const).map((it) => (
+                <button
+                  key={it.key}
+                  onClick={() => setView(it.key)}
+                  className={cn(
+                    'flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors',
+                    view === it.key ? 'bg-card shadow-sm' : 'text-foreground/60'
+                  )}
+                >
+                  <it.icon className="h-4 w-4" /> {it.label}
+                </button>
+              ))}
+            </div>
+            <Button variant="ghost" size="icon-sm" title="Salir" onClick={logout}>
+              <LogOut className="h-4 w-4" />
+            </Button>
+          </div>
+
           {view === 'guides' ? (
             <>
-              <header className="flex items-center gap-2 px-8 py-5">
+              <header className="flex flex-wrap items-center gap-2 px-4 py-4 sm:px-8 sm:py-5">
                 {/* Breadcrumb (también drop targets) */}
-                <nav className="flex flex-1 items-center gap-1 text-sm text-foreground/70">
+                <nav className="flex min-w-0 flex-1 items-center gap-1 text-sm text-foreground/70">
                   <DropZone id="crumb-root" folderId={null} className="px-1">
                     <button className="flex items-center gap-1.5 font-medium hover:text-foreground" onClick={() => setCwd(null)}>
                       <Home className="h-4 w-4" /> Mis guías
@@ -574,19 +599,19 @@ export function Dashboard() {
                   ))}
                 </nav>
                 <input ref={fileRef} type="file" accept="application/json,.json" className="hidden" onChange={onImport} />
-                <Button variant="ghost" size="sm" onClick={() => setNewFolder(true)}>
-                  <FolderPlus className="h-4 w-4" /> Carpeta
+                <Button variant="ghost" size="sm" title="Nueva carpeta" onClick={() => setNewFolder(true)}>
+                  <FolderPlus className="h-4 w-4" /> <span className="hidden sm:inline">Carpeta</span>
                 </Button>
-                <Button variant="ghost" size="sm" onClick={() => fileRef.current?.click()}>
-                  <Upload className="h-4 w-4" /> Importar
+                <Button variant="ghost" size="sm" title="Importar guía" onClick={() => fileRef.current?.click()}>
+                  <Upload className="h-4 w-4" /> <span className="hidden sm:inline">Importar</span>
                 </Button>
-                <Button size="sm" onClick={onNewGuide}>
-                  <FilePlus2 className="h-4 w-4" /> Nueva guía
+                <Button size="sm" title="Nueva guía" onClick={onNewGuide}>
+                  <FilePlus2 className="h-4 w-4" /> <span className="hidden sm:inline">Nueva guía</span>
                 </Button>
                 <ThemeToggle />
               </header>
 
-              <div className="min-h-0 flex-1 overflow-y-auto px-8 pb-10">
+              <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-10 sm:px-8">
                 {!loaded ? (
                   <p className="text-foreground/70">Cargando…</p>
                 ) : subfolders.length === 0 && items.length === 0 ? (
@@ -605,22 +630,23 @@ export function Dashboard() {
             </>
           ) : (
             <>
-              <header className="flex items-center gap-2 px-8 py-5">
+              <header className="flex items-center gap-2 px-4 py-4 sm:px-8 sm:py-5">
                 <h1 className="flex-1 text-lg font-semibold tracking-tight">Publicaciones</h1>
                 <Button
                   size="sm"
+                  title="Nueva publicación"
                   onClick={() => {
                     setPubSlug('');
                     setPubGuideId(guides[0]?.id || '');
                     setNewPub(true);
                   }}
                 >
-                  <Globe className="h-4 w-4" /> Nueva publicación
+                  <Globe className="h-4 w-4" /> <span className="hidden sm:inline">Nueva publicación</span>
                 </Button>
                 <ThemeToggle />
               </header>
 
-              <div className="min-h-0 flex-1 overflow-y-auto px-8 pb-10">
+              <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-10 sm:px-8">
                 {!loaded ? (
                   <p className="text-foreground/70">Cargando…</p>
                 ) : pubs.length === 0 ? (
@@ -628,33 +654,40 @@ export function Dashboard() {
                 ) : (
                   <div className="space-y-2">
                     {pubs.map((p) => (
-                      <div key={p.slug} className="flex items-center gap-3 rounded-xl border border-border/70 bg-card p-4 shadow-card">
-                        <Globe className="h-5 w-5 shrink-0 text-primary" />
-                        <div className="min-w-0 flex-1">
-                          <a
-                            href={publicUrl(p.slug)}
-                            target="_blank"
-                            rel="noopener"
-                            className="block truncate font-medium text-primary hover:underline"
-                          >
-                            /p/{p.slug}
-                          </a>
-                          <div className="truncate text-xs text-muted-foreground">{p.guideName || '(sin guía)'}</div>
-                          <div className="text-xs text-muted-foreground">Creada: {fmtDateTime(p.createdAt)}</div>
-                          <div className="text-xs text-muted-foreground">Actualizada: {fmtDateTime(p.updatedAt)}</div>
+                      <div
+                        key={p.slug}
+                        className="flex flex-col gap-2 rounded-xl border border-border/70 bg-card p-4 shadow-card sm:flex-row sm:items-center sm:gap-3"
+                      >
+                        <div className="flex min-w-0 flex-1 items-start gap-3">
+                          <Globe className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+                          <div className="min-w-0 flex-1">
+                            <a
+                              href={publicUrl(p.slug)}
+                              target="_blank"
+                              rel="noopener"
+                              className="block truncate font-medium text-primary hover:underline"
+                            >
+                              /p/{p.slug}
+                            </a>
+                            <div className="truncate text-xs text-muted-foreground">{p.guideName || '(sin guía)'}</div>
+                            <div className="text-xs text-muted-foreground">Creada: {fmtDateTime(p.createdAt)}</div>
+                            <div className="text-xs text-muted-foreground">Actualizada: {fmtDateTime(p.updatedAt)}</div>
+                          </div>
                         </div>
-                        <Button variant="ghost" size="icon-sm" title="Copiar link" onClick={() => copyPub(p.slug)}>
-                          <Copy className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon-sm" title="Abrir" onClick={() => window.open(publicUrl(p.slug), '_blank', 'noopener')}>
-                          <ExternalLink className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon-sm" title="Actualizar a la versión actual de la guía" onClick={() => setUpdPub(p)}>
-                          <RefreshCw className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon-sm" title="Borrar" onClick={() => setDelPub(p)}>
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                        <div className="flex shrink-0 items-center gap-1 self-end sm:self-auto">
+                          <Button variant="ghost" size="icon-sm" title="Copiar link" onClick={() => copyPub(p.slug)}>
+                            <Copy className="h-4 w-4" />
+                          </Button>
+                          <Button variant="ghost" size="icon-sm" title="Abrir" onClick={() => window.open(publicUrl(p.slug), '_blank', 'noopener')}>
+                            <ExternalLink className="h-4 w-4" />
+                          </Button>
+                          <Button variant="ghost" size="icon-sm" title="Actualizar a la versión actual de la guía" onClick={() => setUpdPub(p)}>
+                            <RefreshCw className="h-4 w-4" />
+                          </Button>
+                          <Button variant="ghost" size="icon-sm" title="Borrar" onClick={() => setDelPub(p)}>
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
                       </div>
                     ))}
                   </div>
