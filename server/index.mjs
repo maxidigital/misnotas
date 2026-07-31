@@ -298,6 +298,11 @@ app.get('/p/:slug', async (req, res) => {
   res.type('html').sendFile(file, { cacheControl: false, etag: false, lastModified: false });
 });
 
+/* ---------- guía de uso para alumnos ---------- */
+app.get('/ayuda', (_req, res) => {
+  res.type('html').sendFile(path.join(__dirname, 'ayuda.html'));
+});
+
 /* ---------- SPA estática ---------- */
 app.use(express.static(DIST));
 app.use((req, res) => {

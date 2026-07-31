@@ -179,6 +179,7 @@ function menuInner(){
   var html = '<div class="menuhead"><img class="menu-logo" src="'+LOGO+'" alt=""><div class="menu-title">'+esc(GUIDE.name||'Gu\\u00eda')+'</div></div>';
   html += '<div class="grid">' + main.map(function(s){ return scard('#/s/'+s.id, s.name, s.folios.length+' folios', 'band-'+s.id); }).join('') + '</div>';
   if(apx.length) html += '<div class="group">Ap\\u00e9ndices</div><div class="grid">' + apx.map(function(s){ return scard('#/s/'+s.id, s.name, s.folios.length+' folios', 'band-'+s.id); }).join('') + '</div>';
+  html += '<div class="home-help"><a class="help-link" href="/ayuda" target="_blank" rel="noopener">Ayuda</a></div>';
   return html;
 }
 function sectionInner(s){
@@ -707,6 +708,8 @@ function css(width: string): string {
   .menuhead { text-align: center; margin: 4px 0 24px; }
   .menu-logo { height: 84px; width: 84px; object-fit: contain; filter: invert(var(--logo-invert)); }
   .menu-title { font-size: calc(1.5rem * var(--fz, 1)); font-weight: 700; margin-top: 6px; }
+  .home-help { text-align: center; margin-top: 26px; }
+  .help-link { color: var(--link); font-size: .95rem; text-decoration: underline; text-underline-offset: 3px; }
 
   /* Title band */
   h1.band {
