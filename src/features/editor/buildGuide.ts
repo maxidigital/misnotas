@@ -11,7 +11,7 @@ var viewport = document.querySelector('.viewport');
 var track = document.getElementById('track');
 var histPanel = document.getElementById('history');
 var histBackdrop = document.getElementById('histBackdrop');
-var brandLogo = document.getElementById('brandLogo');
+var menuBtn = document.getElementById('menuBtn');
 var settings = document.getElementById('settings');
 var histWrap = document.getElementById('histWrap');
 var togIndex = document.getElementById('togIndex');
@@ -19,6 +19,12 @@ var togSession = document.getElementById('togSession');
 var favWrap = document.getElementById('favWrap');
 var favPanel = document.getElementById('favpanel');
 var favTog = document.getElementById('favTog');
+var about = document.getElementById('about');
+var aboutBtn = document.getElementById('aboutBtn');
+var aboutDate = document.getElementById('aboutDate');
+var aboutMsg = document.getElementById('aboutMsg');
+var aboutAction = document.getElementById('aboutAction');
+var aboutClose = document.getElementById('aboutClose');
 function esc(t){ return (t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function sectionById(id){ for(var i=0;i<GUIDE.sections.length;i++){ if(GUIDE.sections[i].id===id) return GUIDE.sections[i]; } return null; }
 function findFolio(id){
@@ -274,7 +280,7 @@ document.addEventListener('click', function(e){
   }
 });
 document.addEventListener('keydown', function(e){
-  if(e.key==='Escape'){ closePanel(); closeFav(); }
+  if(e.key==='Escape'){ closePanel(); closeFav(); closeAbout(); }
   if(!currentFolioId()) return;
   if(e.key==='ArrowLeft') goRel(-1);
   if(e.key==='ArrowRight') goRel(1);
@@ -366,7 +372,7 @@ try{ var _t=localStorage.getItem('reader.theme'); if(_t==='light'||_t==='dark') 
 try{ var _f=parseFloat(localStorage.getItem('reader.fz')); if(_f) applyFZ(_f); }catch(e){}
 try{ var _m=localStorage.getItem('reader.mode'); root.setAttribute('data-mode', _m==='limpia'?'limpia':'guiada'); }catch(e){ root.setAttribute('data-mode','guiada'); }
 syncSettings();
-if(brandLogo) brandLogo.addEventListener('click', function(e){ e.stopPropagation(); if(settings){ settings.hidden=!settings.hidden; syncSettings(); } });
+if(menuBtn) menuBtn.addEventListener('click', function(e){ e.stopPropagation(); if(settings){ settings.hidden=!settings.hidden; syncSettings(); } });
 if(settings) settings.addEventListener('click', function(e){
   e.stopPropagation();
   var t=e.target.closest('[data-theme]'); if(t && settings.contains(t)){ applyTheme(t.getAttribute('data-theme')); return; }
@@ -379,7 +385,7 @@ if(fzMinus) fzMinus.addEventListener('click', function(e){ e.stopPropagation(); 
 if(fzPlus) fzPlus.addEventListener('click', function(e){ e.stopPropagation(); applyFZ(FZ+0.1); });
 if(fzReset) fzReset.addEventListener('click', function(e){ e.stopPropagation(); applyFZ(1); });
 document.addEventListener('click', function(e){
-  if(settings && !settings.hidden && e.target!==brandLogo && !settings.contains(e.target)) settings.hidden=true;
+  if(settings && !settings.hidden && !(menuBtn && menuBtn.contains(e.target)) && !settings.contains(e.target)) settings.hidden=true;
 });
 
 /* ---- PWA: manifest dinámico (conoce la URL final), service worker e instalar ---- */
@@ -425,8 +431,50 @@ function hardReload(){
   }catch(_){}
   finish();
 }
-var refreshBtn=document.getElementById('refreshBtn');
-if(refreshBtn) refreshBtn.addEventListener('click', function(e){ e.stopPropagation(); hardReload(); });
+/* ---- "Acerca de": fecha de esta versión + comprobar si hay una nueva ---- */
+var hayNueva = false;   // pasa a true cuando se detecta una versión más nueva publicada
+function fmtBuilt(){
+  try{
+    var d = new Date(GUIDE_BUILT);
+    if(isNaN(d.getTime())) return '\\u2014';
+    return d.toLocaleString('es-ES', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
+  }catch(e){ return '\\u2014'; }
+}
+function syncAbout(){
+  if(!aboutAction) return;
+  aboutAction.textContent = hayNueva ? 'Actualizar' : 'Comprobar actualizaciones';
+  aboutAction.classList.toggle('go', hayNueva);
+}
+function openAbout(){
+  if(!about) return;
+  if(settings) settings.hidden = true;
+  if(aboutDate) aboutDate.textContent = fmtBuilt();
+  if(aboutMsg) aboutMsg.textContent = hayNueva ? 'Hay una versi\\u00f3n nueva.' : '';
+  syncAbout();
+  about.hidden = false;
+}
+function closeAbout(){ if(about) about.hidden = true; }
+if(aboutBtn) aboutBtn.addEventListener('click', function(e){ e.stopPropagation(); openAbout(); });
+if(aboutClose) aboutClose.addEventListener('click', function(e){ e.stopPropagation(); closeAbout(); });
+if(about) about.addEventListener('click', function(e){ if(e.target===about) closeAbout(); });
+if(aboutAction) aboutAction.addEventListener('click', function(e){
+  e.stopPropagation();
+  if(hayNueva){ hardReload(); return; }
+  aboutAction.disabled = true;
+  if(aboutMsg) aboutMsg.textContent = 'Comprobando\\u2026';
+  remoteVer().then(function(v){
+    aboutAction.disabled = false;
+    if(!v){ if(aboutMsg) aboutMsg.textContent = 'No se pudo comprobar. \\u00bfEst\\u00e1s sin conexi\\u00f3n?'; return; }
+    if(v !== GUIDE_VER){
+      hayNueva = true;
+      if(updbar) updbar.hidden = false;
+      if(aboutMsg) aboutMsg.textContent = 'Hay una versi\\u00f3n nueva.';
+    } else {
+      if(aboutMsg) aboutMsg.textContent = 'Ya tienes la \\u00faltima versi\\u00f3n.';
+    }
+    syncAbout();
+  });
+});
 var deferredPrompt=null, installBtn=document.getElementById('installBtn');
 window.addEventListener('beforeinstallprompt', function(e){ e.preventDefault(); deferredPrompt=e; if(installBtn) installBtn.hidden=false; });
 if(installBtn) installBtn.addEventListener('click', function(e){
@@ -452,13 +500,19 @@ window.addEventListener('appinstalled', function(){ if(installBtn) installBtn.hi
 /* ---- aviso de versión nueva (si se publicó algo mientras la guía estaba abierta) ---- */
 var updbar=document.getElementById('updbar'), updbtn=document.getElementById('updbtn');
 if(updbtn) updbtn.addEventListener('click', function(){ hardReload(); });
-function checkUpdate(){
+/* Versión publicada ahora mismo en el servidor ('' si no se pudo averiguar). */
+function remoteVer(){
   try{
-    fetch(location.pathname, { cache:'no-store' }).then(function(r){ return r.ok ? r.text() : ''; }).then(function(t){
+    return fetch(location.pathname, { cache:'no-store' }).then(function(r){ return r.ok ? r.text() : ''; }).then(function(t){
       var m = t.match(/GUIDE_VER\\s*=\\s*"([^"]+)"/);
-      if(m && m[1] && m[1] !== GUIDE_VER && updbar) updbar.hidden=false;
-    }).catch(function(){});
-  }catch(e){}
+      return (m && m[1]) ? m[1] : '';
+    }).catch(function(){ return ''; });
+  }catch(e){ return Promise.resolve(''); }
+}
+function checkUpdate(){
+  remoteVer().then(function(v){
+    if(v && v !== GUIDE_VER){ hayNueva = true; syncAbout(); if(updbar) updbar.hidden=false; }
+  });
 }
 setTimeout(checkUpdate, 4000);
 document.addEventListener('visibilitychange', function(){ if(document.visibilityState==='visible') checkUpdate(); });
@@ -522,7 +576,14 @@ function css(width: string): string {
     background: var(--bar); border-bottom: 1px solid var(--bar-bd);
     padding: 8px 16px; font-size: 1rem;
   }
-  .topbar .brand-logo { height: 26px; width: 26px; object-fit: contain; cursor: pointer; flex-shrink: 0; filter: invert(var(--logo-invert)); }
+  .topbar .brand-logo { height: 26px; width: 26px; object-fit: contain; flex-shrink: 0; filter: invert(var(--logo-invert)); }
+  /* Botón de menú (tres rayas), a la derecha de la barra */
+  .menubtn {
+    flex-shrink: 0; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    border: none; background: transparent; color: inherit; padding: 5px; border-radius: 8px;
+  }
+  .menubtn:hover { background: var(--hover); }
+  .menubtn svg { pointer-events: none; opacity: .85; }
   .crumbs { flex: 1; min-width: 0; display: flex; align-items: center; gap: 4px; overflow: hidden; white-space: nowrap; }
   .crumb {
     cursor: pointer; border: none; background: transparent; color: var(--selected);
@@ -537,7 +598,7 @@ function css(width: string): string {
 
   /* Menú de ajustes (tema + tamaño de letra) */
   .settings {
-    position: absolute; z-index: 40; top: calc(100% + 6px); left: 12px;
+    position: absolute; z-index: 40; top: calc(100% + 6px); right: 12px;
     background: var(--bar); border: 1px solid var(--bar-bd); border-radius: 12px;
     box-shadow: 0 10px 30px rgba(0,0,0,.25); padding: 8px; min-width: 210px;
     display: flex; flex-direction: column; gap: 6px; font-size: 1rem;
@@ -550,8 +611,34 @@ function css(width: string): string {
     border-radius: 8px; padding: 8px 10px; font-family: inherit; font-size: .95rem; flex: 1;
   }
   .settings button.active { border-color: var(--selected); box-shadow: inset 0 0 0 1px var(--selected); font-weight: 700; }
-  .settings .set-install, .settings .set-refresh { flex: 0 0 auto; margin-top: 2px; }
+  .settings .set-install, .settings .set-about { flex: 0 0 auto; margin-top: 2px; }
   .set-install[hidden] { display: none; }
+  /* Modal de "Acerca de" */
+  .modal {
+    position: fixed; inset: 0; z-index: 80; padding: 20px;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(0,0,0,.45);
+  }
+  .modal[hidden] { display: none; }
+  .modal-card {
+    width: 100%; max-width: 380px; padding: 18px;
+    background: var(--sheet); color: var(--fg);
+    border: 1px solid var(--sheet-bd); border-radius: 16px;
+    box-shadow: 0 18px 50px rgba(0,0,0,.4); font-size: 1rem;
+  }
+  .modal-title { font-size: 1.15rem; font-weight: 700; margin-bottom: 12px; }
+  .about-name { font-weight: 600; margin-bottom: 12px; }
+  .about-row { display: flex; flex-direction: column; gap: 2px; }
+  .about-row span { opacity: .55; font-size: .72rem; text-transform: uppercase; letter-spacing: .5px; }
+  .about-msg { min-height: 1.5em; margin-top: 10px; font-size: .95rem; opacity: .8; }
+  .modal-actions { display: flex; gap: 8px; margin-top: 14px; }
+  .modal-actions button {
+    flex: 1; cursor: pointer; border: 1px solid var(--btn-bd); background: var(--btn); color: inherit;
+    border-radius: 10px; padding: 11px 12px; font-family: inherit; font-size: .95rem;
+  }
+  .modal-actions button:not(:disabled):hover { border-color: var(--btn-bd-strong); }
+  .modal-actions button:disabled { opacity: .55; }
+  .modal-actions .modal-ok.go { background: var(--selected); border-color: var(--selected); color: #fff; font-weight: 700; }
   /* Aviso de versión nueva */
   .updbar {
     position: fixed; left: 50%; transform: translateX(-50%);
@@ -821,6 +908,9 @@ export function renderGuideHtml(project: Project): string {
   let vh = 5381;
   for (let i = 0; i < json.length; i++) vh = ((vh << 5) + vh + json.charCodeAt(i)) >>> 0;
   const guideVer = vh.toString(36);
+  // Cuándo se generó esta copia. Va aparte del hash a propósito: republicar sin tocar
+  // el contenido actualiza la fecha pero no dispara el aviso de "versión nueva".
+  const builtAt = new Date().toISOString();
 
   const nameEsc = (project.name || 'Guía').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   const html =
@@ -835,8 +925,11 @@ export function renderGuideHtml(project: Project): string {
     '<link rel="apple-touch-icon" href="' + LOGO + '">\n' +
     '<title>' + nameEsc + '</title>\n<style>' + css(width) + '\n' + bandCss + '</style>\n</head>\n<body>\n' +
     '<div class="topbar">' +
-      '<img class="brand-logo" id="brandLogo" src="' + LOGO + '" alt="" title="Ajustes">' +
+      '<img class="brand-logo" src="' + LOGO + '" alt="">' +
       '<nav class="crumbs" id="crumbs"></nav>' +
+      '<button class="menubtn" id="menuBtn" aria-label="Menú" title="Menú">' +
+        '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"></line><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="17" x2="20" y2="17"></line></svg>' +
+      '</button>' +
       '<div class="settings" id="settings" hidden>' +
         '<div class="set-label">Tema</div>' +
         '<div class="set-row">' +
@@ -856,7 +949,7 @@ export function renderGuideHtml(project: Project): string {
           '<button data-mode="limpia">Limpia</button>' +
         '</div>' +
         '<div class="set-label">Varios</div>' +
-        '<button class="set-refresh" id="refreshBtn">Actualizar</button>' +
+        '<button class="set-about" id="aboutBtn">Acerca de…</button>' +
         '<button class="set-install" id="installBtn" hidden>Instalar en el dispositivo</button>' +
       '</div>' +
     '</div>\n' +
@@ -879,9 +972,21 @@ export function renderGuideHtml(project: Project): string {
     '</div>\n' +
     '<div class="pagenav" id="pagenav"></div>\n' +
     '<div class="updbar" id="updbar" hidden><span>Hay una versión nueva</span><button id="updbtn">Actualizar</button></div>\n' +
+    '<div class="modal" id="about" hidden>' +
+      '<div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="aboutTitle">' +
+        '<div class="modal-title" id="aboutTitle">Acerca de</div>' +
+        '<div class="about-name">' + nameEsc + '</div>' +
+        '<div class="about-row"><span>Última actualización</span><b id="aboutDate">—</b></div>' +
+        '<div class="about-msg" id="aboutMsg"></div>' +
+        '<div class="modal-actions">' +
+          '<button id="aboutClose">Cerrar</button>' +
+          '<button class="modal-ok" id="aboutAction">Comprobar actualizaciones</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>\n' +
     // Texto HTML (no JS): va literal, sin escapes \\uXXXX — la página declara charset utf-8.
     '<div class="ios-install" id="iosInstall" hidden><span class="ios-msg">Añade esta guía a tu pantalla de inicio: pulsa <b>Compartir</b> y luego <b>«Añadir a pantalla de inicio»</b>.</span><button class="ios-x" id="iosInstallClose" aria-label="Cerrar">✕</button></div>\n' +
-    '<script>\nvar GUIDE = ' + json + ';\nvar LOGO = ' + JSON.stringify(LOGO) + ';\nvar GUIDE_VER = ' + JSON.stringify(guideVer) + ';\n' + RUNTIME + '\n</script>\n' +
+    '<script>\nvar GUIDE = ' + json + ';\nvar LOGO = ' + JSON.stringify(LOGO) + ';\nvar GUIDE_VER = ' + JSON.stringify(guideVer) + ';\nvar GUIDE_BUILT = ' + JSON.stringify(builtAt) + ';\n' + RUNTIME + '\n</script>\n' +
     '</body>\n</html>';
 
   return html;

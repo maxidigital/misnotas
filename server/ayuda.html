@@ -222,6 +222,8 @@
   .m-top { flex: none; display: flex; align-items: center; gap: 6px; background: var(--d-bar); border-bottom: 1px solid var(--d-bd); padding: 8px 10px; }
   .m-logo { width: 16px; height: 16px; border-radius: 50%; background: #cbb96f; flex: none; }
   .m-logo.hi { box-shadow: 0 0 0 3px rgba(47,111,196,.35); }
+  .m-burger { margin-left: auto; flex: none; width: 15px; display: flex; flex-direction: column; justify-content: center; gap: 3px; padding: 3px 0; border-radius: 4px; }
+  .m-burger i { display: block; height: 2px; background: var(--d-ink); border-radius: 2px; opacity: .75; }
   .m-crumb { color: var(--d-blue); font-weight: 600; font-size: 10.5px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
   .m-home { padding: 14px 12px; overflow: hidden; }
   .m-hlogo { width: 38px; height: 38px; border-radius: 50%; background: #d8c9a3; margin: 2px auto 6px; }
@@ -244,7 +246,7 @@
   .m-dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
   .m-fol { padding: 3px 2px 3px 18px; font-size: 9.5px; }
   .m-fol.cur { box-shadow: inset 3px 0 0 var(--d-blue); font-weight: 700; border-radius: 3px; }
-  .m-menu { position: absolute; top: 34px; left: 8px; width: 156px; background: var(--d-bar); border: 1px solid var(--d-bd); border-radius: 10px; padding: 7px; display: flex; flex-direction: column; gap: 5px; box-shadow: 0 10px 24px rgba(0,0,0,.28); }
+  .m-menu { position: absolute; top: 34px; right: 8px; width: 156px; background: var(--d-bar); border: 1px solid var(--d-bd); border-radius: 10px; padding: 7px; display: flex; flex-direction: column; gap: 5px; box-shadow: 0 10px 24px rgba(0,0,0,.28); }
   .m-lab { font-size: 8px; text-transform: uppercase; letter-spacing: .06em; color: var(--d-mut); margin: 1px 2px 0; }
   .m-seg { display: flex; gap: 4px; }
   .m-seg b { flex: 1; text-align: center; background: var(--d-card); border: 1px solid var(--d-bd); border-radius: 6px; padding: 4px 0; font-weight: 600; font-size: 9px; }
@@ -473,7 +475,7 @@
 
   <section>
     <div class="sec-head"><span class="num">5</span><h2>Ajustes</h2></div>
-    <p>Toca el <strong>logo</strong> de arriba a la izquierda para abrir los ajustes.</p>
+    <p>Toca el <strong>botón de tres rayas</strong> de arriba a la derecha para abrir los ajustes.</p>
     <div class="sheet">
       <ul class="feat">
         <li>
@@ -493,9 +495,9 @@
     <div class="figrow">
       <figure class="figure">
         <div class="device">
-          <span class="tag" style="top:-12px; left:20px;">Toca el logo</span>
+          <span class="tag" style="top:-12px; right:20px;">Toca las tres rayas</span>
           <div class="screen">
-            <div class="m-top"><span class="m-logo hi"></span><span class="m-crumb">⌂ Inicio</span></div>
+            <div class="m-top"><span class="m-logo"></span><span class="m-crumb">⌂ Inicio</span><span class="m-burger hi" aria-hidden="true"><i></i><i></i><i></i></span></div>
             <div class="m-menu">
               <div class="m-lab">Tema</div>
               <div class="m-seg"><b class="on">Claro</b><b>Oscuro</b><b>Auto</b></div>
@@ -504,11 +506,11 @@
               <div class="m-lab">Vista</div>
               <div class="m-seg"><b class="on">Guiada</b><b>Limpia</b></div>
               <div class="m-lab">Varios</div>
-              <div class="m-btn">Actualizar</div>
+              <div class="m-btn">Acerca de…</div>
             </div>
           </div>
         </div>
-        <figcaption class="caption">El menú del logo: tema, tamaño de letra, vista y acciones.</figcaption>
+        <figcaption class="caption">El menú de las tres rayas: tema, tamaño de letra, vista y acciones.</figcaption>
       </figure>
     </div>
   </section>
@@ -523,7 +525,7 @@
         </li>
         <li>
           <span class="ic" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/><path d="M3 21v-5h5"/></svg></span>
-          <div><b>Cuando hay novedades</b>Al abrirla con conexión, si hay una versión nueva verás abajo el aviso <strong>«Hay una versión nueva»</strong>. Toca <strong>Actualizar</strong>. También puedes hacerlo cuando quieras desde el <strong>menú del logo → Actualizar</strong>.</div>
+          <div><b>Cuando hay novedades</b>Al abrirla con conexión, si hay una versión nueva verás abajo el aviso <strong>«Hay una versión nueva»</strong>. Toca <strong>Actualizar</strong>. También puedes comprobarlo cuando quieras desde el <strong>menú (tres rayas) → Acerca de…</strong>, que además te dice de cuándo es la versión que estás leyendo.</div>
         </li>
       </ul>
     </div>
@@ -538,15 +540,15 @@
       </details>
       <details>
         <summary>La letra es muy pequeña o muy grande</summary>
-        <div class="ans"><p>Ajústala en el logo → <strong>Texto</strong>, con A− y A+. La A del medio vuelve al tamaño normal.</p></div>
+        <div class="ans"><p>Ajústala en el menú (tres rayas) → <strong>Texto</strong>, con A− y A+. La A del medio vuelve al tamaño normal.</p></div>
       </details>
       <details>
         <summary>Quiero leer sin distracciones</summary>
-        <div class="ans"><p>Logo → <strong>Vista</strong> → <strong>Limpia</strong>. Se ocultan las ayudas de los bordes; para volver, elige <strong>Guiada</strong>.</p></div>
+        <div class="ans"><p>Menú (tres rayas) → <strong>Vista</strong> → <strong>Limpia</strong>. Se ocultan las ayudas de los bordes; para volver, elige <strong>Guiada</strong>.</p></div>
       </details>
       <details>
         <summary>Sigo viendo una versión antigua</summary>
-        <div class="ans"><p>Logo → <strong>Actualizar</strong>. Si aún así no cambia, cierra la app del todo (deslízala hacia arriba en el selector de apps) y vuelve a abrirla.</p></div>
+        <div class="ans"><p>Menú (tres rayas) → <strong>Acerca de…</strong> → <strong>Comprobar actualizaciones</strong>. Si hay una nueva, el mismo botón pasa a decir <strong>Actualizar</strong>. Si aún así no cambia, cierra la app del todo (deslízala hacia arriba en el selector de apps) y vuelve a abrirla.</p></div>
       </details>
       <details>
         <summary>¿Se pierden mis favoritos?</summary>
