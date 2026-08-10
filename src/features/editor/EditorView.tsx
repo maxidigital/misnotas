@@ -43,13 +43,10 @@ export function EditorView({ guideId }: { guideId: string }) {
     const save = () => {
       const p = pending;
       if (!p) return;
-      setStatus('saving');
       updateGuide(p.id, p)
         .then(() => {
-          if (pending === p) {
-            pending = null; // no entró nada nuevo mientras guardábamos
-            setStatus('saved');
-          }
+          if (pending === p) pending = null; // no entró nada nuevo mientras guardábamos
+          setStatus('saved'); // siempre: un guardado bueno deja obsoleto cualquier error previo
         })
         .catch((e) => {
           setStatus('error');
@@ -65,7 +62,6 @@ export function EditorView({ guideId }: { guideId: string }) {
       if (!p || p.updatedAt === lastSaved) return; // only data edits bump updatedAt
       lastSaved = p.updatedAt;
       pending = p;
-      setStatus('saving');
       if (retry) clearTimeout(retry);
       if (timer) clearTimeout(timer);
       timer = setTimeout(save, 800);

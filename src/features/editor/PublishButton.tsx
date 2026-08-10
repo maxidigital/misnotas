@@ -20,7 +20,6 @@ export function PublishButton() {
       // Guardar primero: se publica lo que hay en pantalla, así que si el guardado
       // fallara quedaría publicado algo que la guía guardada no tiene.
       const setStatus = useSaveStatus.getState().set;
-      setStatus('saving');
       try {
         await updateGuide(project.id, project);
         setStatus('saved');
