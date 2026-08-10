@@ -4,6 +4,7 @@ import { existsSync } from 'node:fs';
 import { timingSafeEqual } from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { sendMail } from './mailer.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..');
@@ -25,11 +26,73 @@ await mkdir(PUBLISHED_DIR, { recursive: true });
 
 const app = express();
 
-/* ---------- auth (una contraseña compartida, en un header) ---------- */
+/* ---------- auth (contraseña compartida, en un header) ---------- */
+// La vieja sigue entrando mientras esté definida, para no dejar a nadie afuera de golpe:
+// cada vez que se usa llega un aviso por mail. Cuando dejen de llegar, se borra la variable.
+const OLD_PASSWORD =
+  process.env.AUTH_PASSWORD_OLD && process.env.AUTH_PASSWORD_OLD !== AUTH_PASSWORD
+    ? process.env.AUTH_PASSWORD_OLD
+    : '';
+
 const PW = Buffer.from(AUTH_PASSWORD);
-function samePassword(given) {
+const PW_OLD = OLD_PASSWORD ? Buffer.from(OLD_PASSWORD) : null;
+
+function sameAs(given, expected) {
+  if (!expected) return false;
   const buf = Buffer.from(String(given || ''));
-  return buf.length === PW.length && timingSafeEqual(buf, PW);
+  // La longitud se compara antes porque timingSafeEqual exige buffers del mismo largo.
+  return buf.length === expected.length && timingSafeEqual(buf, expected);
+}
+
+/** 'new' | 'old' | null */
+function matchPassword(given) {
+  if (sameAs(given, PW)) return 'new';
+  if (sameAs(given, PW_OLD)) return 'old';
+  return null;
+}
+
+/* ---------- aviso por mail cuando alguien entra con la contraseña vieja ---------- */
+// Un aviso por dispositivo y por día: quien deja el editor abierto trabajando no genera
+// más correos, pero si entra otra persona (u otro aparato) ese sí avisa.
+const ALERT_EVERY_MS = 12 * 60 * 60 * 1000;
+const alerted = new Map(); // dispositivo -> cuándo se avisó por última vez
+
+/** IP del visitante. Detrás del proxy de Railway req.ip es el proxy, así que se mira la
+ *  cabecera; es orientativa, el cliente puede falsearla. */
+function clientIp(req) {
+  const xff = String(req.get('x-forwarded-for') || '').split(',')[0].trim();
+  return xff || req.ip || req.socket.remoteAddress || '?';
+}
+
+function notifyOldPassword(req) {
+  const ip = clientIp(req);
+  const ua = req.get('user-agent') || '?';
+  const key = ip + ' | ' + ua;
+
+  const now = Date.now();
+  if (now - (alerted.get(key) || 0) < ALERT_EVERY_MS) return;
+  if (alerted.size > 200) alerted.clear(); // techo de memoria
+  alerted.set(key, now);
+
+  const text = [
+    'Alguien entró en misnotas con la contraseña VIEJA.',
+    '',
+    'Cuándo:     ' +
+      new Date().toLocaleString('es-ES', {
+        timeZone: 'Europe/Madrid',
+        dateStyle: 'short',
+        timeStyle: 'short',
+      }) +
+      ' (hora de Madrid)',
+    'IP:         ' + ip + '  (orientativa)',
+    'Navegador:  ' + ua,
+    '',
+    'La contraseña vieja sigue funcionando mientras AUTH_PASSWORD_OLD esté definida.',
+    'Cuando dejen de llegar estos avisos, borrá esa variable del entorno.',
+  ].join('\n');
+
+  console.warn('[auth] acceso con la contraseña vieja desde', ip);
+  sendMail({ subject: '[misnotas] Alguien entró con la contraseña vieja', text }).catch(() => {});
 }
 
 /* Freno al fuerza bruta: cada fallo demora la respuesta (100ms, 200ms, 400ms… hasta 2s).
@@ -39,8 +102,12 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 async function requireAuth(req, res, next) {
   const ip = req.ip || req.socket.remoteAddress || '?';
-  if (samePassword(req.get('x-app-password'))) {
+  const match = matchPassword(req.get('x-app-password'));
+  if (match) {
     fails.delete(ip);
+    // Solo en /api/me, que es por donde se entra: el resto de las rutas son la sesión ya
+    // empezada y avisarían decenas de veces. Sin await: el aviso no demora la respuesta.
+    if (match === 'old' && req.path === '/me') notifyOldPassword(req);
     return next();
   }
   const n = (fails.get(ip) || 0) + 1;

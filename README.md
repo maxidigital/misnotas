@@ -40,9 +40,13 @@ npm run dev         # front en :5173 (proxea /api y /p a :3001)
 
 | Variable        | Default            | Para qué |
 |-----------------|--------------------|----------|
-| `AUTH_PASSWORD` | `dev` fuera de producción | Contraseña única de acceso al editor. **Con `NODE_ENV=production` no tiene default: si falta, el servidor no arranca.** |
+| `AUTH_PASSWORD` | `dev` fuera de producción | Contraseña de acceso al editor. **Con `NODE_ENV=production` no tiene default: si falta, el servidor no arranca.** |
+| `AUTH_PASSWORD_OLD` | — | Contraseña anterior durante una rotación: sigue entrando, pero cada uso dispara un aviso por mail. Ver "Rotar la contraseña". |
 | `DATA_DIR`      | `/data`            | Dónde viven los datos. En Railway, el punto de montaje del volumen. |
 | `PORT`          | `3001`             | Puerto de escucha. |
+| `MAILJET_API_KEY`, `MAILJET_API_SECRET` | — | Credenciales de Mailjet para los avisos. Son las mismas que usa el formulario de contacto de `v2x.tools`. Sin ellas no se manda nada y queda un aviso en el log; lo demás funciona igual. |
+| `ALERT_EMAIL_TO` | `maxidigital@gmail.com` | A dónde llegan los avisos. |
+| `ALERT_EMAIL_FROM` | `noreply@v2x.tools` | Remitente. Tiene que estar validado en la cuenta de Mailjet. |
 
 ## Datos en disco (`DATA_DIR`)
 
@@ -64,6 +68,23 @@ Una sola contraseña compartida, mandada en el header `x-app-password` y guardad
 
 Lo que **no** pide contraseña: `/ayuda`, el service worker `/p/sw.js` y las publicaciones
 `/p/<slug>`. O sea: **una guía publicada la ve cualquiera que tenga (o adivine) el link.**
+
+### Rotar la contraseña
+
+Cambiar `AUTH_PASSWORD` de golpe deja afuera a todo el mundo. Para hacerlo sin cortar:
+
+1. Poner la contraseña actual en `AUTH_PASSWORD_OLD` y la nueva en `AUTH_PASSWORD`. Las dos
+   entran.
+2. Repartir la nueva.
+3. Cuando alguien entra con la vieja llega un correo con la hora, la IP aproximada y el
+   navegador. Avisa **al entrar** (solo en `/api/me`), no en cada llamada a la API, y como
+   mucho **una vez cada 12 horas por dispositivo**: quien deje el editor abierto todo el día
+   genera un correo, no cincuenta; pero si entra otra persona, esa sí avisa aparte.
+4. Cuando dejen de llegar avisos, borrar `AUTH_PASSWORD_OLD` del entorno. Ahí sí, la vieja
+   deja de funcionar.
+
+Si `AUTH_PASSWORD_OLD` no está definida —o es igual a la nueva— no cambia nada y no se avisa
+de nada.
 
 ## Publicar
 
