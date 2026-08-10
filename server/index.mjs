@@ -51,8 +51,18 @@ async function requireAuth(req, res, next) {
 }
 
 // Todo /api pide contraseña ANTES de parsear el body: sin credenciales no se puede
-// hacer que el servidor parsee 16mb de JSON.
-app.use('/api', requireAuth, express.json({ limit: '16mb' }));
+// hacer que el servidor parsee 16mb de JSON. Y nada de /api se cachea: sin esto la
+// respuesta sale con ETag y sin Cache-Control, y el navegador puede mostrar una
+// lista vieja después de guardar o publicar.
+app.use(
+  '/api',
+  (_req, res, next) => {
+    res.set('Cache-Control', 'no-store');
+    next();
+  },
+  requireAuth,
+  express.json({ limit: '16mb' })
+);
 
 app.get('/api/me', (_req, res) => res.json({ ok: true }));
 

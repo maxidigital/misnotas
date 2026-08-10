@@ -2,9 +2,10 @@ import * as React from 'react';
 import { RefreshCw, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useEditorStore } from '@/store/useEditorStore';
+import { useSaveStatus } from '@/store/useSaveStatus';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { listPublications, updatePublication } from '@/services/guidesApi';
+import { listPublications, updateGuide, updatePublication } from '@/services/guidesApi';
 import { renderGuideHtml } from './buildGuide';
 
 export function PublishButton() {
@@ -16,10 +17,24 @@ export function PublishButton() {
     if (!project) return;
     setBusy(true);
     try {
+      // Guardar primero: se publica lo que hay en pantalla, así que si el guardado
+      // fallara quedaría publicado algo que la guía guardada no tiene.
+      const setStatus = useSaveStatus.getState().set;
+      setStatus('saving');
+      try {
+        await updateGuide(project.id, project);
+        setStatus('saved');
+      } catch {
+        setStatus('error');
+        toast.error('No se pudo guardar la guía; no se publicó nada');
+        return;
+      }
+
       const pubs = await listPublications();
       const linked = pubs.filter((p) => p.guideId === project.id);
       if (linked.length === 0) {
-        toast('Esta guía no tiene publicaciones');
+        // Aviso llamativo: pasaba desapercibido y parecía que la publicación no se actualizaba.
+        toast.warning('Esta guía no tiene ninguna publicación. Creala desde “Publicaciones”.');
         setOpen(false);
         return;
       }

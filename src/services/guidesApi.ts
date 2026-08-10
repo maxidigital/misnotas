@@ -16,6 +16,7 @@ export class ApiError extends Error {
 
 async function api(path: string, opts: RequestInit = {}): Promise<any> {
   const res = await fetch('/api' + path, {
+    cache: 'no-store', // leer siempre del servidor: acá se lee justo después de escribir
     ...opts,
     headers: { 'Content-Type': 'application/json', 'x-app-password': getPw(), ...(opts.headers || {}) },
   });
