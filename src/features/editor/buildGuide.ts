@@ -433,11 +433,12 @@ function hardReload(){
 }
 /* ---- "Acerca de": fecha de esta versión + comprobar si hay una nueva ---- */
 var hayNueva = false;   // pasa a true cuando se detecta una versión más nueva publicada
+/* La versión ES la fecha de publicación, así que se muestra tal cual, con segundos. */
 function fmtBuilt(){
   try{
-    var d = new Date(GUIDE_BUILT);
+    var d = new Date(GUIDE_VER);
     if(isNaN(d.getTime())) return '\\u2014';
-    return d.toLocaleString('es-ES', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
+    return d.toLocaleString('es-ES', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit', second:'2-digit' });
   }catch(e){ return '\\u2014'; }
 }
 function aboutSay(t, ok){
@@ -472,7 +473,6 @@ if(aboutAction) aboutAction.addEventListener('click', function(e){
     if(!v){ aboutSay('No se pudo comprobar. \\u00bfEst\\u00e1s sin conexi\\u00f3n?', false); return; }
     if(v !== GUIDE_VER){
       hayNueva = true;
-      if(updbar) updbar.hidden = false;
       aboutSay('Hay una versi\\u00f3n nueva.', false);
     } else {
       aboutSay('Ya tienes la \\u00faltima versi\\u00f3n.', true);
@@ -502,25 +502,25 @@ window.addEventListener('appinstalled', function(){ if(installBtn) installBtn.hi
   if(x) x.addEventListener('click', function(){ iosEl.hidden=true; try{ localStorage.setItem('reader.iosInstall','1'); }catch(e){} });
 })();
 
-/* ---- aviso de versión nueva (si se publicó algo mientras la guía estaba abierta) ---- */
-var updbar=document.getElementById('updbar'), updbtn=document.getElementById('updbtn');
-if(updbtn) updbtn.addEventListener('click', function(){ hardReload(); });
-/* Versión publicada ahora mismo en el servidor ('' si no se pudo averiguar). */
+/* Versión publicada ahora mismo en el servidor ('' si no se pudo averiguar).
+   Solo se consulta cuando el lector la pide a mano desde "Acerca de": nunca se le
+   avisa por su cuenta de que hay una versión nueva. */
 function remoteVer(){
   try{
-    return fetch(location.pathname, { cache:'no-store' }).then(function(r){ return r.ok ? r.text() : ''; }).then(function(t){
-      var m = t.match(/GUIDE_VER\\s*=\\s*"([^"]+)"/);
-      return (m && m[1]) ? m[1] : '';
-    }).catch(function(){ return ''; });
+    // Unos pocos bytes en vez de la guía entera.
+    return fetch(location.pathname + '/ver', { cache:'no-store' })
+      .then(function(r){ return r.ok ? r.text() : ''; })
+      .then(function(t){ return (t||'').trim() || verFromPage(); })
+      .catch(function(){ return verFromPage(); });
   }catch(e){ return Promise.resolve(''); }
 }
-function checkUpdate(){
-  remoteVer().then(function(v){
-    if(v && v !== GUIDE_VER){ hayNueva = true; syncAbout(); if(updbar) updbar.hidden=false; }
-  });
+/* Respaldo: leer el número del HTML publicado (guías servidas por algo que no conoce /ver). */
+function verFromPage(){
+  return fetch(location.pathname, { cache:'no-store' }).then(function(r){ return r.ok ? r.text() : ''; }).then(function(t){
+    var m = t.match(/GUIDE_VER\\s*=\\s*"([^"]+)"/);
+    return (m && m[1]) ? m[1] : '';
+  }).catch(function(){ return ''; });
 }
-setTimeout(checkUpdate, 4000);
-document.addEventListener('visibilitychange', function(){ if(document.visibilityState==='visible') checkUpdate(); });
 
 window.addEventListener('hashchange', render);
 render();
@@ -645,20 +645,6 @@ function css(width: string): string {
   .modal-actions button:not(:disabled):hover { border-color: var(--btn-bd-strong); }
   .modal-actions button:disabled { opacity: .55; }
   .modal-actions .modal-ok.go { background: var(--selected); border-color: var(--selected); color: #fff; font-weight: 700; }
-  /* Aviso de versión nueva */
-  .updbar {
-    position: fixed; left: 50%; transform: translateX(-50%);
-    bottom: calc(14px + env(safe-area-inset-bottom)); z-index: 60;
-    display: flex; align-items: center; gap: 10px;
-    background: var(--bar); border: 1px solid var(--bar-bd); color: inherit;
-    border-radius: 999px; padding: 8px 8px 8px 16px; box-shadow: 0 6px 20px rgba(0,0,0,.28);
-    font-size: .95rem;
-  }
-  .updbar[hidden] { display: none; }
-  .updbar button {
-    cursor: pointer; border: none; background: var(--selected); color: #fff;
-    border-radius: 999px; padding: 8px 14px; font-family: inherit; font-size: .9rem; font-weight: 600;
-  }
   /* Aviso para añadir a la pantalla de inicio (iOS) */
   .ios-install {
     position: fixed; left: 12px; right: 12px;
@@ -910,10 +896,9 @@ export function renderGuideHtml(project: Project): string {
   };
   // Escape "<" so nothing (e.g. "</script>" inside body HTML) can break out of the script.
   const json = JSON.stringify(data).replace(/</g, '\\u003c');
-  // Cuándo se generó esta copia (lo que muestra "Acerca de").
-  const builtAt = new Date().toISOString();
-  // La versión se calcula abajo, sobre el archivo entero, y reemplaza a esta marca.
-  const VER_MARK = '__GUIDE_VER__';
+  // La versión de una publicación es el momento exacto en que se generó: cambia en cada
+  // publicación, se lee de un vistazo y además dice cuál es más nueva.
+  const guideVer = new Date().toISOString();
 
   const nameEsc = (project.name || 'Guía').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   const html =
@@ -982,7 +967,6 @@ export function renderGuideHtml(project: Project): string {
       '<div class="hist-backdrop" id="histBackdrop"></div>' +
     '</div>\n' +
     '<div class="pagenav" id="pagenav"></div>\n' +
-    '<div class="updbar" id="updbar" hidden><span>Hay una versión nueva</span><button id="updbtn">Actualizar</button></div>\n' +
     '<div class="modal" id="about" hidden>' +
       '<div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="aboutTitle">' +
         '<div class="modal-title" id="aboutTitle">Acerca de</div>' +
@@ -997,15 +981,10 @@ export function renderGuideHtml(project: Project): string {
     '</div>\n' +
     // Texto HTML (no JS): va literal, sin escapes \\uXXXX — la página declara charset utf-8.
     '<div class="ios-install" id="iosInstall" hidden><span class="ios-msg">Añade esta guía a tu pantalla de inicio: pulsa <b>Compartir</b> y luego <b>«Añadir a pantalla de inicio»</b>.</span><button class="ios-x" id="iosInstallClose" aria-label="Cerrar">✕</button></div>\n' +
-    '<script>\nvar GUIDE = ' + json + ';\nvar LOGO = ' + JSON.stringify(LOGO) + ';\nvar GUIDE_VER = "' + VER_MARK + '";\nvar GUIDE_BUILT = ' + JSON.stringify(builtAt) + ';\n' + RUNTIME + '\n</script>\n' +
+    '<script>\nvar GUIDE = ' + json + ';\nvar LOGO = ' + JSON.stringify(LOGO) + ';\nvar GUIDE_VER = ' + JSON.stringify(guideVer) + ';\n' + RUNTIME + '\n</script>\n' +
     '</body>\n</html>';
 
-  // Versión = huella del archivo publicado completo (contenido, código del lector, estilos
-  // y fecha). Antes se calculaba solo sobre el contenido, así que republicar con un lector
-  // nuevo no le avisaba a nadie: para el que leía, la guía "no había cambiado".
-  let vh = 5381;
-  for (let i = 0; i < html.length; i++) vh = ((vh << 5) + vh + html.charCodeAt(i)) >>> 0;
-  return html.replace(VER_MARK, vh.toString(36));
+  return html;
 }
 
 /** Vista previa: genera la guía y la abre en una pestaña nueva (efímera, no publica). */

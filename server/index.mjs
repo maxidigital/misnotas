@@ -407,6 +407,8 @@ self.addEventListener('fetch', function(e){
   var url = new URL(req.url);
   if(url.origin !== self.location.origin) return;
   if(url.pathname.indexOf('/p/') !== 0 || url.pathname === '/p/sw.js') return;
+  // /p/<slug>/ver es el número de versión: se pide a mano y no tiene sentido cachearlo.
+  if(url.pathname.slice(-4) === '/ver' && url.pathname.split('/').length === 4) return;
   // Network-first bypassing the HTTP cache (iOS standalone la cachea agresivamente);
   // la copia offline vive solo en CacheStorage. Se guarda bajo el pathname (sin query)
   // para que los reloads con ?v=... no dejen una entrada nueva cada vez.
@@ -422,6 +424,20 @@ app.get('/p/sw.js', (_req, res) => {
   res.set('Service-Worker-Allowed', '/p/');
   res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
   res.type('application/javascript').send(SW_JS);
+});
+
+/* Versión publicada, en unos pocos bytes. El número vive dentro del HTML de la guía; sin
+   esto el lector tiene que bajarse la guía entera solo para comparar. Público, como la guía. */
+app.get('/p/:slug/ver', async (req, res) => {
+  if (!validId(req.params.slug)) return res.status(400).send('');
+  res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+  try {
+    const html = await readFile(pubFileFor(req.params.slug), 'utf8');
+    const m = html.match(/var GUIDE_VER = "([^"]+)"/);
+    res.type('text/plain').send(m ? m[1] : '');
+  } catch {
+    res.status(404).type('text/plain').send('');
+  }
 });
 
 /* ---------- publicación pública (sin auth): /p/<slug> ---------- */
