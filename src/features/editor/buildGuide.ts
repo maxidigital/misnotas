@@ -910,13 +910,10 @@ export function renderGuideHtml(project: Project): string {
   };
   // Escape "<" so nothing (e.g. "</script>" inside body HTML) can break out of the script.
   const json = JSON.stringify(data).replace(/</g, '\\u003c');
-  // Versión del contenido, para avisar si hay una publicación más nueva.
-  let vh = 5381;
-  for (let i = 0; i < json.length; i++) vh = ((vh << 5) + vh + json.charCodeAt(i)) >>> 0;
-  const guideVer = vh.toString(36);
-  // Cuándo se generó esta copia. Va aparte del hash a propósito: republicar sin tocar
-  // el contenido actualiza la fecha pero no dispara el aviso de "versión nueva".
+  // Cuándo se generó esta copia (lo que muestra "Acerca de").
   const builtAt = new Date().toISOString();
+  // La versión se calcula abajo, sobre el archivo entero, y reemplaza a esta marca.
+  const VER_MARK = '__GUIDE_VER__';
 
   const nameEsc = (project.name || 'Guía').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   const html =
@@ -1000,10 +997,15 @@ export function renderGuideHtml(project: Project): string {
     '</div>\n' +
     // Texto HTML (no JS): va literal, sin escapes \\uXXXX — la página declara charset utf-8.
     '<div class="ios-install" id="iosInstall" hidden><span class="ios-msg">Añade esta guía a tu pantalla de inicio: pulsa <b>Compartir</b> y luego <b>«Añadir a pantalla de inicio»</b>.</span><button class="ios-x" id="iosInstallClose" aria-label="Cerrar">✕</button></div>\n' +
-    '<script>\nvar GUIDE = ' + json + ';\nvar LOGO = ' + JSON.stringify(LOGO) + ';\nvar GUIDE_VER = ' + JSON.stringify(guideVer) + ';\nvar GUIDE_BUILT = ' + JSON.stringify(builtAt) + ';\n' + RUNTIME + '\n</script>\n' +
+    '<script>\nvar GUIDE = ' + json + ';\nvar LOGO = ' + JSON.stringify(LOGO) + ';\nvar GUIDE_VER = "' + VER_MARK + '";\nvar GUIDE_BUILT = ' + JSON.stringify(builtAt) + ';\n' + RUNTIME + '\n</script>\n' +
     '</body>\n</html>';
 
-  return html;
+  // Versión = huella del archivo publicado completo (contenido, código del lector, estilos
+  // y fecha). Antes se calculaba solo sobre el contenido, así que republicar con un lector
+  // nuevo no le avisaba a nadie: para el que leía, la guía "no había cambiado".
+  let vh = 5381;
+  for (let i = 0; i < html.length; i++) vh = ((vh << 5) + vh + html.charCodeAt(i)) >>> 0;
+  return html.replace(VER_MARK, vh.toString(36));
 }
 
 /** Vista previa: genera la guía y la abre en una pestaña nueva (efímera, no publica). */
