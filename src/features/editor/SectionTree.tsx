@@ -27,8 +27,49 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { cn } from '@/lib/cn';
 import type { Folio, Section } from '@/types';
+
+/** Confirmación para borrados: no hay deshacer y el autosave los manda al servidor enseguida. */
+function ConfirmDelete({
+  open,
+  onOpenChange,
+  title,
+  detail,
+  onConfirm,
+}: {
+  open: boolean;
+  onOpenChange: (o: boolean) => void;
+  title: string;
+  detail?: string;
+  onConfirm: () => void;
+}) {
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{title}</DialogTitle>
+        </DialogHeader>
+        {detail && <p className="text-sm text-muted-foreground">{detail}</p>}
+        <DialogFooter>
+          <Button variant="ghost" onClick={() => onOpenChange(false)}>
+            Cancelar
+          </Button>
+          <Button
+            variant="destructive"
+            onClick={() => {
+              onOpenChange(false);
+              onConfirm();
+            }}
+          >
+            Borrar
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
 
 export function SectionTree() {
   const project = useEditorStore((s) => s.projects.find((p) => p.id === s.activeProjectId));
@@ -85,12 +126,14 @@ function SortableSection({ section }: { section: Section }) {
   const style = { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.5 : 1 };
 
   const [collapsed, setCollapsed] = React.useState(true);
+  const [confirm, setConfirm] = React.useState(false);
   const selection = useEditorStore((s) => s.selection);
   const select = useEditorStore((s) => s.select);
   const addFolio = useEditorStore((s) => s.addFolio);
   const deleteSection = useEditorStore((s) => s.deleteSection);
 
   const selected = selection.sectionId === section.id && !selection.folioId;
+  const n = section.folios.length;
 
   return (
     <div ref={setNodeRef} style={style} className="mb-1">
@@ -143,11 +186,18 @@ function SortableSection({ section }: { section: Section }) {
               Editar sección
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem destructive onSelect={() => deleteSection(section.id)}>
+            <DropdownMenuItem destructive onSelect={() => setConfirm(true)}>
               <Trash2 className="h-4 w-4" /> Borrar sección
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+        <ConfirmDelete
+          open={confirm}
+          onOpenChange={setConfirm}
+          title={`¿Borrar la sección “${section.name}”?`}
+          detail={n > 0 ? `Se borran también sus ${n} folio${n === 1 ? '' : 's'}. No se puede deshacer.` : 'No se puede deshacer.'}
+          onConfirm={() => deleteSection(section.id)}
+        />
       </div>
 
       {!collapsed && (
@@ -167,6 +217,7 @@ function SortableFolio({ folio, sectionId }: { folio: Folio; sectionId: string }
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: folio.id });
   const style = { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.5 : 1 };
 
+  const [confirm, setConfirm] = React.useState(false);
   const selection = useEditorStore((s) => s.selection);
   const select = useEditorStore((s) => s.select);
   const duplicate = useEditorStore((s) => s.duplicateFolio);
@@ -203,11 +254,18 @@ function SortableFolio({ folio, sectionId }: { folio: Folio; sectionId: string }
               <Copy className="h-4 w-4" /> Duplicar
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem destructive onSelect={() => remove(folio.id)}>
+            <DropdownMenuItem destructive onSelect={() => setConfirm(true)}>
               <Trash2 className="h-4 w-4" /> Borrar
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+        <ConfirmDelete
+          open={confirm}
+          onOpenChange={setConfirm}
+          title={`¿Borrar el folio “${folio.title || '(sin título)'}”?`}
+          detail="No se puede deshacer."
+          onConfirm={() => remove(folio.id)}
+        />
       </div>
     </div>
   );

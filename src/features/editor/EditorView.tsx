@@ -5,6 +5,7 @@ import { useSaveStatus } from '@/store/useSaveStatus';
 import { useAuth } from '@/store/useAuth';
 import { TopBar } from '@/components/layout/TopBar';
 import { EditorWorkspace } from '@/features/editor/EditorWorkspace';
+import type { Project } from '@/types';
 
 export function EditorView({ guideId }: { guideId: string }) {
   const [state, setState] = useState<'loading' | 'ready' | 'error'>('loading');
@@ -35,24 +36,57 @@ export function EditorView({ guideId }: { guideId: string }) {
     if (state !== 'ready') return;
     const setStatus = useSaveStatus.getState().set;
     let timer: ReturnType<typeof setTimeout> | undefined;
+    let retry: ReturnType<typeof setTimeout> | undefined;
     let lastSaved = useEditorStore.getState().getActiveProject()?.updatedAt || '';
+    let pending: Project | null = null; // lo editado que todavía no confirmó el servidor
+
+    const save = () => {
+      const p = pending;
+      if (!p) return;
+      setStatus('saving');
+      updateGuide(p.id, p)
+        .then(() => {
+          if (pending === p) {
+            pending = null; // no entró nada nuevo mientras guardábamos
+            setStatus('saved');
+          }
+        })
+        .catch((e) => {
+          setStatus('error');
+          // Si venció la sesión no sirve reintentar: hay que volver a entrar.
+          if (e instanceof ApiError && e.status === 401) return useAuth.getState().logout();
+          if (retry) clearTimeout(retry);
+          retry = setTimeout(save, 5000); // insistir: el trabajo sigue en memoria
+        });
+    };
 
     const unsub = useEditorStore.subscribe((s) => {
       const p = s.projects.find((pp) => pp.id === s.activeProjectId);
       if (!p || p.updatedAt === lastSaved) return; // only data edits bump updatedAt
       lastSaved = p.updatedAt;
+      pending = p;
       setStatus('saving');
+      if (retry) clearTimeout(retry);
       if (timer) clearTimeout(timer);
-      timer = setTimeout(() => {
-        updateGuide(p.id, p)
-          .then(() => setStatus('saved'))
-          .catch(() => setStatus('error'));
-      }, 800);
+      timer = setTimeout(save, 800);
     });
+
+    // Cerrar la pestaña con cambios sin confirmar pierde trabajo: avisar antes.
+    const onBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (!pending) return;
+      e.preventDefault();
+      e.returnValue = '';
+    };
+    window.addEventListener('beforeunload', onBeforeUnload);
 
     return () => {
       if (timer) clearTimeout(timer);
+      if (retry) clearTimeout(retry);
+      window.removeEventListener('beforeunload', onBeforeUnload);
       unsub();
+      // Salir del editor (← Mis guías) dentro de la ventana del debounce no debe perder
+      // el último cambio: se manda igual, sin esperar respuesta.
+      if (pending) updateGuide(pending.id, pending).catch(() => {});
     };
   }, [state]);
 

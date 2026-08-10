@@ -52,7 +52,7 @@ import {
 } from '@/services/guidesApi';
 import { renderGuideHtml } from '@/features/editor/buildGuide';
 import { useAuth } from '@/store/useAuth';
-import type { Project } from '@/types';
+import type { Folio, FolioLink, Project, Section } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ThemeToggle } from '@/components/layout/ThemeToggle';
@@ -127,6 +127,46 @@ function pathTo(folders: Folder[], id: string | null): Folder[] {
     cur = f.parentId;
   }
   return chain;
+}
+
+const uid = () => (crypto.randomUUID ? crypto.randomUUID() : 'id-' + Math.random().toString(36).slice(2));
+
+/** Normaliza un JSON importado a la forma que espera el editor. Un archivo a medias
+ *  (una sección sin `folios`, por ejemplo) rompía el editor con la guía ya creada. */
+function normalizeImported(raw: unknown): Partial<Project> {
+  const data = raw as any;
+  if (!data || typeof data !== 'object' || !Array.isArray(data.sections)) {
+    throw new Error('no parece una guía exportada');
+  }
+  const sections: Section[] = data.sections.map((s: any) => ({
+    // Se conservan los ids: los enlaces dentro del guión apuntan por id y no se pueden remapear.
+    id: typeof s?.id === 'string' && s.id ? s.id : uid(),
+    name: typeof s?.name === 'string' ? s.name : 'Sección',
+    type: s?.type === 'apendice' ? 'apendice' : 'flujo',
+    titleBarColor: typeof s?.titleBarColor === 'string' ? s.titleBarColor : undefined,
+    folios: (Array.isArray(s?.folios) ? s.folios : []).map(
+      (f: any): Folio => ({
+        id: typeof f?.id === 'string' && f.id ? f.id : uid(),
+        title: typeof f?.title === 'string' ? f.title : '',
+        guion: typeof f?.guion === 'string' ? f.guion : '',
+        links: (Array.isArray(f?.links) ? f.links : []).map(
+          (l: any): FolioLink => ({
+            id: typeof l?.id === 'string' && l.id ? l.id : uid(),
+            label: typeof l?.label === 'string' ? l.label : '',
+            target:
+              l?.target?.kind === 'section'
+                ? { kind: 'section', id: String(l.target.id ?? '') }
+                : { kind: 'folio', id: String(l?.target?.id ?? '') },
+          })
+        ),
+      })
+    ),
+  }));
+  return {
+    name: typeof data.name === 'string' && data.name.trim() ? data.name : 'Guía importada',
+    maxChars: typeof data.maxChars === 'number' ? data.maxChars : undefined,
+    sections,
+  };
 }
 
 export type Item = { kind: 'guide' | 'folder'; id: string; name: string };
@@ -373,11 +413,8 @@ export function Dashboard() {
     e.target.value = '';
     if (!file) return;
     try {
-      const data = JSON.parse(await file.text());
-      if (!Array.isArray(data.sections)) throw new Error('Formato inválido');
-      const copy: Partial<Project> = { ...data, folderId: cwd };
-      delete copy.id;
-      await createGuide(copy);
+      const imported = normalizeImported(JSON.parse(await file.text()));
+      await createGuide({ ...imported, folderId: cwd });
       toast.success('Guía importada');
       reload();
     } catch (err) {

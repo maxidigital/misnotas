@@ -41,6 +41,17 @@ export function SectionEditor({ section }: { section: Section }) {
       <div className="space-y-1.5">
         <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Color de la franja del título</label>
         <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            title="Sin color"
+            onClick={() => update(section.id, { titleBarColor: undefined })}
+            className={cn(
+              'flex h-8 w-8 items-center justify-center rounded-full border border-dashed border-muted-foreground/60 text-xs text-muted-foreground transition-transform hover:scale-110',
+              !section.titleBarColor && 'ring-2 ring-selected ring-offset-2 ring-offset-background'
+            )}
+          >
+            ✕
+          </button>
           {PALETTE.map((c) => {
             const selected = (section.titleBarColor ?? '').toLowerCase() === c.value.toLowerCase();
             return (
