@@ -237,6 +237,8 @@
   .m-nav { flex: none; display: flex; align-items: center; justify-content: space-between; padding: 8px 12px 12px; gap: 8px; }
   .m-nav .chev { width: 40px; height: 30px; border: 1px solid var(--d-bd); border-radius: 8px; display: grid; place-items: center; color: var(--d-ink); background: var(--d-card); font-size: 15px; }
   .m-panel { position: absolute; left: 0; top: 33px; bottom: 0; width: 152px; background: var(--d-bar); border-right: 1px solid var(--d-bd); padding: 9px; box-shadow: 10px 0 24px rgba(0,0,0,.16); }
+  .m-panel.right { left: auto; right: 0; border-right: none; border-left: 1px solid var(--d-bd); box-shadow: -10px 0 24px rgba(0,0,0,.16); display: flex; flex-direction: column; }
+  .m-panel.right .m-btn { margin-top: auto; }
   .m-ptitle { font-size: 8px; text-transform: uppercase; letter-spacing: .06em; color: var(--d-mut); margin-bottom: 7px; }
   .m-sec { display: flex; align-items: center; gap: 5px; padding: 4px 2px; font-size: 10px; font-weight: 600; }
   .m-dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
@@ -421,7 +423,7 @@
       <ul class="feat">
         <li>
           <span class="ic star" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><path d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg></span>
-          <div><b>Marcar o quitar</b>Estando en el folio, abre el <strong>menú principal</strong> (toca el <strong>logo</strong> de arriba a la izquierda) y pulsa <strong>«Marcar como favorito»</strong>. Para quitarlo, el mismo botón.</div>
+          <div><b>Marcar o quitar</b>Estando en el folio, abre el <strong>panel derecho</strong> (franja derecha de la pantalla) y pulsa el botón de abajo del todo: <strong>«Marcar como favorito»</strong>. Para quitarlo, el mismo botón.</div>
         </li>
         <li>
           <span class="ic star" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg></span>
@@ -443,7 +445,27 @@
             <div class="m-nav"><span class="chev">‹</span><span class="chev">›</span></div>
           </div>
         </div>
-        <figcaption class="caption">Los folios marcados llevan una estrella. Se marcan desde el menú del logo.</figcaption>
+        <figcaption class="caption">Los folios marcados llevan una estrella arriba a la derecha.</figcaption>
+      </figure>
+      <figure class="figure">
+        <div class="device">
+          <span class="tag" style="top:44%; right:-16px;">Toca el borde &rsaquo;</span>
+          <div class="screen">
+            <div class="m-top"><span class="m-logo"></span><span class="m-crumb">&#8962; &middot; Anamnesis &middot; Motivo</span></div>
+            <div class="m-sheet">
+              <span class="m-star">&#9733;</span>
+              <div class="m-band" style="background:#4A6B57">Motivo de consulta</div>
+              <div class="m-lines"><span style="width:100%"></span><span style="width:90%"></span><span style="width:96%"></span></div>
+            </div>
+            <div class="m-panel right">
+              <div class="m-ptitle">Favoritos</div>
+              <div class="m-fol cur">Motivo de consulta</div>
+              <div class="m-fol">Escalas de valoraci&oacute;n</div>
+              <div class="m-btn">&#9733; Quitar de favoritos</div>
+            </div>
+          </div>
+        </div>
+        <figcaption class="caption">El bot&oacute;n de marcar y quitar est&aacute; abajo del todo, en el panel de Favoritos.</figcaption>
       </figure>
     </div>
     <p style="color:var(--ink-soft); font-size:.95rem; margin-top:1.25rem;">Tus favoritos se guardan en tu dispositivo; cada persona tiene los suyos.</p>
@@ -482,7 +504,6 @@
               <div class="m-lab">Vista</div>
               <div class="m-seg"><b class="on">Guiada</b><b>Limpia</b></div>
               <div class="m-lab">Varios</div>
-              <div class="m-btn">★ Marcar como favorito</div>
               <div class="m-btn">Actualizar</div>
             </div>
           </div>

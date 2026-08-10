@@ -123,8 +123,15 @@ function renderFav(){
       var r = findFolio(id);
       return '<button class="hist-item'+(id===cur?' cur':'')+'" data-go="#/f/'+id+'">'+esc(r.folio.title||'(sin t\\u00edtulo)')+'</button>';
     }).join('') + '</div>';
+  } else if(cur){
+    html += '<div class="fav-empty">A\\u00fan no has marcado ning\\u00fan folio. Usa el bot\\u00f3n de abajo para a\\u00f1adir este.</div>';
   } else {
-    html += '<div class="fav-empty">Para a\\u00f1adir un folio a favoritos, entra en el men\\u00fa principal \\u2699 y toca \\u00abMarcar como favorito\\u00bb.</div>';
+    html += '<div class="fav-empty">A\\u00fan no has marcado ning\\u00fan folio. Entra en uno y usa el bot\\u00f3n de este panel.</div>';
+  }
+  // El alta/baja vive en el panel: solo tiene sentido estando en un folio.
+  if(cur){
+    var on = isFav(cur);
+    html += '<button class="fav-btn'+(on?' on':'')+'">'+(on?'\\u2605 Quitar de favoritos':'\\u2606 Marcar como favorito')+'</button>';
   }
   favPanel.innerHTML = html;
 }
@@ -138,15 +145,7 @@ function updateStar(){
     if(!ex){ var b=document.createElement('span'); b.className='favstar'; b.setAttribute('aria-hidden','true'); b.title='Favorito'; b.textContent='\\u2605'; wrap.appendChild(b); }
   } else if(ex){ ex.remove(); }
 }
-function updateFavBtn(){
-  var b = document.getElementById('favBtn'); if(!b) return;
-  var cur = currentFolioId();
-  if(!cur){ b.hidden=true; return; }
-  b.hidden=false;
-  b.textContent = isFav(cur) ? '\\u2605 Quitar de favoritos' : '\\u2606 Marcar como favorito';
-  b.classList.toggle('on', isFav(cur));
-}
-function updateFavUI(){ updateStar(); updateFavBtn(); renderFav(); }
+function updateFavUI(){ updateStar(); renderFav(); }
 function openFav(){ if(histWrap) histWrap.classList.remove('open'); if(favWrap) favWrap.classList.add('open'); if(histBackdrop) histBackdrop.classList.add('open'); renderFav(); }
 function closeFav(){ if(favWrap) favWrap.classList.remove('open'); if(histBackdrop && !(histWrap && histWrap.classList.contains('open'))) histBackdrop.classList.remove('open'); }
 function openPanel(view){
@@ -239,7 +238,7 @@ function renderFolio(id){
 function render(){
   pushHist(location.hash || '#/');
   renderPanel();
-  renderFav(); updateFavBtn();
+  renderFav();
   var parts = (location.hash||'').replace(/^#/,'').split('/').filter(Boolean);
   if(parts[0]==='f' && parts[1]) return renderFolio(parts[1]);
   if(parts[0]==='s' && parts[1]) return renderSection(parts[1]);
@@ -249,6 +248,9 @@ function render(){
 /* ---- click navigation ---- */
 if(histBackdrop) histBackdrop.addEventListener('click', function(){ closePanel(); closeFav(); });
 if(favTog) favTog.addEventListener('click', function(e){ e.stopPropagation(); if(favWrap && favWrap.classList.contains('open')) closeFav(); else openFav(); });
+if(favPanel) favPanel.addEventListener('click', function(e){
+  if(e.target.closest('.fav-btn')){ e.stopPropagation(); toggleFav(currentFolioId()); }
+});
 function togHandler(view){ return function(e){
   e.stopPropagation();
   if(histWrap && histWrap.classList.contains('open') && panelView===view) closePanel();
@@ -364,10 +366,9 @@ try{ var _t=localStorage.getItem('reader.theme'); if(_t==='light'||_t==='dark') 
 try{ var _f=parseFloat(localStorage.getItem('reader.fz')); if(_f) applyFZ(_f); }catch(e){}
 try{ var _m=localStorage.getItem('reader.mode'); root.setAttribute('data-mode', _m==='limpia'?'limpia':'guiada'); }catch(e){ root.setAttribute('data-mode','guiada'); }
 syncSettings();
-if(brandLogo) brandLogo.addEventListener('click', function(e){ e.stopPropagation(); if(settings){ settings.hidden=!settings.hidden; syncSettings(); updateFavBtn(); } });
+if(brandLogo) brandLogo.addEventListener('click', function(e){ e.stopPropagation(); if(settings){ settings.hidden=!settings.hidden; syncSettings(); } });
 if(settings) settings.addEventListener('click', function(e){
   e.stopPropagation();
-  var fb=e.target.closest('#favBtn'); if(fb){ toggleFav(currentFolioId()); return; }
   var t=e.target.closest('[data-theme]'); if(t && settings.contains(t)){ applyTheme(t.getAttribute('data-theme')); return; }
   var f=e.target.closest('[data-fs]'); if(f && settings.contains(f)){ applyFZ(FZ + (f.getAttribute('data-fs')==='+'?0.1:-0.1)); return; }
   var md=e.target.closest('[data-mode]'); if(md && settings.contains(md)){ applyMode(md.getAttribute('data-mode')); return; }
@@ -549,10 +550,8 @@ function css(width: string): string {
     border-radius: 8px; padding: 8px 10px; font-family: inherit; font-size: .95rem; flex: 1;
   }
   .settings button.active { border-color: var(--selected); box-shadow: inset 0 0 0 1px var(--selected); font-weight: 700; }
-  .settings .set-install, .settings .set-refresh, .settings .set-fav { flex: 0 0 auto; margin-top: 2px; }
-  .settings .set-fav.on { border-color: #F5B301; color: #C98A00; font-weight: 700; }
+  .settings .set-install, .settings .set-refresh { flex: 0 0 auto; margin-top: 2px; }
   .set-install[hidden] { display: none; }
-  .set-fav[hidden] { display: none; }
   /* Aviso de versión nueva */
   .updbar {
     position: fixed; left: 50%; transform: translateX(-50%);
@@ -617,7 +616,15 @@ function css(width: string): string {
   .fav-toggles { box-shadow: -2px 0 8px rgba(0,0,0,.12); }
   .tog.fav-tog { border: 1px solid var(--bar-bd); border-right: none; border-radius: 10px 0 0 10px; }
   .favwrap.open .fav-tog svg { transform: rotate(180deg); }
-  .fav-empty { padding: 14px 12px; opacity: .6; font-size: .95rem; line-height: 1.45; }
+  /* Ocupa el hueco para que el botón de marcar quede siempre abajo del todo. */
+  .fav-empty { flex: 1; padding: 14px 12px; opacity: .6; font-size: .95rem; line-height: 1.45; }
+  .fav-btn {
+    flex-shrink: 0; margin-top: 6px; cursor: pointer;
+    border: 1px solid var(--btn-bd); background: var(--btn); color: inherit;
+    border-radius: 8px; padding: 12px 10px; font-family: inherit; font-size: 1rem;
+  }
+  .fav-btn:hover { border-color: var(--btn-bd-strong); }
+  .fav-btn.on { border-color: #F5B301; font-weight: 700; }
   /* Dos flechitas apiladas: arriba = Índice, abajo = Sesión */
   .toggles { align-self: stretch; flex-shrink: 0; width: 24px; display: none; flex-direction: column; box-shadow: 2px 0 8px rgba(0,0,0,.12); }
   /* Pestañas: visibles en desktop y en modo Guiada; escondidas en Limpia (táctil) */
@@ -849,7 +856,6 @@ export function renderGuideHtml(project: Project): string {
           '<button data-mode="limpia">Limpia</button>' +
         '</div>' +
         '<div class="set-label">Varios</div>' +
-        '<button class="set-fav" id="favBtn" hidden></button>' +
         '<button class="set-refresh" id="refreshBtn">Actualizar</button>' +
         '<button class="set-install" id="installBtn" hidden>Instalar en el dispositivo</button>' +
       '</div>' +
@@ -873,7 +879,8 @@ export function renderGuideHtml(project: Project): string {
     '</div>\n' +
     '<div class="pagenav" id="pagenav"></div>\n' +
     '<div class="updbar" id="updbar" hidden><span>Hay una versión nueva</span><button id="updbtn">Actualizar</button></div>\n' +
-    '<div class="ios-install" id="iosInstall" hidden><span class="ios-msg">A\\u00f1ade esta gu\\u00eda a tu pantalla de inicio: pulsa <b>Compartir</b> y luego <b>\\u00abA\\u00f1adir a pantalla de inicio\\u00bb</b>.</span><button class="ios-x" id="iosInstallClose" aria-label="Cerrar">\\u2715</button></div>\n' +
+    // Texto HTML (no JS): va literal, sin escapes \\uXXXX — la página declara charset utf-8.
+    '<div class="ios-install" id="iosInstall" hidden><span class="ios-msg">Añade esta guía a tu pantalla de inicio: pulsa <b>Compartir</b> y luego <b>«Añadir a pantalla de inicio»</b>.</span><button class="ios-x" id="iosInstallClose" aria-label="Cerrar">✕</button></div>\n' +
     '<script>\nvar GUIDE = ' + json + ';\nvar LOGO = ' + JSON.stringify(LOGO) + ';\nvar GUIDE_VER = ' + JSON.stringify(guideVer) + ';\n' + RUNTIME + '\n</script>\n' +
     '</body>\n</html>';
 
