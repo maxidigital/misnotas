@@ -24,7 +24,6 @@ var aboutBtn = document.getElementById('aboutBtn');
 var aboutDate = document.getElementById('aboutDate');
 var aboutMsg = document.getElementById('aboutMsg');
 var aboutAction = document.getElementById('aboutAction');
-var aboutClose = document.getElementById('aboutClose');
 function esc(t){ return (t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function sectionById(id){ for(var i=0;i<GUIDE.sections.length;i++){ if(GUIDE.sections[i].id===id) return GUIDE.sections[i]; } return null; }
 function findFolio(id){
@@ -461,7 +460,7 @@ function openAbout(){
 }
 function closeAbout(){ if(about) about.hidden = true; }
 if(aboutBtn) aboutBtn.addEventListener('click', function(e){ e.stopPropagation(); openAbout(); });
-if(aboutClose) aboutClose.addEventListener('click', function(e){ e.stopPropagation(); closeAbout(); });
+// No hay botón de cerrar: se cierra tocando fuera de la tarjeta (o con Escape).
 if(about) about.addEventListener('click', function(e){ if(e.target===about) closeAbout(); });
 if(aboutAction) aboutAction.addEventListener('click', function(e){
   e.stopPropagation();
@@ -507,10 +506,15 @@ window.addEventListener('appinstalled', function(){ if(installBtn) installBtn.hi
    avisa por su cuenta de que hay una versión nueva. */
 function remoteVer(){
   try{
-    // Unos pocos bytes en vez de la guía entera.
+    // Unos pocos bytes en vez de la guía entera. Un servidor que no conozca esta ruta
+    // responde 200 con el HTML de la SPA, así que no alcanza con mirar el status: si lo
+    // que vuelve no tiene pinta de versión, se usa el respaldo.
     return fetch(location.pathname + '/ver', { cache:'no-store' })
       .then(function(r){ return r.ok ? r.text() : ''; })
-      .then(function(t){ return (t||'').trim() || verFromPage(); })
+      .then(function(t){
+        t = (t||'').trim();
+        return (t && t.length < 64 && t.indexOf('<') === -1) ? t : verFromPage();
+      })
       .catch(function(){ return verFromPage(); });
   }catch(e){ return Promise.resolve(''); }
 }
@@ -974,7 +978,6 @@ export function renderGuideHtml(project: Project): string {
         '<div class="about-row"><span>Última actualización</span><b id="aboutDate">—</b></div>' +
         '<div class="about-msg" id="aboutMsg"></div>' +
         '<div class="modal-actions">' +
-          '<button id="aboutClose">Cerrar</button>' +
           '<button class="modal-ok" id="aboutAction">Comprobar actualizaciones</button>' +
         '</div>' +
       '</div>' +
