@@ -1,6 +1,7 @@
 import express from 'express';
 import { readFile, writeFile, readdir, mkdir, rename, unlink } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
+import { timingSafeEqual } from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -9,27 +10,65 @@ const ROOT = path.resolve(__dirname, '..');
 const DIST = path.join(ROOT, 'dist');
 const DATA_DIR = process.env.DATA_DIR || '/data';
 const PUBLISHED_DIR = path.join(DATA_DIR, 'published');
-const AUTH_PASSWORD = process.env.AUTH_PASSWORD || 'dev';
 const PORT = process.env.PORT || 3001;
+
+// En producción no hay contraseña por defecto: sin AUTH_PASSWORD el servidor no arranca
+// (si la variable se pierde en un deploy, es preferible caerse a quedar abierto con 'dev').
+const AUTH_PASSWORD = process.env.AUTH_PASSWORD || (process.env.NODE_ENV === 'production' ? '' : 'dev');
+if (!AUTH_PASSWORD) {
+  console.error('Falta AUTH_PASSWORD. Definila en el entorno antes de arrancar.');
+  process.exit(1);
+}
 
 await mkdir(DATA_DIR, { recursive: true });
 await mkdir(PUBLISHED_DIR, { recursive: true });
 
 const app = express();
-app.use(express.json({ limit: '16mb' }));
 
-/* ---------- auth (placeholder muy simple: una contraseña en header) ---------- */
-function requireAuth(req, res, next) {
-  if (req.get('x-app-password') === AUTH_PASSWORD) return next();
+/* ---------- auth (una contraseña compartida, en un header) ---------- */
+const PW = Buffer.from(AUTH_PASSWORD);
+function samePassword(given) {
+  const buf = Buffer.from(String(given || ''));
+  return buf.length === PW.length && timingSafeEqual(buf, PW);
+}
+
+/* Freno al fuerza bruta: cada fallo demora la respuesta (100ms, 200ms, 400ms… hasta 2s).
+   No bloquea, así que un atacante no puede dejar afuera al dueño; solo lo hace inviable. */
+const fails = new Map(); // ip -> cantidad de fallos seguidos
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+async function requireAuth(req, res, next) {
+  const ip = req.ip || req.socket.remoteAddress || '?';
+  if (samePassword(req.get('x-app-password'))) {
+    fails.delete(ip);
+    return next();
+  }
+  const n = (fails.get(ip) || 0) + 1;
+  if (fails.size > 500) fails.clear(); // techo de memoria; el castigo se reinicia, no pasa nada
+  fails.set(ip, n);
+  await sleep(Math.min(2000, 100 * 2 ** (n - 1)));
   return res.status(401).json({ error: 'unauthorized' });
 }
-app.get('/api/me', requireAuth, (_req, res) => res.json({ ok: true }));
+
+// Todo /api pide contraseña ANTES de parsear el body: sin credenciales no se puede
+// hacer que el servidor parsee 16mb de JSON.
+app.use('/api', requireAuth, express.json({ limit: '16mb' }));
+
+app.get('/api/me', (_req, res) => res.json({ ok: true }));
 
 /* ---------- guías (1 JSON por guía en DATA_DIR) ---------- */
 const ID_RE = /^[a-z0-9-]+$/;
 const validId = (id) => typeof id === 'string' && ID_RE.test(id) && id.length <= 100;
 const fileFor = (id) => path.join(DATA_DIR, id + '.json');
 const newId = () => 'g-' + Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
+
+/** Forma mínima aceptable de una guía. Esto es lo único que protege al único lugar
+ *  donde vive el contenido: sin este chequeo, un body vacío o roto pisa la guía entera. */
+function validProject(p) {
+  if (!p || typeof p !== 'object' || Array.isArray(p)) return false;
+  if (!Array.isArray(p.sections)) return false;
+  return p.sections.every((s) => s && typeof s === 'object' && !Array.isArray(s) && Array.isArray(s.folios));
+}
 
 async function readGuide(id) {
   return JSON.parse(await readFile(fileFor(id), 'utf8'));
@@ -72,7 +111,7 @@ async function writeFolders(list) {
   await rename(tmp, FOLDERS_FILE);
 }
 
-app.get('/api/guides', requireAuth, async (_req, res) => {
+app.get('/api/guides', async (_req, res) => {
   const files = (await readdir(DATA_DIR)).filter((f) => f.endsWith('.json') && !f.startsWith('_'));
   const list = [];
   for (const f of files) {
@@ -95,9 +134,9 @@ app.get('/api/guides', requireAuth, async (_req, res) => {
 });
 
 /* ---------- publicaciones ---------- */
-app.get('/api/publications', requireAuth, async (_req, res) => res.json(await readPublications()));
+app.get('/api/publications', async (_req, res) => res.json(await readPublications()));
 
-app.post('/api/publications', requireAuth, async (req, res) => {
+app.post('/api/publications', async (req, res) => {
   const b = req.body || {};
   const slug = String(b.slug || '').trim();
   if (!validId(slug)) return res.status(400).json({ error: 'slug inválido' });
@@ -115,7 +154,7 @@ app.post('/api/publications', requireAuth, async (req, res) => {
   res.json(pub);
 });
 
-app.put('/api/publications/:slug', requireAuth, async (req, res) => {
+app.put('/api/publications/:slug', async (req, res) => {
   const slug = req.params.slug;
   if (!validId(slug)) return res.status(400).json({ error: 'bad slug' });
   const b = req.body || {};
@@ -134,7 +173,7 @@ app.put('/api/publications/:slug', requireAuth, async (req, res) => {
   res.json(pub);
 });
 
-app.delete('/api/publications/:slug', requireAuth, async (req, res) => {
+app.delete('/api/publications/:slug', async (req, res) => {
   const slug = req.params.slug;
   if (!validId(slug)) return res.status(400).json({ error: 'bad slug' });
   let list = await readPublications();
@@ -148,7 +187,7 @@ app.delete('/api/publications/:slug', requireAuth, async (req, res) => {
   res.json({ ok: true });
 });
 
-app.get('/api/guides/:id', requireAuth, async (req, res) => {
+app.get('/api/guides/:id', async (req, res) => {
   if (!validId(req.params.id)) return res.status(400).json({ error: 'bad id' });
   try {
     res.json(await readGuide(req.params.id));
@@ -157,9 +196,11 @@ app.get('/api/guides/:id', requireAuth, async (req, res) => {
   }
 });
 
-app.post('/api/guides', requireAuth, async (req, res) => {
+app.post('/api/guides', async (req, res) => {
   const project = req.body || {};
-  const id = validId(project.id) ? project.id : newId();
+  if (!validProject(project)) return res.status(400).json({ error: 'guía inválida' });
+  // Se respeta el id que venga solo si está libre: crear no puede pisar una guía existente.
+  const id = validId(project.id) && !existsSync(fileFor(project.id)) ? project.id : newId();
   const now = new Date().toISOString();
   const toSave = { ...project, id, folderId: project.folderId ?? null, createdAt: project.createdAt || now, updatedAt: now };
   await writeGuide(id, toSave);
@@ -167,7 +208,7 @@ app.post('/api/guides', requireAuth, async (req, res) => {
 });
 
 /* PATCH: cambios de metadatos sin mandar el proyecto entero (renombrar / mover). */
-app.patch('/api/guides/:id', requireAuth, async (req, res) => {
+app.patch('/api/guides/:id', async (req, res) => {
   if (!validId(req.params.id)) return res.status(400).json({ error: 'bad id' });
   let p;
   try {
@@ -183,14 +224,30 @@ app.patch('/api/guides/:id', requireAuth, async (req, res) => {
   res.json({ id: p.id, name: p.name, folderId: p.folderId ?? null, updatedAt: p.updatedAt });
 });
 
-app.put('/api/guides/:id', requireAuth, async (req, res) => {
+app.put('/api/guides/:id', async (req, res) => {
   if (!validId(req.params.id)) return res.status(400).json({ error: 'bad id' });
-  const toSave = { ...(req.body || {}), id: req.params.id, updatedAt: new Date().toISOString() };
+  const body = req.body || {};
+  if (!validProject(body)) return res.status(400).json({ error: 'guía inválida' });
+  let prev;
+  try {
+    prev = await readGuide(req.params.id);
+  } catch {
+    return res.status(404).json({ error: 'not found' }); // guardar no crea guías
+  }
+  // El editor manda el contenido; la ubicación y el alta las manda el servidor. Así un
+  // editor abierto hace rato no revierte un "mover a carpeta" hecho desde el dashboard.
+  const toSave = {
+    ...body,
+    id: req.params.id,
+    folderId: prev.folderId ?? null,
+    createdAt: prev.createdAt || new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
   await writeGuide(req.params.id, toSave);
   res.json({ ok: true, updatedAt: toSave.updatedAt });
 });
 
-app.delete('/api/guides/:id', requireAuth, async (req, res) => {
+app.delete('/api/guides/:id', async (req, res) => {
   if (!validId(req.params.id)) return res.status(400).json({ error: 'bad id' });
   try {
     await unlink(fileFor(req.params.id));
@@ -201,9 +258,9 @@ app.delete('/api/guides/:id', requireAuth, async (req, res) => {
 });
 
 /* ---------- carpetas ---------- */
-app.get('/api/folders', requireAuth, async (_req, res) => res.json(await readFolders()));
+app.get('/api/folders', async (_req, res) => res.json(await readFolders()));
 
-app.post('/api/folders', requireAuth, async (req, res) => {
+app.post('/api/folders', async (req, res) => {
   const folders = await readFolders();
   const f = {
     id: newFolderId(),
@@ -215,7 +272,7 @@ app.post('/api/folders', requireAuth, async (req, res) => {
   res.json(f);
 });
 
-app.patch('/api/folders/:id', requireAuth, async (req, res) => {
+app.patch('/api/folders/:id', async (req, res) => {
   const folders = await readFolders();
   const f = folders.find((x) => x.id === req.params.id);
   if (!f) return res.status(404).json({ error: 'not found' });
@@ -225,7 +282,7 @@ app.patch('/api/folders/:id', requireAuth, async (req, res) => {
   res.json(f);
 });
 
-app.delete('/api/folders/:id', requireAuth, async (req, res) => {
+app.delete('/api/folders/:id', async (req, res) => {
   const id = req.params.id;
   let folders = await readFolders();
   const target = folders.find((x) => x.id === id);
@@ -254,7 +311,7 @@ app.delete('/api/folders/:id', requireAuth, async (req, res) => {
 
 /* ---------- service worker de las guías (PWA / offline), scope /p/ ---------- */
 const SW_JS = `
-const CACHE = 'guia-v2';
+const CACHE = 'guia-v3';
 self.addEventListener('install', function(){ self.skipWaiting(); });
 self.addEventListener('activate', function(e){
   e.waitUntil(
@@ -274,12 +331,13 @@ self.addEventListener('fetch', function(e){
   if(url.origin !== self.location.origin) return;
   if(url.pathname.indexOf('/p/') !== 0 || url.pathname === '/p/sw.js') return;
   // Network-first bypassing the HTTP cache (iOS standalone la cachea agresivamente);
-  // la copia offline vive solo en CacheStorage.
+  // la copia offline vive solo en CacheStorage. Se guarda bajo el pathname (sin query)
+  // para que los reloads con ?v=... no dejen una entrada nueva cada vez.
   e.respondWith(
     fetch(url.pathname, { cache: 'no-store', credentials: 'same-origin' }).then(function(res){
-      try { var copy = res.clone(); caches.open(CACHE).then(function(c){ c.put(req, copy); }); } catch(_){}
+      try { var copy = res.clone(); caches.open(CACHE).then(function(c){ c.put(url.pathname, copy); }); } catch(_){}
       return res;
-    }).catch(function(){ return caches.match(req); })
+    }).catch(function(){ return caches.match(url.pathname); })
   );
 });
 `;
