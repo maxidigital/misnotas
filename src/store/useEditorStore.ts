@@ -20,14 +20,6 @@ interface EditorState {
   // derived
   getActiveProject: () => Project | undefined;
 
-  // project
-  createProject: (name?: string) => void;
-  renameProject: (id: string, name: string) => void;
-  setMaxChars: (n: number) => void;
-  deleteProject: (id: string) => void;
-  setActiveProject: (id: string) => void;
-  importProject: (project: Project) => void;
-
   // section
   addSection: (name?: string) => void;
   updateSection: (id: string, patch: Partial<Pick<Section, 'name' | 'type' | 'titleBarColor'>>) => void;
@@ -53,10 +45,6 @@ interface EditorState {
 
   // load a guide (from the server) into the editor
   loadProject: (project: Project) => void;
-}
-
-function newProject(name: string): Project {
-  return { id: uid(), name, createdAt: now(), updatedAt: now(), sections: [] };
 }
 
 export const useEditorStore = create<EditorState>()((set, get) => {
@@ -96,51 +84,6 @@ export const useEditorStore = create<EditorState>()((set, get) => {
         openFolioIds: [],
 
         getActiveProject: () => get().projects.find((p) => p.id === get().activeProjectId),
-
-        // ----- project -----
-        createProject: (name) =>
-          set((s) => {
-            const p = newProject(name?.trim() || 'Proyecto sin título');
-            return { projects: [...s.projects, p], activeProjectId: p.id, selection: {} };
-          }),
-        renameProject: (id, name) =>
-          set((s) => ({
-            projects: s.projects.map((p) => (p.id === id ? { ...p, name: name.trim() || p.name, updatedAt: now() } : p)),
-          })),
-        setMaxChars: (n) => mutateActive((p) => ({ ...p, maxChars: n > 0 ? n : undefined })),
-        deleteProject: (id) =>
-          set((s) => {
-            const projects = s.projects.filter((p) => p.id !== id);
-            const activeProjectId = s.activeProjectId === id ? (projects[0]?.id ?? null) : s.activeProjectId;
-            return { projects, activeProjectId, selection: {}, openFolioIds: s.activeProjectId === id ? [] : s.openFolioIds };
-          }),
-        setActiveProject: (id) => set({ activeProjectId: id, selection: {}, openFolioIds: [] }),
-        importProject: (project) =>
-          set((s) => {
-            // Keep section/folio ids so BOTH kinds of link survive: the list links and the
-            // inline links (which store data-id inside the guión HTML and can't be remapped).
-            // Only the project id is fresh. Id lookups are always scoped to the active project.
-            const imported: Project = {
-              id: uid(),
-              name: project.name || 'Proyecto importado',
-              createdAt: project.createdAt || now(),
-              updatedAt: now(),
-              maxChars: project.maxChars,
-              sections: (project.sections || []).map((sec) => ({
-                id: sec.id,
-                name: sec.name ?? 'Sección',
-                type: sec.type === 'apendice' ? 'apendice' : 'flujo',
-                titleBarColor: sec.titleBarColor,
-                folios: (sec.folios || []).map((f) => ({
-                  id: f.id,
-                  title: f.title ?? '',
-                  guion: f.guion ?? '',
-                  links: (f.links ?? []).map((l) => ({ id: l.id ?? uid(), label: l.label ?? '', target: l.target })),
-                })),
-              })),
-            };
-            return { projects: [...s.projects, imported], activeProjectId: imported.id, selection: {} };
-          }),
 
         // ----- section -----
         addSection: (name) => {
