@@ -368,9 +368,9 @@ function applyFZ(v){
   root.style.setProperty('--fz', String(FZ));
   try{ localStorage.setItem('reader.fz', String(FZ)); }catch(e){}
 }
-try{ var _t=localStorage.getItem('reader.theme'); if(_t==='light'||_t==='dark') root.setAttribute('data-theme', _t); }catch(e){}
+/* Tema y modo ya vienen puestos en <html> por el script de la cabecera. Acá solo se
+   recupera FZ, que además de la variable CSS necesita el valor en memoria para A+/A-. */
 try{ var _f=parseFloat(localStorage.getItem('reader.fz')); if(_f) applyFZ(_f); }catch(e){}
-try{ var _m=localStorage.getItem('reader.mode'); root.setAttribute('data-mode', _m==='limpia'?'limpia':'guiada'); }catch(e){ root.setAttribute('data-mode','guiada'); }
 syncSettings();
 if(menuBtn) menuBtn.addEventListener('click', function(e){ e.stopPropagation(); if(settings){ settings.hidden=!settings.hidden; syncSettings(); } });
 if(settings) settings.addEventListener('click', function(e){
@@ -440,6 +440,11 @@ function fmtBuilt(){
     return d.toLocaleString('es-ES', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
   }catch(e){ return '\\u2014'; }
 }
+function aboutSay(t, ok){
+  if(!aboutMsg) return;
+  aboutMsg.textContent = t;
+  aboutMsg.className = 'about-msg' + (ok ? ' ok' : '');
+}
 function syncAbout(){
   if(!aboutAction) return;
   aboutAction.textContent = hayNueva ? 'Actualizar' : 'Comprobar actualizaciones';
@@ -449,7 +454,7 @@ function openAbout(){
   if(!about) return;
   if(settings) settings.hidden = true;
   if(aboutDate) aboutDate.textContent = fmtBuilt();
-  if(aboutMsg) aboutMsg.textContent = hayNueva ? 'Hay una versi\\u00f3n nueva.' : '';
+  aboutSay(hayNueva ? 'Hay una versi\\u00f3n nueva.' : '', false);
   syncAbout();
   about.hidden = false;
 }
@@ -461,16 +466,16 @@ if(aboutAction) aboutAction.addEventListener('click', function(e){
   e.stopPropagation();
   if(hayNueva){ hardReload(); return; }
   aboutAction.disabled = true;
-  if(aboutMsg) aboutMsg.textContent = 'Comprobando\\u2026';
+  aboutSay('Comprobando\\u2026', false);
   remoteVer().then(function(v){
     aboutAction.disabled = false;
-    if(!v){ if(aboutMsg) aboutMsg.textContent = 'No se pudo comprobar. \\u00bfEst\\u00e1s sin conexi\\u00f3n?'; return; }
+    if(!v){ aboutSay('No se pudo comprobar. \\u00bfEst\\u00e1s sin conexi\\u00f3n?', false); return; }
     if(v !== GUIDE_VER){
       hayNueva = true;
       if(updbar) updbar.hidden = false;
-      if(aboutMsg) aboutMsg.textContent = 'Hay una versi\\u00f3n nueva.';
+      aboutSay('Hay una versi\\u00f3n nueva.', false);
     } else {
-      if(aboutMsg) aboutMsg.textContent = 'Ya tienes la \\u00faltima versi\\u00f3n.';
+      aboutSay('Ya tienes la \\u00faltima versi\\u00f3n.', true);
     }
     syncAbout();
   });
@@ -533,7 +538,7 @@ function css(width: string): string {
     --card:#FEFCF7; --card-bd:rgba(120,105,80,.20); --card-bd-h:rgba(120,105,80,.42);
     --card-sh:0 4px 14px rgba(70,55,30,.10);
     --btn:#FBF7EE; --btn-bd:rgba(120,105,80,.28); --btn-bd-strong:rgba(120,105,80,.5);
-    --link:#4A6B57; --logo-invert:0; --fz:1; --histw:min(80vw, 300px); --selected:#4692F2;
+    --link:#4A6B57; --ok:#2E7D4F; --logo-invert:0; --fz:1; --histw:min(80vw, 300px); --selected:#4692F2;
   }
   /* variables de tema oscuro (reutilizadas por auto y por override manual) */
   @media (prefers-color-scheme: dark) {
@@ -546,7 +551,7 @@ function css(width: string): string {
       --card:#2A2D34; --card-bd:rgba(255,255,255,.08); --card-bd-h:rgba(255,255,255,.20);
       --card-sh:0 4px 14px rgba(0,0,0,.35);
       --btn:#2A2D34; --btn-bd:rgba(255,255,255,.10); --btn-bd-strong:rgba(255,255,255,.24);
-      --link:#89A995; --logo-invert:1;
+      --link:#89A995; --ok:#5FBF87; --logo-invert:1;
     }
   }
   :root[data-theme="dark"] {
@@ -558,7 +563,7 @@ function css(width: string): string {
     --card:#2A2D34; --card-bd:rgba(255,255,255,.08); --card-bd-h:rgba(255,255,255,.20);
     --card-sh:0 4px 14px rgba(0,0,0,.35);
     --btn:#2A2D34; --btn-bd:rgba(255,255,255,.10); --btn-bd-strong:rgba(255,255,255,.24);
-    --link:#89A995; --logo-invert:1;
+    --link:#89A995; --ok:#5FBF87; --logo-invert:1;
   }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body { height: 100%; margin: 0; }
@@ -631,6 +636,7 @@ function css(width: string): string {
   .about-row { display: flex; flex-direction: column; gap: 2px; }
   .about-row span { opacity: .55; font-size: .72rem; text-transform: uppercase; letter-spacing: .5px; }
   .about-msg { min-height: 1.5em; margin-top: 10px; font-size: .95rem; opacity: .8; }
+  .about-msg.ok { color: var(--ok); opacity: 1; font-weight: 600; }
   .modal-actions { display: flex; gap: 8px; margin-top: 14px; }
   .modal-actions button {
     flex: 1; cursor: pointer; border: 1px solid var(--btn-bd); background: var(--btn); color: inherit;
@@ -915,6 +921,14 @@ export function renderGuideHtml(project: Project): string {
   const nameEsc = (project.name || 'Guía').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   const html =
     '<!doctype html>\n<html lang="es">\n<head>\n<meta charset="utf-8">\n' +
+    // Preferencias ANTES del primer pintado: si esto viviera en el script del final,
+    // la primera pasada se dibujaría con los valores por defecto (parpadeo de las
+    // pestañas de los bordes, del tema y del tamaño de letra).
+    '<script>try{var r=document.documentElement,s=localStorage;' +
+    "var m=s.getItem('reader.mode');r.setAttribute('data-mode',m==='limpia'?'limpia':'guiada');" +
+    "var t=s.getItem('reader.theme');if(t==='light'||t==='dark')r.setAttribute('data-theme',t);" +
+    "var f=parseFloat(s.getItem('reader.fz'));if(f)r.style.setProperty('--fz',String(Math.max(0.8,Math.min(1.4,f))));" +
+    "}catch(e){document.documentElement.setAttribute('data-mode','guiada');}</script>\n" +
     '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n' +
     '<link rel="icon" href="' + LOGO + '">\n' +
     '<meta name="theme-color" content="#E3D8C4">\n' +
