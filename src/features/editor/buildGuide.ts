@@ -21,6 +21,7 @@ var favPanel = document.getElementById('favpanel');
 var favTog = document.getElementById('favTog');
 var about = document.getElementById('about');
 var aboutBtn = document.getElementById('aboutBtn');
+var helpBtn = document.getElementById('helpBtn');
 var aboutDate = document.getElementById('aboutDate');
 var aboutMsg = document.getElementById('aboutMsg');
 var aboutAction = document.getElementById('aboutAction');
@@ -459,6 +460,13 @@ function openAbout(){
   about.hidden = false;
 }
 function closeAbout(){ if(about) about.hidden = true; }
+// El manual también está enlazado en la pantalla de inicio; desde acá se llega estando
+// en cualquier folio, que es donde suele hacer falta.
+if(helpBtn) helpBtn.addEventListener('click', function(e){
+  e.stopPropagation();
+  if(settings) settings.hidden = true;
+  window.open('/ayuda', '_blank', 'noopener');
+});
 if(aboutBtn) aboutBtn.addEventListener('click', function(e){ e.stopPropagation(); openAbout(); });
 // No hay botón de cerrar: se cierra tocando fuera de la tarjeta (o con Escape).
 if(about) about.addEventListener('click', function(e){ if(e.target===about) closeAbout(); });
@@ -620,7 +628,7 @@ function css(width: string): string {
     border-radius: 8px; padding: 8px 10px; font-family: inherit; font-size: .95rem; flex: 1;
   }
   .settings button.active { border-color: var(--selected); box-shadow: inset 0 0 0 1px var(--selected); font-weight: 700; }
-  .settings .set-install, .settings .set-about { flex: 0 0 auto; margin-top: 2px; }
+  .settings .set-install, .settings .set-about, .settings .set-help { flex: 0 0 auto; margin-top: 2px; }
   .set-install[hidden] { display: none; }
   /* Modal de "Acerca de" */
   .modal {
@@ -949,6 +957,7 @@ export function renderGuideHtml(project: Project): string {
           '<button data-mode="limpia">Limpia</button>' +
         '</div>' +
         '<div class="set-label">Varios</div>' +
+        '<button class="set-help" id="helpBtn">Ayuda</button>' +
         '<button class="set-about" id="aboutBtn">Acerca de…</button>' +
         '<button class="set-install" id="installBtn" hidden>Instalar en el dispositivo</button>' +
       '</div>' +
