@@ -253,15 +253,34 @@ try{ var _fv=JSON.parse(localStorage.getItem(favKey())||'[]'); if(_fv && _fv.len
 function saveFav(){ try{ localStorage.setItem(favKey(), JSON.stringify(FAV)); }catch(e){} }
 function isFav(id){ return !!id && FAV.indexOf(id)!==-1; }
 function toggleFav(id){ if(!id) return; if(isFav(id)){ FAV=FAV.filter(function(x){ return x!==id; }); } else { FAV.unshift(id); } saveFav(); updateFavUI(); }
+/* Reordenar por posición visible (no por índice crudo de FAV, que puede tener
+   ids de folios que ya no existen mezclados). */
+function moveFav(id, dir){
+  var visible = FAV.filter(function(x){ return !!findFolio(x); });
+  var vi = visible.indexOf(id);
+  if(vi<0) return;
+  var ti = vi + (dir==='up'?-1:1);
+  if(ti<0 || ti>=visible.length) return;
+  var ai = FAV.indexOf(id), bi = FAV.indexOf(visible[ti]);
+  var tmp = FAV[ai]; FAV[ai]=FAV[bi]; FAV[bi]=tmp;
+  saveFav();
+  renderFav();
+}
 function renderFav(){
   if(!favPanel) return;
   var cur = currentFolioId();
   var items = FAV.filter(function(id){ return !!findFolio(id); });
   var html = '<div class="hist-title">Favoritos</div>';
   if(items.length){
-    html += '<div class="hist-list">' + items.map(function(id){
+    html += '<div class="hist-list">' + items.map(function(id, i){
       var r = findFolio(id);
-      return '<button class="hist-item'+(id===cur?' cur':'')+'" data-go="#/f/'+id+'">'+esc(r.folio.title||'(sin t\\u00edtulo)')+'</button>';
+      return '<div class="fav-row">'
+        + '<button class="hist-item'+(id===cur?' cur':'')+'" data-go="#/f/'+id+'">'+esc(r.folio.title||'(sin t\\u00edtulo)')+'</button>'
+        + '<span class="fav-order">'
+          + '<button class="fav-move" data-move="up" data-id="'+id+'" aria-label="Subir"'+(i===0?' disabled':'')+'>\\u25b4</button>'
+          + '<button class="fav-move" data-move="down" data-id="'+id+'" aria-label="Bajar"'+(i===items.length-1?' disabled':'')+'>\\u25be</button>'
+        + '</span>'
+        + '</div>';
     }).join('') + '</div>';
   } else if(cur){
     html += '<div class="fav-empty">A\\u00fan no has marcado ning\\u00fan folio. Usa el bot\\u00f3n de abajo para a\\u00f1adir este.</div>';
@@ -392,7 +411,9 @@ function render(){
 if(histBackdrop) histBackdrop.addEventListener('click', function(){ closePanel(); closeFav(); });
 if(favTog) favTog.addEventListener('click', function(e){ e.stopPropagation(); if(favWrap && favWrap.classList.contains('open')) closeFav(); else openFav(); });
 if(favPanel) favPanel.addEventListener('click', function(e){
-  if(e.target.closest('.fav-btn')){ e.stopPropagation(); toggleFav(currentFolioId()); }
+  if(e.target.closest('.fav-btn')){ e.stopPropagation(); toggleFav(currentFolioId()); return; }
+  var mv=e.target.closest('[data-move]');
+  if(mv){ e.stopPropagation(); moveFav(mv.getAttribute('data-id'), mv.getAttribute('data-move')); }
 });
 function togHandler(view){ return function(e){
   e.stopPropagation();
@@ -861,7 +882,8 @@ function css(width: string): string {
   .history {
     width: var(--histw);
     background: var(--bar); border-right: 1px solid var(--bar-bd);
-    overflow: hidden; display: flex; flex-direction: column; padding: 8px;
+    overflow: hidden; display: flex; flex-direction: column;
+    padding: 8px 8px calc(8px + env(safe-area-inset-bottom));
   }
   .histwrap.open .history { box-shadow: 0 0 40px rgba(0,0,0,.28); }
   /* Panel de Favoritos (a la derecha, espejo del historial/índice) */
@@ -875,7 +897,8 @@ function css(width: string): string {
   .favpanel {
     width: var(--histw);
     background: var(--bar); border-left: 1px solid var(--bar-bd);
-    overflow: hidden; display: flex; flex-direction: column; padding: 8px;
+    overflow: hidden; display: flex; flex-direction: column;
+    padding: 8px 8px calc(8px + env(safe-area-inset-bottom));
   }
   .favwrap.open .favpanel { box-shadow: 0 0 40px rgba(0,0,0,.28); }
   .fav-toggles { box-shadow: -2px 0 8px rgba(0,0,0,.12); }
@@ -969,6 +992,18 @@ function css(width: string): string {
   .hist-item.result { white-space: normal; overflow: visible; text-overflow: clip; line-height: 1.3; }
   .hist-item.result small { display: block; margin-top: 3px; font-weight: 400; opacity: .68; }
   .hist-item.result mark { background: var(--selected); color: #fff; border-radius: 3px; padding: 0 1px; }
+  /* Favoritos: cada fila es el folio + dos flechitas para reordenar. */
+  .fav-row { display: flex; align-items: stretch; gap: 2px; }
+  .fav-row .hist-item { flex: 1; width: auto; min-width: 0; }
+  .fav-order { flex-shrink: 0; display: flex; flex-direction: column; }
+  .fav-move {
+    flex: 1; cursor: pointer; border: none; background: transparent; color: inherit;
+    font-family: inherit; font-size: .8rem; line-height: 1; padding: 2px 6px;
+    border-radius: 6px; opacity: .6;
+  }
+  .fav-move:hover { background: var(--hover); opacity: 1; }
+  .fav-move:disabled { opacity: .2; cursor: default; }
+  .fav-move:disabled:hover { background: transparent; }
   .hist-clear {
     flex-shrink: 0; margin-top: 6px; cursor: pointer;
     border: 1px solid var(--btn-bd); background: var(--btn); color: inherit;
