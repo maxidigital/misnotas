@@ -6,7 +6,6 @@ import { LOGO } from '@/logo';
  *  finger-following horizontal carousel (prev | current | next) for folios. */
 const RUNTIME = `
 var crumbs = document.getElementById('crumbs');
-var brandLogo = document.getElementById('brandLogo');
 var pagenav = document.getElementById('pagenav');
 var viewport = document.querySelector('.viewport');
 var track = document.getElementById('track');
@@ -347,16 +346,17 @@ function setFolioTriple(gi){
 }
 
 /* ---- render ---- */
-function renderMenu(){ if(brandLogo) brandLogo.hidden=false; crumbs.innerHTML = '<span class="brand-name">Instituto Blasco</span>'; setSingle(menuInner()); pagenav.className='pagenav'; pagenav.innerHTML=''; }
+function renderMenu(){
+  crumbs.innerHTML = '<span class="brand-line"><img class="brand-logo" src="'+LOGO+'" alt=""><span class="brand-name">Instituto Blasco</span></span>';
+  setSingle(menuInner()); pagenav.className='pagenav'; pagenav.innerHTML='';
+}
 function renderSection(id){
   var s = sectionById(id); if(!s) return renderMenu();
-  if(brandLogo) brandLogo.hidden=true;
   crumbs.innerHTML = crumbHome(false);
   setSingle(sectionInner(s)); pagenav.className='pagenav'; pagenav.innerHTML='';
 }
 function renderFolio(id){
   var r = findFolio(id); if(!r) return renderMenu();
-  if(brandLogo) brandLogo.hidden=true;
   var s = r.section, f = r.folio, gi = flatIndex(f.id);
   crumbs.innerHTML = crumbHome(false)+csep()+crumbLink(s.name,'#/s/'+s.id);
   setFolioTriple(gi);
@@ -770,6 +770,9 @@ function css(width: string): string {
   .crumb:last-child { flex-shrink: 1; }
   .csep { opacity: .4; font-size: 1rem; flex-shrink: 0; }
   .brand-name { font-weight: 600; font-size: 1rem; }
+  /* Logo + "Instituto Blasco" centrados como conjunto (solo en Inicio, es lo único
+     que pinta .crumbs ahí; en sección/folio crumbs son los breadcrumbs de siempre). */
+  .brand-line { width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; }
 
   /* Menú de ajustes (tema + tamaño de letra) */
   .settings {
@@ -1127,7 +1130,6 @@ export function renderGuideHtml(project: Project): string {
       '<button class="menubtn" id="menuBtn" aria-label="Menú" title="Menú">' +
         '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"></line><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="17" x2="20" y2="17"></line></svg>' +
       '</button>' +
-      '<img class="brand-logo" id="brandLogo" src="' + LOGO + '" alt="">' +
       '<nav class="crumbs" id="crumbs"></nav>' +
       '<div class="settings" id="settings" hidden>' +
         '<div class="set-label">Tema</div>' +
