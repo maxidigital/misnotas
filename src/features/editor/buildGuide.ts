@@ -1005,11 +1005,20 @@ function css(width: string): string {
   .home-help { text-align: center; margin-top: 26px; }
   .help-link { color: var(--link); font-size: .95rem; text-decoration: underline; text-underline-offset: 3px; }
 
-  /* Title band (pantalla de sección: lista de folios) */
+  /* Title band, tema Clásico (default): pantalla de sección (lista de folios). */
   h1.band {
     font-size: calc(1.95rem * var(--fz, 1)); text-align: center; font-weight: 700; line-height: 1.2;
     padding: .55em .9em; margin: 0 0 1.1em; border-radius: 16px;
     background: var(--bbg, #ddd); color: var(--btxt, #333);
+  }
+  /* Título de sección, tema Nuevo: mismo lenguaje que el título del folio (sin caja,
+     centrado, cursiva, gris, línea del color de la sección debajo). */
+  :root[data-visual="nuevo"] h1.band {
+    font-size: calc(1.8rem * var(--fz, 1)); font-weight: 700; font-style: italic; line-height: 1.25;
+    text-align: center; color: var(--text-muted, var(--fg));
+    background: none; border-radius: 0;
+    padding: 0 0 .5em; margin: 0 0 1.1em;
+    border-bottom: 3px solid var(--raw, var(--sheet-bd));
   }
   /* Título del folio, tema Clásico (default): misma caja de color que la pantalla
      de sección. */
