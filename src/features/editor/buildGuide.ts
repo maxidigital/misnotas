@@ -123,10 +123,25 @@ function buildTreeHtml(){
 /* ---- búsqueda dentro del panel Índice ---- */
 var idxQuery = '';
 function wordsOf(q){ return norm(q).split(/\\s+/).filter(function(w){ return w.length>0; }); }
+// Palabras de 1-2 letras ("de", "la", "el"...) son casi siempre muy comunes: buscarlas en
+// el cuerpo del folio inundaría los resultados con casi cualquier folio de la guía.
+function bodyWords(words){ return words.filter(function(w){ return w.length>=3; }); }
+function titleScore(item, words){
+  var t = norm(item.f.title||'');
+  var n = 0;
+  for(var i=0;i<words.length;i++){ if(t.indexOf(words[i])!==-1) n++; }
+  return n;
+}
 function matchItems(words){
-  return FLAT.filter(function(item){
-    return words.every(function(w){ return item.fullSearch.indexOf(w)!==-1; });
-  });
+  var bw = bodyWords(words);
+  if(bw.length){
+    return FLAT.filter(function(item){
+      return bw.every(function(w){ return item.fullSearch.indexOf(w)!==-1; });
+    });
+  }
+  // Solo hay palabras cortas: para no inundar de resultados del cuerpo, cuentan
+  // únicamente si aparecen en el título del folio.
+  return FLAT.filter(function(item){ return titleScore(item, words) > 0; });
 }
 function markSnippet(plain, normd, words){
   var hit = new Array(plain.length);
@@ -148,19 +163,14 @@ function markSnippet(plain, normd, words){
   return out;
 }
 function snippetFor(item, words){
+  var bw = bodyWords(words);
   var pos = -1;
-  for(var i=0;i<words.length && pos<0;i++){ pos = item.plainNorm.indexOf(words[i]); }
+  for(var i=0;i<bw.length && pos<0;i++){ pos = item.plainNorm.indexOf(bw[i]); }
   if(pos<0) pos = 0;
   var start = Math.max(0, pos-40), end = Math.min(item.plain.length, pos+90);
   var pre = start>0 ? '\\u2026' : '';
   var post = end<item.plain.length ? '\\u2026' : '';
-  return pre + markSnippet(item.plain.slice(start,end), item.plainNorm.slice(start,end), words) + post;
-}
-function titleScore(item, words){
-  var t = norm(item.f.title||'');
-  var n = 0;
-  for(var i=0;i<words.length;i++){ if(t.indexOf(words[i])!==-1) n++; }
-  return n;
+  return pre + markSnippet(item.plain.slice(start,end), item.plainNorm.slice(start,end), bw) + post;
 }
 function buildResultsHtml(words){
   var items = matchItems(words);
