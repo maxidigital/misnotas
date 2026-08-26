@@ -745,7 +745,7 @@ function css(width: string): string {
     padding: 8px 16px; font-size: 1rem;
   }
   .topbar .brand-logo { height: 26px; width: 26px; object-fit: contain; flex-shrink: 0; filter: invert(var(--logo-invert)); }
-  /* Botón de menú (tres rayas), a la derecha de la barra */
+  /* Botón de menú (tres rayas), a la izquierda de la barra */
   .menubtn {
     flex-shrink: 0; cursor: pointer; display: flex; align-items: center; justify-content: center;
     border: none; background: transparent; color: inherit; padding: 5px; border-radius: 8px;
@@ -766,7 +766,7 @@ function css(width: string): string {
 
   /* Menú de ajustes (tema + tamaño de letra) */
   .settings {
-    position: absolute; z-index: 40; top: calc(100% + 6px); right: 12px;
+    position: absolute; z-index: 40; top: calc(100% + 6px); left: 12px;
     background: var(--bar); border: 1px solid var(--bar-bd); border-radius: 12px;
     box-shadow: 0 10px 30px rgba(0,0,0,.25); padding: 8px; min-width: 210px;
     display: flex; flex-direction: column; gap: 6px; font-size: 1rem;
@@ -1102,11 +1102,11 @@ export function renderGuideHtml(project: Project): string {
     '<link rel="apple-touch-icon" href="' + LOGO + '">\n' +
     '<title>' + nameEsc + '</title>\n<style>' + css(width) + '\n' + bandCss + '</style>\n</head>\n<body>\n' +
     '<div class="topbar">' +
-      '<img class="brand-logo" src="' + LOGO + '" alt="">' +
-      '<nav class="crumbs" id="crumbs"></nav>' +
       '<button class="menubtn" id="menuBtn" aria-label="Menú" title="Menú">' +
         '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"></line><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="17" x2="20" y2="17"></line></svg>' +
       '</button>' +
+      '<img class="brand-logo" src="' + LOGO + '" alt="">' +
+      '<nav class="crumbs" id="crumbs"></nav>' +
       '<div class="settings" id="settings" hidden>' +
         '<div class="set-label">Tema</div>' +
         '<div class="set-row">' +
