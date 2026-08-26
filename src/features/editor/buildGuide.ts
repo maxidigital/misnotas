@@ -804,9 +804,16 @@ function css(width: string): string {
   .crumb:last-child { flex-shrink: 1; }
   .csep { opacity: .4; font-size: 1rem; flex-shrink: 0; }
   .brand-name { font-weight: 600; font-size: 1rem; }
-  /* Logo + "Instituto Blasco" centrados como conjunto (solo en Inicio, es lo único
-     que pinta .crumbs ahí; en sección/folio crumbs son los breadcrumbs de siempre). */
-  .brand-line { width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; }
+  /* Logo + "Instituto Blasco" centrados en TODA la barra (no en el espacio que
+     sobra después del botón de menú, que los corría hacia la derecha). Posición
+     absoluta respecto a .topbar, ignora el ancho de .crumbs. Solo en Inicio, es
+     lo único que pinta .crumbs ahí; en sección/folio crumbs son los breadcrumbs
+     de siempre y no llevan esta clase. */
+  .brand-line {
+    position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+    display: flex; align-items: center; gap: 8px;
+    max-width: calc(100% - 96px); overflow: hidden; white-space: nowrap;
+  }
 
   /* Menú de ajustes (tema + tamaño de letra) */
   .settings {
