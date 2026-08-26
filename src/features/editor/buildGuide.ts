@@ -455,13 +455,20 @@ viewport.addEventListener('touchmove', function(e){
   track.style.transform = 'translateX('+(-W+d)+'px)';
 }, {passive:false});
 viewport.addEventListener('touchend', function(e){
+  // "moved" depende de haber recibido touchmove; en pantallas sin swipe (Inicio/
+  // sección) nunca se llama preventDefault(), así que un flick rápido puede
+  // llegarle al navegador con pocos o ningún touchmove y dejar moved en false
+  // aunque el dedo sí se haya desplazado. Se refuerza con la distancia real
+  // entre el toque inicial y el final.
+  var ex=e.changedTouches[0].clientX, ey=e.changedTouches[0].clientY;
+  var reallyMoved = moved || Math.abs(ex-sx)>10 || Math.abs(ey-sy)>10;
   // tap (sin arrastrar) en la banda izquierda → arriba: Índice, abajo: Sesión
-  if(!moved && startLeft && !(histWrap && histWrap.classList.contains('open'))
+  if(!reallyMoved && startLeft && !(histWrap && histWrap.classList.contains('open'))
      && !e.target.closest('a, button')){
     openPanel(startTop ? 'index' : 'session'); dragging=false; return;
   }
   // tap en la banda derecha → Favoritos
-  if(!moved && startRight && !(favWrap && favWrap.classList.contains('open'))
+  if(!reallyMoved && startRight && !(favWrap && favWrap.classList.contains('open'))
      && !e.target.closest('a, button')){
     openFav(); dragging=false; return;
   }
