@@ -38,6 +38,18 @@ function findFolio(id){
 var FLAT = [];
 GUIDE.sections.forEach(function(s){ s.folios.forEach(function(f){ FLAT.push({ s:s, f:f }); }); });
 function flatIndex(id){ for(var k=0;k<FLAT.length;k++){ if(FLAT[k].f.id===id) return k; } return -1; }
+
+/* ---- búsqueda: texto plano por folio (para snippet) + versión normalizada (para matchear) ---- */
+function norm(t){ return (t||'').toLowerCase().normalize('NFD').replace(/[\\u0300-\\u036f]/g,''); }
+function stripHtml(html){ var d=document.createElement('div'); d.innerHTML=html||''; return d.textContent||''; }
+FLAT.forEach(function(item){
+  // normalize('NFC'): el texto de origen a veces trae acentos ya descompuestos (letra +
+  // marca combinante suelta, p.ej. copiado de otra fuente); sin esto, plain y plainNorm
+  // pueden quedar de distinta longitud y el resaltado del snippet se desalinea.
+  item.plain = ((item.f.title ? item.f.title+'. ' : '') + stripHtml(item.f.body)).normalize('NFC');
+  item.plainNorm = norm(item.plain);
+  item.fullSearch = norm(item.s.name) + ' ' + item.plainNorm;
+});
 function currentFolioId(){ var p=(location.hash||'').replace(/^#/,'').split('/').filter(Boolean); return (p[0]==='f'&&p[1])?p[1]:null; }
 function goRel(delta){
   var id=currentFolioId(); if(!id) return;
@@ -86,8 +98,7 @@ function renderHistory(){
 /* ---- panel lateral: dos vistas (Índice / Sesión) ---- */
 var panelView = 'session';
 var treeOpen = {};
-function renderTree(){
-  if(!histPanel) return;
+function buildTreeHtml(){
   var cur = currentFolioId();
   function row(s){
     var open = !!treeOpen[s.id];
@@ -105,13 +116,87 @@ function renderTree(){
   }
   var main = GUIDE.sections.filter(function(s){ return s.type!=='apendice'; });
   var apx = GUIDE.sections.filter(function(s){ return s.type==='apendice'; });
-  var html = '<div class="hist-title">\\u00cdndice</div><div class="hist-list">';
-  html += main.map(row).join('');
+  var html = main.map(row).join('');
   if(apx.length){ html += '<div class="tree-group">Ap\\u00e9ndices</div>' + apx.map(row).join(''); }
-  html += '</div>';
-  histPanel.innerHTML = html;
+  return html;
 }
-function renderPanel(){ if(panelView==='index') renderTree(); else renderHistory(); }
+/* ---- búsqueda dentro del panel Índice ---- */
+var idxQuery = '';
+function wordsOf(q){ return norm(q).split(/\\s+/).filter(function(w){ return w.length>0; }); }
+function matchItems(words){
+  return FLAT.filter(function(item){
+    return words.every(function(w){ return item.fullSearch.indexOf(w)!==-1; });
+  });
+}
+function markSnippet(plain, normd, words){
+  var hit = new Array(plain.length);
+  words.forEach(function(w){
+    if(!w) return;
+    var from = 0, idx;
+    while((idx = normd.indexOf(w, from)) !== -1){
+      for(var k=idx; k<idx+w.length && k<hit.length; k++) hit[k] = true;
+      from = idx + w.length;
+    }
+  });
+  var out = '', open = false;
+  for(var i=0; i<plain.length; i++){
+    if(hit[i] && !open){ out += '<mark>'; open = true; }
+    if(!hit[i] && open){ out += '</mark>'; open = false; }
+    out += esc(plain[i]);
+  }
+  if(open) out += '</mark>';
+  return out;
+}
+function snippetFor(item, words){
+  var pos = -1;
+  for(var i=0;i<words.length && pos<0;i++){ pos = item.plainNorm.indexOf(words[i]); }
+  if(pos<0) pos = 0;
+  var start = Math.max(0, pos-40), end = Math.min(item.plain.length, pos+90);
+  var pre = start>0 ? '\\u2026' : '';
+  var post = end<item.plain.length ? '\\u2026' : '';
+  return pre + markSnippet(item.plain.slice(start,end), item.plainNorm.slice(start,end), words) + post;
+}
+function buildResultsHtml(words){
+  var items = matchItems(words);
+  if(!items.length){
+    return { title: 'Sin resultados', html: '<div class="fav-empty">No se encontr\\u00f3 nada con esas palabras.</div>' };
+  }
+  var cur = currentFolioId();
+  var html = items.map(function(item){
+    var f = item.f, s = item.s;
+    return '<button class="hist-item result'+(cur===f.id?' cur':'')+'" data-go="#/f/'+f.id+'">'
+      + '<b>'+esc(s.name)+'</b> \\u2014 '+esc(f.title||'(sin t\\u00edtulo)')
+      + '<br><small>'+snippetFor(item, words)+'</small></button>';
+  }).join('');
+  var n = items.length;
+  return { title: n+' resultado'+(n===1?'':'s'), html: html };
+}
+function updateIndexResults(){
+  var input = document.getElementById('idxSearch');
+  var title = document.getElementById('idxTitle');
+  var results = document.getElementById('idxResults');
+  if(!results) return;
+  idxQuery = input ? input.value : '';
+  var words = wordsOf(idxQuery);
+  if(!words.length){
+    if(title) title.textContent = '\\u00cdndice';
+    results.innerHTML = buildTreeHtml();
+    return;
+  }
+  var r = buildResultsHtml(words);
+  if(title) title.textContent = r.title;
+  results.innerHTML = r.html;
+}
+function renderIndexPanel(){
+  if(!histPanel) return;
+  histPanel.innerHTML = '<div class="hist-title" id="idxTitle">\\u00cdndice</div>'
+    + '<div class="idx-search"><input id="idxSearch" type="search" inputmode="search" autocomplete="off" placeholder="Buscar en la gu\\u00eda\\u2026"></div>'
+    + '<div class="hist-list" id="idxResults"></div>';
+  var input = document.getElementById('idxSearch');
+  if(input) input.value = idxQuery;
+  updateIndexResults();
+}
+function renderPanel(){ if(panelView==='index') renderIndexPanel(); else renderHistory(); }
 /* ---- favoritos (persistidos por guía) ---- */
 var FAV = [];
 function favKey(){ return 'reader.fav:' + location.pathname; }
@@ -266,8 +351,11 @@ if(togIndex) togIndex.addEventListener('click', togHandler('index'));
 if(togSession) togSession.addEventListener('click', togHandler('session'));
 if(histPanel) histPanel.addEventListener('click', function(e){
   var sec=e.target.closest('.tree-sec');
-  if(sec){ e.stopPropagation(); var sid=sec.getAttribute('data-sec'); treeOpen[sid]=!treeOpen[sid]; renderTree(); return; }
+  if(sec){ e.stopPropagation(); var sid=sec.getAttribute('data-sec'); treeOpen[sid]=!treeOpen[sid]; updateIndexResults(); return; }
   if(e.target.closest('.hist-clear')){ e.stopPropagation(); clearHist(); }
+});
+if(histPanel) histPanel.addEventListener('input', function(e){
+  if(e.target && e.target.id==='idxSearch'){ updateIndexResults(); }
 });
 document.addEventListener('click', function(e){
   var g = e.target.closest('[data-go]');
@@ -768,6 +856,13 @@ function css(width: string): string {
   .tree-folio.cur { font-weight: 700; background: var(--hover); box-shadow: inset 3px 0 0 var(--selected); }
   .tree-group { font-size: .72rem; text-transform: uppercase; letter-spacing: .5px; opacity: .55; padding: 12px 10px 4px; margin-top: 6px; border-top: 1px solid var(--bar-bd); }
   .hist-title { flex-shrink: 0; font-size: .82rem; text-transform: uppercase; letter-spacing: .5px; opacity: .55; padding: 8px 10px 4px; }
+  .idx-search { flex-shrink: 0; padding: 4px 8px 8px; }
+  .idx-search input {
+    width: 100%; box-sizing: border-box; font-family: inherit; font-size: .95rem;
+    padding: 8px 10px; border-radius: 8px; border: 1px solid var(--btn-bd);
+    background: var(--btn); color: inherit; outline: none;
+  }
+  .idx-search input:focus { border-color: var(--selected); }
   .hist-list { flex: 1; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; }
   .hist-item {
     display: block; width: 100%; text-align: left; cursor: pointer;
@@ -777,6 +872,9 @@ function css(width: string): string {
   }
   .hist-item:hover { background: var(--hover); }
   .hist-item.cur { font-weight: 700; box-shadow: inset 3px 0 0 var(--selected); }
+  .hist-item.result { white-space: normal; overflow: visible; text-overflow: clip; line-height: 1.3; }
+  .hist-item.result small { display: block; margin-top: 3px; font-weight: 400; opacity: .68; }
+  .hist-item.result mark { background: var(--selected); color: #fff; border-radius: 3px; padding: 0 1px; }
   .hist-clear {
     flex-shrink: 0; margin-top: 6px; cursor: pointer;
     border: 1px solid var(--btn-bd); background: var(--btn); color: inherit;
