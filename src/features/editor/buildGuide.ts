@@ -175,8 +175,10 @@ function updateIndexResults(){
   var input = document.getElementById('idxSearch');
   var title = document.getElementById('idxTitle');
   var results = document.getElementById('idxResults');
+  var clearBtn = document.getElementById('idxClear');
   if(!results) return;
   idxQuery = input ? input.value : '';
+  if(clearBtn) clearBtn.hidden = !idxQuery;
   var words = wordsOf(idxQuery);
   if(!words.length){
     if(title) title.textContent = '\\u00cdndice';
@@ -190,7 +192,8 @@ function updateIndexResults(){
 function renderIndexPanel(){
   if(!histPanel) return;
   histPanel.innerHTML = '<div class="hist-title" id="idxTitle">\\u00cdndice</div>'
-    + '<div class="idx-search"><input id="idxSearch" type="search" inputmode="search" autocomplete="off" placeholder="Buscar en la gu\\u00eda\\u2026"></div>'
+    + '<div class="idx-search"><input id="idxSearch" type="search" inputmode="search" autocomplete="off" placeholder="Buscar en la gu\\u00eda\\u2026">'
+    + '<button class="idx-clear" id="idxClear" aria-label="Limpiar b\\u00fasqueda" title="Limpiar" hidden>\\u00d7</button></div>'
     + '<div class="hist-list" id="idxResults"></div>';
   var input = document.getElementById('idxSearch');
   if(input) input.value = idxQuery;
@@ -352,7 +355,13 @@ if(togSession) togSession.addEventListener('click', togHandler('session'));
 if(histPanel) histPanel.addEventListener('click', function(e){
   var sec=e.target.closest('.tree-sec');
   if(sec){ e.stopPropagation(); var sid=sec.getAttribute('data-sec'); treeOpen[sid]=!treeOpen[sid]; updateIndexResults(); return; }
-  if(e.target.closest('.hist-clear')){ e.stopPropagation(); clearHist(); }
+  if(e.target.closest('.hist-clear')){ e.stopPropagation(); clearHist(); return; }
+  if(e.target.closest('#idxClear')){
+    e.stopPropagation();
+    var input=document.getElementById('idxSearch');
+    if(input){ input.value=''; input.focus(); }
+    updateIndexResults();
+  }
 });
 if(histPanel) histPanel.addEventListener('input', function(e){
   if(e.target && e.target.id==='idxSearch'){ updateIndexResults(); }
@@ -856,13 +865,21 @@ function css(width: string): string {
   .tree-folio.cur { font-weight: 700; background: var(--hover); box-shadow: inset 3px 0 0 var(--selected); }
   .tree-group { font-size: .72rem; text-transform: uppercase; letter-spacing: .5px; opacity: .55; padding: 12px 10px 4px; margin-top: 6px; border-top: 1px solid var(--bar-bd); }
   .hist-title { flex-shrink: 0; font-size: .82rem; text-transform: uppercase; letter-spacing: .5px; opacity: .55; padding: 8px 10px 4px; }
-  .idx-search { flex-shrink: 0; padding: 4px 8px 8px; }
+  .idx-search { flex-shrink: 0; padding: 4px 8px 8px; position: relative; }
   .idx-search input {
     width: 100%; box-sizing: border-box; font-family: inherit; font-size: .95rem;
-    padding: 8px 10px; border-radius: 8px; border: 1px solid var(--btn-bd);
+    padding: 8px 30px 8px 10px; border-radius: 8px; border: 1px solid var(--btn-bd);
     background: var(--btn); color: inherit; outline: none;
   }
   .idx-search input:focus { border-color: var(--selected); }
+  .idx-search input[type="search"]::-webkit-search-cancel-button { -webkit-appearance: none; }
+  .idx-clear {
+    position: absolute; top: 50%; right: 14px; transform: translateY(-50%);
+    cursor: pointer; border: none; background: transparent; color: inherit;
+    font-size: 1.15rem; line-height: 1; padding: 4px 6px; border-radius: 6px; opacity: .55;
+  }
+  .idx-clear:hover { opacity: .9; background: var(--hover); }
+  .idx-clear[hidden] { display: none; }
   .hist-list { flex: 1; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; }
   .hist-item {
     display: block; width: 100%; text-align: left; cursor: pointer;
