@@ -658,40 +658,41 @@ function css(width: string): string {
   return `
   :root {
     color-scheme: light dark;
-    --bg:#ECE3D2; --fg:#2A2620;
-    --bar:#E3D8C4; --bar-bd:rgba(120,105,80,.24);
-    --hover:rgba(120,105,80,.15);
-    --sheet:#FBF7EE; --sheet-bd:rgba(120,105,80,.16);
-    --sheet-sh:0 1px 2px rgba(70,55,30,.05), 0 10px 30px rgba(70,55,30,.07);
-    --card:#FEFCF7; --card-bd:rgba(120,105,80,.20); --card-bd-h:rgba(120,105,80,.42);
-    --card-sh:0 4px 14px rgba(70,55,30,.10);
-    --btn:#FBF7EE; --btn-bd:rgba(120,105,80,.28); --btn-bd-strong:rgba(120,105,80,.5);
-    --link:#4A6B57; --ok:#2E7D4F; --logo-invert:0; --fz:1; --histw:min(80vw, 300px); --selected:#4692F2;
+    /* Paleta Underwater (design/PALETTE.md en el repo underwater), acento Celeste. */
+    --bg:#F2F0F5; --fg:#17151D;
+    --bar:#FBFAFD; --bar-bd:#E4E1EA;
+    --hover:rgba(23,21,29,.15);
+    --sheet:#FBFAFD; --sheet-bd:#E4E1EA;
+    --sheet-sh:0 1px 2px rgba(23,21,29,.05), 0 10px 30px rgba(23,21,29,.07);
+    --card:#FBFAFD; --card-bd:#E4E1EA; --card-bd-h:rgba(23,21,29,.42);
+    --card-sh:0 4px 14px rgba(23,21,29,.10);
+    --btn:#FFFFFF; --btn-bd:#E4E1EA; --btn-bd-strong:rgba(23,21,29,.5);
+    --link:#0369A1; --ok:#2E7D4F; --logo-invert:0; --fz:1; --histw:min(80vw, 300px); --selected:#0369A1;
   }
   /* variables de tema oscuro (reutilizadas por auto y por override manual) */
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
-      --bg:#15161A; --fg:#E7E5E0;
-      --bar:#1E2026; --bar-bd:rgba(255,255,255,.08);
-      --hover:rgba(255,255,255,.09);
-      --sheet:#23262C; --sheet-bd:rgba(255,255,255,.06);
+      --bg:#09090B; --fg:#F5F3F7;
+      --bar:#141318; --bar-bd:#2B2733;
+      --hover:rgba(245,243,247,.09);
+      --sheet:#141318; --sheet-bd:#2B2733;
       --sheet-sh:0 1px 2px rgba(0,0,0,.3), 0 10px 30px rgba(0,0,0,.28);
-      --card:#2A2D34; --card-bd:rgba(255,255,255,.08); --card-bd-h:rgba(255,255,255,.20);
+      --card:#141318; --card-bd:#2B2733; --card-bd-h:rgba(245,243,247,.20);
       --card-sh:0 4px 14px rgba(0,0,0,.35);
-      --btn:#2A2D34; --btn-bd:rgba(255,255,255,.10); --btn-bd-strong:rgba(255,255,255,.24);
-      --link:#89A995; --ok:#5FBF87; --logo-invert:1;
+      --btn:#1D1A22; --btn-bd:#2B2733; --btn-bd-strong:rgba(245,243,247,.24);
+      --link:#38BDF8; --ok:#5FBF87; --logo-invert:1;
     }
   }
   :root[data-theme="dark"] {
-    --bg:#15161A; --fg:#E7E5E0;
-    --bar:#1E2026; --bar-bd:rgba(255,255,255,.08);
-    --hover:rgba(255,255,255,.09);
-    --sheet:#23262C; --sheet-bd:rgba(255,255,255,.06);
+    --bg:#09090B; --fg:#F5F3F7;
+    --bar:#141318; --bar-bd:#2B2733;
+    --hover:rgba(245,243,247,.09);
+    --sheet:#141318; --sheet-bd:#2B2733;
     --sheet-sh:0 1px 2px rgba(0,0,0,.3), 0 10px 30px rgba(0,0,0,.28);
-    --card:#2A2D34; --card-bd:rgba(255,255,255,.08); --card-bd-h:rgba(255,255,255,.20);
+    --card:#141318; --card-bd:#2B2733; --card-bd-h:rgba(245,243,247,.20);
     --card-sh:0 4px 14px rgba(0,0,0,.35);
-    --btn:#2A2D34; --btn-bd:rgba(255,255,255,.10); --btn-bd-strong:rgba(255,255,255,.24);
-    --link:#89A995; --ok:#5FBF87; --logo-invert:1;
+    --btn:#1D1A22; --btn-bd:#2B2733; --btn-bd-strong:rgba(245,243,247,.24);
+    --link:#38BDF8; --ok:#5FBF87; --logo-invert:1;
   }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body { height: 100%; margin: 0; }
