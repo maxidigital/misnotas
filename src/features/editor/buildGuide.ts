@@ -156,11 +156,20 @@ function snippetFor(item, words){
   var post = end<item.plain.length ? '\\u2026' : '';
   return pre + markSnippet(item.plain.slice(start,end), item.plainNorm.slice(start,end), words) + post;
 }
+function titleScore(item, words){
+  var t = norm(item.f.title||'');
+  var n = 0;
+  for(var i=0;i<words.length;i++){ if(t.indexOf(words[i])!==-1) n++; }
+  return n;
+}
 function buildResultsHtml(words){
   var items = matchItems(words);
   if(!items.length){
     return { title: 'Sin resultados', html: '<div class="fav-empty">No se encontr\\u00f3 nada con esas palabras.</div>' };
   }
+  // Los que matchean en el título van primero; el resto conserva el orden de la guía
+  // (sort es estable, así que dentro de cada grupo no se reordena nada más).
+  items = items.slice().sort(function(a,b){ return titleScore(b,words) - titleScore(a,words); });
   var cur = currentFolioId();
   var html = items.map(function(item){
     var f = item.f, s = item.s;
