@@ -450,10 +450,14 @@ viewport.addEventListener('touchstart', function(e){
 viewport.addEventListener('touchmove', function(e){
   var dx=e.touches[0].clientX-sx, dy=e.touches[0].clientY-sy;
   if(Math.abs(dx)>10 || Math.abs(dy)>10) moved=true;
-  if(!swipable) return;
   if(axis===null){ if(Math.abs(dx)<8 && Math.abs(dy)<8) return; axis = Math.abs(dx)>Math.abs(dy) ? 'x' : 'y'; }
   if(axis!=='x') return;               // vertical → dejar el scroll normal
-  e.preventDefault(); dragging=true;
+  // Horizontal: frenar el gesto nativo del navegador (si no, en pantallas sin
+  // carrusel puede "robarse" el touch y touchend termina con coordenadas poco
+  // confiables, rompiendo la distinción tap/drag de más abajo).
+  e.preventDefault();
+  if(!swipable) return;                // sin folio no hay carrusel que animar
+  dragging=true;
   var d=dx; if((d>0&&!hasPrev)||(d<0&&!hasNext)) d*=0.28;   // resistencia en los extremos
   track.style.transform = 'translateX('+(-W+d)+'px)';
 }, {passive:false});
