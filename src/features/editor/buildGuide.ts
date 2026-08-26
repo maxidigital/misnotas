@@ -502,12 +502,15 @@ var root = document.documentElement;
 var FZ = 1;
 function currentTheme(){ return root.getAttribute('data-theme') || 'auto'; }
 function currentMode(){ return root.getAttribute('data-mode')||'guiada'; }
+function currentVisual(){ return root.getAttribute('data-visual')==='nuevo' ? 'nuevo' : 'clasico'; }
 function syncSettings(){
   if(!settings) return;
   var t=currentTheme(), bs=settings.querySelectorAll('[data-theme]');
   for(var i=0;i<bs.length;i++){ bs[i].classList.toggle('active', bs[i].getAttribute('data-theme')===t); }
   var m=currentMode(), ms=settings.querySelectorAll('[data-mode]');
   for(var j=0;j<ms.length;j++){ ms[j].classList.toggle('active', ms[j].getAttribute('data-mode')===m); }
+  var vv=currentVisual(), vs=settings.querySelectorAll('[data-visual]');
+  for(var k=0;k<vs.length;k++){ vs[k].classList.toggle('active', vs[k].getAttribute('data-visual')===vv); }
 }
 function applyMode(m){
   if(m!=='limpia') m='guiada';
@@ -518,6 +521,12 @@ function applyMode(m){
 function applyTheme(t){
   if(t==='light'||t==='dark'){ root.setAttribute('data-theme', t); } else { root.removeAttribute('data-theme'); t='auto'; }
   try{ localStorage.setItem('reader.theme', t); }catch(e){}
+  syncSettings();
+}
+function applyVisual(v){
+  if(v!=='nuevo') v='clasico';
+  if(v==='nuevo'){ root.setAttribute('data-visual', 'nuevo'); } else { root.removeAttribute('data-visual'); }
+  try{ localStorage.setItem('reader.visual', v); }catch(e){}
   syncSettings();
 }
 function applyFZ(v){
@@ -535,6 +544,7 @@ if(settings) settings.addEventListener('click', function(e){
   var t=e.target.closest('[data-theme]'); if(t && settings.contains(t)){ applyTheme(t.getAttribute('data-theme')); return; }
   var f=e.target.closest('[data-fs]'); if(f && settings.contains(f)){ applyFZ(FZ + (f.getAttribute('data-fs')==='+'?0.1:-0.1)); return; }
   var md=e.target.closest('[data-mode]'); if(md && settings.contains(md)){ applyMode(md.getAttribute('data-mode')); return; }
+  var vd=e.target.closest('[data-visual]'); if(vd && settings.contains(vd)){ applyVisual(vd.getAttribute('data-visual')); return; }
 });
 /* listeners directos, a prueba de balas, para A- / A+ */
 var fzMinus=document.getElementById('fzMinus'), fzPlus=document.getElementById('fzPlus'), fzReset=document.getElementById('fzReset');
@@ -709,6 +719,7 @@ function css(width: string): string {
     --card-sh:0 4px 14px rgba(23,21,29,.10);
     --btn:#FFFFFF; --btn-bd:#E4E1EA; --btn-bd-strong:rgba(23,21,29,.5);
     --link:#0369A1; --ok:#2E7D4F; --logo-invert:0; --fz:1; --histw:min(80vw, 300px); --selected:#0369A1;
+    --text-muted:#6B6572;
   }
   /* variables de tema oscuro (reutilizadas por auto y por override manual) */
   @media (prefers-color-scheme: dark) {
@@ -722,6 +733,7 @@ function css(width: string): string {
       --card-sh:0 4px 14px rgba(0,0,0,.35);
       --btn:#1D1A22; --btn-bd:#2B2733; --btn-bd-strong:rgba(245,243,247,.24);
       --link:#38BDF8; --ok:#5FBF87; --logo-invert:1;
+      --text-muted:#A6A1AD;
     }
   }
   :root[data-theme="dark"] {
@@ -734,6 +746,7 @@ function css(width: string): string {
     --card-sh:0 4px 14px rgba(0,0,0,.35);
     --btn:#1D1A22; --btn-bd:#2B2733; --btn-bd-strong:rgba(245,243,247,.24);
     --link:#38BDF8; --ok:#5FBF87; --logo-invert:1;
+    --text-muted:#A6A1AD;
   }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body { height: 100%; margin: 0; }
@@ -976,9 +989,10 @@ function css(width: string): string {
     background: var(--sheet); border: 1px solid var(--sheet-bd); border-radius: 8px;
     box-shadow: var(--sheet-sh);
   }
-  /* Folio: menos aire arriba que el resto de las pantallas (menú/sección), para que
-     el título quede más pegado al borde superior de la hoja. */
-  .wrap-folio { padding-top: 16px; }
+  /* Folio en tema Nuevo: menos aire arriba que el resto de las pantallas (menú/
+     sección), para que el título quede más pegado al borde superior de la hoja.
+     En Clásico se deja el padding normal de .wrap, igual que estaba siempre. */
+  :root[data-visual="nuevo"] .wrap-folio { padding-top: 16px; }
   .favstar {
     position: absolute; top: 8px; right: 10px; z-index: 3;
     pointer-events: none; color: #F5B301; font-size: 20px; line-height: 1;
@@ -997,11 +1011,20 @@ function css(width: string): string {
     padding: .55em .9em; margin: 0 0 1.1em; border-radius: 16px;
     background: var(--bbg, #ddd); color: var(--btxt, #333);
   }
-  /* Título del folio: sin caja, directo sobre la hoja, con una línea fina del color
-     de la sección debajo en vez del rectángulo de fondo. */
+  /* Título del folio, tema Clásico (default): misma caja de color que la pantalla
+     de sección. */
   h1.folio-title {
-    font-size: calc(1.6rem * var(--fz, 1)); font-weight: 700; line-height: 1.25;
-    text-align: left; color: var(--fg);
+    font-size: calc(1.95rem * var(--fz, 1)); text-align: center; font-weight: 700; line-height: 1.2;
+    padding: .55em .9em; margin: 0 0 1.1em; border-radius: 16px;
+    background: var(--bbg, #ddd); color: var(--btxt, #333);
+  }
+  /* Título del folio, tema Nuevo: sin caja, centrado, en cursiva y en gris, con una
+     línea fina del color de la sección debajo (el hex tal cual lo eligió el
+     instructor, no la variante recalculada de --btxt). */
+  :root[data-visual="nuevo"] h1.folio-title {
+    font-size: calc(1.6rem * var(--fz, 1)); font-weight: 700; font-style: italic; line-height: 1.25;
+    text-align: center; color: var(--text-muted, var(--fg));
+    background: none; border-radius: 0;
     margin: 0 0 .75em; padding: 0 0 .5em;
     border-bottom: 3px solid var(--raw, var(--sheet-bd));
   }
@@ -1115,6 +1138,7 @@ export function renderGuideHtml(project: Project): string {
     '<script>try{var r=document.documentElement,s=localStorage;' +
     "var m=s.getItem('reader.mode');r.setAttribute('data-mode',m==='limpia'?'limpia':'guiada');" +
     "var t=s.getItem('reader.theme');if(t==='light'||t==='dark')r.setAttribute('data-theme',t);" +
+    "var v=s.getItem('reader.visual');if(v==='nuevo')r.setAttribute('data-visual','nuevo');" +
     "var f=parseFloat(s.getItem('reader.fz'));if(f)r.style.setProperty('--fz',String(Math.max(0.8,Math.min(1.4,f))));" +
     "}catch(e){document.documentElement.setAttribute('data-mode','guiada');}</script>\n" +
     '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n' +
@@ -1137,6 +1161,11 @@ export function renderGuideHtml(project: Project): string {
           '<button data-theme="light">Claro</button>' +
           '<button data-theme="dark">Oscuro</button>' +
           '<button data-theme="auto">Auto</button>' +
+        '</div>' +
+        '<div class="set-label">Estilo</div>' +
+        '<div class="set-row">' +
+          '<button data-visual="clasico">Cl\\u00e1sico</button>' +
+          '<button data-visual="nuevo">Nuevo</button>' +
         '</div>' +
         '<div class="set-label">Texto</div>' +
         '<div class="set-row set-fs">' +
