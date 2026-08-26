@@ -1112,8 +1112,11 @@ export function renderGuideHtml(project: Project): string {
         `.band-${s.id}{--bbg:${b.lightBg};--btxt:${b.lightText};--raw:${raw};}` +
         `@media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .band-${s.id}{--bbg:${b.darkBg};--btxt:${b.darkText};}}` +
         `:root[data-theme="dark"] .band-${s.id}{--bbg:${b.darkBg};--btxt:${b.darkText};}` +
-        // Si la sección tiene color propio, el botón del menú toma ese color.
-        (b.colored ? `.scard.band-${s.id}{background:var(--bbg);color:var(--btxt);border-color:transparent;}` : '')
+        // Clásico: si la sección tiene color propio, el botón del menú se rellena con ese color.
+        (b.colored ? `.scard.band-${s.id}{background:var(--bbg);color:var(--btxt);border-color:transparent;}` : '') +
+        // Nuevo: tarjeta neutra (como cualquier otra) con un borde de acento del color
+        // de la sección, en vez de rellenarse por completo.
+        `:root[data-visual="nuevo"] .scard.band-${s.id}{background:var(--card);color:inherit;border-color:var(--card-bd);border-left-color:${raw};border-left-width:4px;}`
       );
     })
     .join('\n');
