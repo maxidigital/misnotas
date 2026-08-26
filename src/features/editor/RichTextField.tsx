@@ -43,7 +43,7 @@ import {
   ContextMenuSubTrigger,
   ContextMenuTrigger,
 } from '@/components/ui/context-menu';
-import { PALETTE } from '@/lib/palette';
+import { PALETTE_TEXT } from '@/lib/palette';
 import { cn } from '@/lib/cn';
 
 /** Adds `fontSize` and `color` attributes to the textStyle mark (inline styles). */
@@ -258,7 +258,7 @@ export function RichTextField({ value, onChange, minHeight = '100%', className, 
             }}
           >
             <div className="grid grid-cols-8 gap-1 p-1">
-              {PALETTE.map((c) => (
+              {PALETTE_TEXT.map((c) => (
                 <DropdownMenuItem
                   key={c.value}
                   title={c.name}
