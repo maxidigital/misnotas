@@ -132,6 +132,33 @@ function titleScore(item, words){
   for(var i=0;i<words.length;i++){ if(t.indexOf(words[i])!==-1) n++; }
   return n;
 }
+function isWordChar(c){ return !!c && /[a-z0-9]/.test(c); }
+/* 2 = palabra entera, 1 = arranca una palabra (prefijo), 0 = solo aparece a mitad
+   de otra palabra (ej. "mente" dentro de "suavemente") — para que un match más
+   "de palabra completa" gane por sobre uno que es pura coincidencia de substring. */
+function boundaryScore(text, w){
+  if(!text || !w) return 0;
+  var best = 0, from = 0, idx;
+  while((idx = text.indexOf(w, from)) !== -1){
+    var leftOk = idx===0 || !isWordChar(text[idx-1]);
+    var rightOk = (idx+w.length===text.length) || !isWordChar(text[idx+w.length]);
+    var s = (leftOk && rightOk) ? 2 : (leftOk ? 1 : 0);
+    if(s>best) best = s;
+    if(best===2) break;
+    from = idx + w.length;
+  }
+  return best;
+}
+/* Orden de resultados: 1) título (como antes), 2) calidad del match en el cuerpo
+   (palabra entera > empieza la palabra > solo a mitad), 3) orden de la guía. */
+function matchScore(item, words){
+  var bw = bodyWords(words);
+  var titleN = norm(item.f.title||'');
+  var t = 0, b = 0;
+  for(var i=0;i<words.length;i++){ t += boundaryScore(titleN, words[i]); }
+  for(var i=0;i<bw.length;i++){ b += boundaryScore(item.plainNorm, bw[i]); }
+  return t*1000 + b;
+}
 function matchItems(words){
   var bw = bodyWords(words);
   if(bw.length){
@@ -177,9 +204,9 @@ function buildResultsHtml(words){
   if(!items.length){
     return { title: 'Sin resultados', html: '<div class="fav-empty">No se encontr\\u00f3 nada con esas palabras.</div>' };
   }
-  // Los que matchean en el título van primero; el resto conserva el orden de la guía
-  // (sort es estable, así que dentro de cada grupo no se reordena nada más).
-  items = items.slice().sort(function(a,b){ return titleScore(b,words) - titleScore(a,words); });
+  // Título primero, después mejor calidad de match (palabra entera > prefijo > mitad
+  // de palabra); el resto conserva el orden de la guía (sort es estable).
+  items = items.slice().sort(function(a,b){ return matchScore(b,words) - matchScore(a,words); });
   var cur = currentFolioId();
   var html = items.map(function(item){
     var f = item.f, s = item.s;
@@ -211,7 +238,7 @@ function updateIndexResults(){
 function renderIndexPanel(){
   if(!histPanel) return;
   histPanel.innerHTML = '<div class="hist-title" id="idxTitle">\\u00cdndice</div>'
-    + '<div class="idx-search"><input id="idxSearch" type="search" inputmode="search" autocomplete="off" placeholder="Buscar en la gu\\u00eda\\u2026">'
+    + '<div class="idx-search"><input id="idxSearch" type="search" inputmode="search" autocomplete="off" placeholder="Buscar">'
     + '<button class="idx-clear" id="idxClear" aria-label="Limpiar b\\u00fasqueda" title="Limpiar" hidden>\\u00d7</button></div>'
     + '<div class="hist-list" id="idxResults"></div>';
   var input = document.getElementById('idxSearch');
