@@ -889,8 +889,7 @@ function css(width: string): string {
   .history {
     width: var(--histw);
     background: var(--bar); border-right: 1px solid var(--bar-bd);
-    overflow: hidden; display: flex; flex-direction: column;
-    padding: 8px 8px calc(8px + env(safe-area-inset-bottom));
+    overflow: hidden; display: flex; flex-direction: column; padding: 8px;
   }
   .histwrap.open .history { box-shadow: 0 0 40px rgba(0,0,0,.28); }
   /* Panel de Favoritos (a la derecha, espejo del historial/índice) */
@@ -904,8 +903,7 @@ function css(width: string): string {
   .favpanel {
     width: var(--histw);
     background: var(--bar); border-left: 1px solid var(--bar-bd);
-    overflow: hidden; display: flex; flex-direction: column;
-    padding: 8px 8px calc(8px + env(safe-area-inset-bottom));
+    overflow: hidden; display: flex; flex-direction: column; padding: 8px;
   }
   .favwrap.open .favpanel { box-shadow: 0 0 40px rgba(0,0,0,.28); }
   .fav-toggles { box-shadow: -2px 0 8px rgba(0,0,0,.12); }
