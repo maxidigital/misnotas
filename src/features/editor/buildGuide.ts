@@ -328,10 +328,10 @@ function sectionInner(s){
 }
 function folioInner(f, s){
   var star = isFav(f.id) ? '<span class="favstar" title="Favorito" aria-hidden="true">\\u2605</span>' : '';
-  return star + '<h1 class="band band-'+s.id+'">'+esc(f.title||'')+'</h1>'
+  return star + '<h1 class="folio-title band-'+s.id+'">'+esc(f.title||'')+'</h1>'
     + '<div class="body">'+(f.body||'')+'</div>';
 }
-function pageFolio(item){ return '<div class="page">'+(item?'<div class="wrap">'+folioInner(item.f,item.s)+'</div>':'')+'</div>'; }
+function pageFolio(item){ return '<div class="page">'+(item?'<div class="wrap wrap-folio">'+folioInner(item.f,item.s)+'</div>':'')+'</div>'; }
 
 /* ---- track layout ---- */
 function setSingle(inner){
@@ -973,6 +973,9 @@ function css(width: string): string {
     background: var(--sheet); border: 1px solid var(--sheet-bd); border-radius: 8px;
     box-shadow: var(--sheet-sh);
   }
+  /* Folio: menos aire arriba que el resto de las pantallas (menú/sección), para que
+     el título quede más pegado al borde superior de la hoja. */
+  .wrap-folio { padding-top: 16px; }
   .favstar {
     position: absolute; top: 8px; right: 10px; z-index: 3;
     pointer-events: none; color: #F5B301; font-size: 20px; line-height: 1;
@@ -985,11 +988,19 @@ function css(width: string): string {
   .home-help { text-align: center; margin-top: 26px; }
   .help-link { color: var(--link); font-size: .95rem; text-decoration: underline; text-underline-offset: 3px; }
 
-  /* Title band */
+  /* Title band (pantalla de sección: lista de folios) */
   h1.band {
     font-size: calc(1.95rem * var(--fz, 1)); text-align: center; font-weight: 700; line-height: 1.2;
     padding: .55em .9em; margin: 0 0 1.1em; border-radius: 16px;
     background: var(--bbg, #ddd); color: var(--btxt, #333);
+  }
+  /* Título del folio: sin caja, directo sobre la hoja, con una línea fina del color
+     de la sección debajo en vez del rectángulo de fondo. */
+  h1.folio-title {
+    font-size: calc(1.6rem * var(--fz, 1)); font-weight: 700; line-height: 1.25;
+    text-align: left; color: var(--fg);
+    margin: 0 0 .75em; padding: 0 0 .5em;
+    border-bottom: 3px solid var(--btxt, var(--sheet-bd));
   }
 
   .body { font-size: calc(1.5rem * var(--fz, 1)); }
