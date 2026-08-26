@@ -6,6 +6,7 @@ import { LOGO } from '@/logo';
  *  finger-following horizontal carousel (prev | current | next) for folios. */
 const RUNTIME = `
 var crumbs = document.getElementById('crumbs');
+var brandLogo = document.getElementById('brandLogo');
 var pagenav = document.getElementById('pagenav');
 var viewport = document.querySelector('.viewport');
 var track = document.getElementById('track');
@@ -346,14 +347,16 @@ function setFolioTriple(gi){
 }
 
 /* ---- render ---- */
-function renderMenu(){ crumbs.innerHTML = '<span class="brand-name">Instituto Blasco</span>'; setSingle(menuInner()); pagenav.className='pagenav'; pagenav.innerHTML=''; }
+function renderMenu(){ if(brandLogo) brandLogo.hidden=false; crumbs.innerHTML = '<span class="brand-name">Instituto Blasco</span>'; setSingle(menuInner()); pagenav.className='pagenav'; pagenav.innerHTML=''; }
 function renderSection(id){
   var s = sectionById(id); if(!s) return renderMenu();
+  if(brandLogo) brandLogo.hidden=true;
   crumbs.innerHTML = crumbHome(false);
   setSingle(sectionInner(s)); pagenav.className='pagenav'; pagenav.innerHTML='';
 }
 function renderFolio(id){
   var r = findFolio(id); if(!r) return renderMenu();
+  if(brandLogo) brandLogo.hidden=true;
   var s = r.section, f = r.folio, gi = flatIndex(f.id);
   crumbs.innerHTML = crumbHome(false)+csep()+crumbLink(s.name,'#/s/'+s.id);
   setFolioTriple(gi);
@@ -1105,7 +1108,7 @@ export function renderGuideHtml(project: Project): string {
       '<button class="menubtn" id="menuBtn" aria-label="Menú" title="Menú">' +
         '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"></line><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="17" x2="20" y2="17"></line></svg>' +
       '</button>' +
-      '<img class="brand-logo" src="' + LOGO + '" alt="">' +
+      '<img class="brand-logo" id="brandLogo" src="' + LOGO + '" alt="">' +
       '<nav class="crumbs" id="crumbs"></nav>' +
       '<div class="settings" id="settings" hidden>' +
         '<div class="set-label">Tema</div>' +
