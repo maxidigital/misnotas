@@ -1000,7 +1000,7 @@ function css(width: string): string {
     font-size: calc(1.6rem * var(--fz, 1)); font-weight: 700; line-height: 1.25;
     text-align: left; color: var(--fg);
     margin: 0 0 .75em; padding: 0 0 .5em;
-    border-bottom: 3px solid var(--btxt, var(--sheet-bd));
+    border-bottom: 3px solid var(--raw, var(--sheet-bd));
   }
 
   .body { font-size: calc(1.5rem * var(--fz, 1)); }
@@ -1069,8 +1069,12 @@ export function renderGuideHtml(project: Project): string {
   const bandCss = project.sections
     .map((s) => {
       const b = bandColors(s.titleBarColor || '#4a4a4a');
+      const raw = s.titleBarColor || '#4a4a4a';
       return (
-        `.band-${s.id}{--bbg:${b.lightBg};--btxt:${b.lightText};}` +
+        // --raw: el color tal cual lo eligió el instructor (mismo en los dos temas),
+        // para la línea bajo el título del folio; --bbg/--btxt son variantes
+        // recalculadas (saturación/luminosidad ajustadas) para fondo/texto legible.
+        `.band-${s.id}{--bbg:${b.lightBg};--btxt:${b.lightText};--raw:${raw};}` +
         `@media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .band-${s.id}{--bbg:${b.darkBg};--btxt:${b.darkText};}}` +
         `:root[data-theme="dark"] .band-${s.id}{--bbg:${b.darkBg};--btxt:${b.darkText};}` +
         // Si la sección tiene color propio, el botón del menú toma ese color.
