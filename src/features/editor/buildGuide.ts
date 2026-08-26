@@ -1326,7 +1326,14 @@ export function renderGuideHtml(project: Project): string {
     // Texto HTML (no JS): va literal, sin escapes \\uXXXX — la página declara charset utf-8.
     '<div class="ios-install" id="iosInstall" hidden><span class="ios-msg">Añade esta guía a tu pantalla de inicio: pulsa <b>Compartir</b> y luego <b>«Añadir a pantalla de inicio»</b>.</span><button class="ios-x" id="iosInstallClose" aria-label="Cerrar">✕</button></div>\n' +
     '<script>\nvar GUIDE = ' + json + ';\nvar LOGO = ' + JSON.stringify(LOGO) + ';\nvar GUIDE_VER = ' + JSON.stringify(guideVer) + ';\n' +
-    'var FAV_COLORS = ' + JSON.stringify(PALETTE_TEXT.map((c) => c.value)) + ';\n' + RUNTIME + '\n</script>\n' +
+    // Solo los 9 colores "en uso" de Underwater (no los 7 de la ampliación reservada).
+    'var FAV_COLORS = ' +
+      JSON.stringify(
+        PALETTE_TEXT.filter((c) =>
+          ['Naranja', 'Amarillo', 'Lima', 'Verde', 'Cian', 'Azul', 'Violeta', 'Fucsia', 'Coral'].includes(c.name)
+        ).map((c) => c.value)
+      ) +
+      ';\n' + RUNTIME + '\n</script>\n' +
     '</body>\n</html>';
 
   return html;
