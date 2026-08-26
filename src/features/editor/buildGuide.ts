@@ -1,6 +1,7 @@
 import type { Project } from '@/types';
 import { bandColors } from './previewFolio';
 import { LOGO } from '@/logo';
+import { PALETTE } from '@/lib/palette';
 
 /** Reader runtime (vanilla). Navigation via data-go / data-kind+data-id, plus a
  *  finger-following horizontal carousel (prev | current | next) for folios. */
@@ -266,6 +267,33 @@ function moveFav(id, dir){
   saveFav();
   renderFav();
 }
+/* ---- color por favorito (independiente del orden/alta-baja) ---- */
+var FAVCOLOR = {};
+function favColorKey(){ return 'reader.favcolor:' + location.pathname; }
+try{ var _fc=JSON.parse(localStorage.getItem(favColorKey())||'{}'); if(_fc && typeof _fc==='object') FAVCOLOR=_fc; }catch(e){}
+function saveFavColor(){ try{ localStorage.setItem(favColorKey(), JSON.stringify(FAVCOLOR)); }catch(e){} }
+function favColor(id){ return FAVCOLOR[id] || null; }
+function setFavColor(id, color){
+  if(color){ FAVCOLOR[id] = color; } else { delete FAVCOLOR[id]; }
+  saveFavColor();
+  renderFav();
+}
+/* ---- menú "⋯" por favorito: mover arriba/abajo + color ---- */
+var favMenuOpen = null;
+function renderFavMenu(id, idx, total){
+  var color = favColor(id);
+  var swatches = (typeof FAV_COLORS!=='undefined' ? FAV_COLORS : []).map(function(c){
+    return '<button class="fav-swatch'+(c===color?' on':'')+'" data-set-color="'+c+'" data-id="'+id+'" style="background:'+c+'" aria-label="Color"></button>';
+  }).join('');
+  return '<div class="fav-menu">'
+    + '<button class="fav-menu-item" data-move="up" data-id="'+id+'"'+(idx===0?' disabled':'')+'>\\u2191 Mover arriba</button>'
+    + '<button class="fav-menu-item" data-move="down" data-id="'+id+'"'+(idx===total-1?' disabled':'')+'>\\u2193 Mover abajo</button>'
+    + '<div class="fav-swatches">'
+      + '<button class="fav-swatch none'+(!color?' on':'')+'" data-set-color="" data-id="'+id+'" aria-label="Sin color">\\u2715</button>'
+      + swatches
+    + '</div>'
+  + '</div>';
+}
 function renderFav(){
   if(!favPanel) return;
   var cur = currentFolioId();
@@ -274,13 +302,14 @@ function renderFav(){
   if(items.length){
     html += '<div class="hist-list">' + items.map(function(id, i){
       var r = findFolio(id);
-      return '<div class="fav-row">'
-        + '<button class="hist-item'+(id===cur?' cur':'')+'" data-go="#/f/'+id+'">'+esc(r.folio.title||'(sin t\\u00edtulo)')+'</button>'
-        + '<span class="fav-order">'
-          + '<button class="fav-move" data-move="up" data-id="'+id+'" aria-label="Subir"'+(i===0?' disabled':'')+'>\\u25b4</button>'
-          + '<button class="fav-move" data-move="down" data-id="'+id+'" aria-label="Bajar"'+(i===items.length-1?' disabled':'')+'>\\u25be</button>'
-        + '</span>'
+      var color = favColor(id);
+      var dot = color ? '<span class="fav-dot" style="background:'+color+'"></span>' : '';
+      var row = '<div class="fav-row">'
+        + '<button class="hist-item'+(id===cur?' cur':'')+'" data-go="#/f/'+id+'">'+dot+esc(r.folio.title||'(sin t\\u00edtulo)')+'</button>'
+        + '<button class="fav-menu-btn" data-menu-id="'+id+'" aria-label="Opciones">\\u22ef</button>'
         + '</div>';
+      if(favMenuOpen===id) row += renderFavMenu(id, i, items.length);
+      return row;
     }).join('') + '</div>';
   } else if(cur){
     html += '<div class="fav-empty">A\\u00fan no has marcado ning\\u00fan folio. Usa el bot\\u00f3n de abajo para a\\u00f1adir este.</div>';
@@ -306,7 +335,7 @@ function updateStar(){
 }
 function updateFavUI(){ updateStar(); renderFav(); }
 function openFav(){ if(histWrap) histWrap.classList.remove('open'); if(favWrap) favWrap.classList.add('open'); if(histBackdrop) histBackdrop.classList.add('open'); renderFav(); }
-function closeFav(){ if(favWrap) favWrap.classList.remove('open'); if(histBackdrop && !(histWrap && histWrap.classList.contains('open'))) histBackdrop.classList.remove('open'); }
+function closeFav(){ favMenuOpen=null; if(favWrap) favWrap.classList.remove('open'); if(histBackdrop && !(histWrap && histWrap.classList.contains('open'))) histBackdrop.classList.remove('open'); }
 function openPanel(view){
   if(favWrap) favWrap.classList.remove('open');
   panelView = view;
@@ -412,8 +441,15 @@ if(histBackdrop) histBackdrop.addEventListener('click', function(){ closePanel()
 if(favTog) favTog.addEventListener('click', function(e){ e.stopPropagation(); if(favWrap && favWrap.classList.contains('open')) closeFav(); else openFav(); });
 if(favPanel) favPanel.addEventListener('click', function(e){
   if(e.target.closest('.fav-btn')){ e.stopPropagation(); toggleFav(currentFolioId()); return; }
+  var mb=e.target.closest('.fav-menu-btn');
+  if(mb){ e.stopPropagation(); var mid=mb.getAttribute('data-menu-id'); favMenuOpen=(favMenuOpen===mid)?null:mid; renderFav(); return; }
   var mv=e.target.closest('[data-move]');
-  if(mv){ e.stopPropagation(); moveFav(mv.getAttribute('data-id'), mv.getAttribute('data-move')); }
+  if(mv){ e.stopPropagation(); moveFav(mv.getAttribute('data-id'), mv.getAttribute('data-move')); return; }
+  var sc=e.target.closest('[data-set-color]');
+  if(sc){ e.stopPropagation(); setFavColor(sc.getAttribute('data-id'), sc.getAttribute('data-set-color')); }
+});
+document.addEventListener('click', function(e){
+  if(favMenuOpen && !e.target.closest('.fav-menu') && !e.target.closest('.fav-menu-btn')){ favMenuOpen=null; renderFav(); }
 });
 function togHandler(view){ return function(e){
   e.stopPropagation();
@@ -997,18 +1033,41 @@ function css(width: string): string {
   .hist-item.result { white-space: normal; overflow: visible; text-overflow: clip; line-height: 1.3; }
   .hist-item.result small { display: block; margin-top: 3px; font-weight: 400; opacity: .68; }
   .hist-item.result mark { background: var(--selected); color: #fff; border-radius: 3px; padding: 0 1px; }
-  /* Favoritos: cada fila es el folio + dos flechitas para reordenar. */
+  /* Favoritos: cada fila es el folio + botón "⋯" que despliega mover arriba/abajo
+     y color. */
   .fav-row { display: flex; align-items: stretch; gap: 2px; }
   .fav-row .hist-item { flex: 1; width: auto; min-width: 0; }
-  .fav-order { flex-shrink: 0; display: flex; flex-direction: column; }
-  .fav-move {
-    flex: 1; cursor: pointer; border: none; background: transparent; color: inherit;
-    font-family: inherit; font-size: .8rem; line-height: 1; padding: 2px 6px;
-    border-radius: 6px; opacity: .6;
+  .fav-dot { display: inline-block; width: 8px; height: 8px; border-radius: 999px; margin-right: 7px; flex-shrink: 0; vertical-align: middle; }
+  .fav-menu-btn {
+    flex-shrink: 0; cursor: pointer; border: none; background: transparent; color: inherit;
+    font-family: inherit; font-size: 1.1rem; line-height: 1; padding: 0 10px;
+    border-radius: 8px; opacity: .6;
   }
-  .fav-move:hover { background: var(--hover); opacity: 1; }
-  .fav-move:disabled { opacity: .2; cursor: default; }
-  .fav-move:disabled:hover { background: transparent; }
+  .fav-menu-btn:hover { background: var(--hover); opacity: 1; }
+  .fav-menu {
+    margin: 2px 0 6px; padding: 6px; border-radius: 10px;
+    background: var(--btn); border: 1px solid var(--btn-bd);
+    display: flex; flex-direction: column; gap: 2px;
+  }
+  .fav-menu-item {
+    text-align: left; cursor: pointer; border: none; background: transparent; color: inherit;
+    font-family: inherit; font-size: .92rem; padding: 8px; border-radius: 6px;
+  }
+  .fav-menu-item:hover { background: var(--hover); }
+  .fav-menu-item:disabled { opacity: .35; cursor: default; }
+  .fav-menu-item:disabled:hover { background: transparent; }
+  .fav-swatches { display: flex; flex-wrap: wrap; gap: 6px; padding: 6px 4px 2px; }
+  .fav-swatch {
+    width: 22px; height: 22px; border-radius: 999px; cursor: pointer;
+    border: 2px solid transparent; padding: 0;
+  }
+  .fav-swatch.on { border-color: var(--fg); }
+  .fav-swatch.none {
+    background: transparent !important; border: 1px solid var(--btn-bd);
+    display: flex; align-items: center; justify-content: center;
+    font-size: .7rem; opacity: .6; color: inherit;
+  }
+  .fav-swatch.none.on { border-color: var(--fg); opacity: 1; }
   .hist-clear {
     flex-shrink: 0; margin-top: 6px; cursor: pointer;
     border: 1px solid var(--btn-bd); background: var(--btn); color: inherit;
@@ -1267,7 +1326,8 @@ export function renderGuideHtml(project: Project): string {
     '</div>\n' +
     // Texto HTML (no JS): va literal, sin escapes \\uXXXX — la página declara charset utf-8.
     '<div class="ios-install" id="iosInstall" hidden><span class="ios-msg">Añade esta guía a tu pantalla de inicio: pulsa <b>Compartir</b> y luego <b>«Añadir a pantalla de inicio»</b>.</span><button class="ios-x" id="iosInstallClose" aria-label="Cerrar">✕</button></div>\n' +
-    '<script>\nvar GUIDE = ' + json + ';\nvar LOGO = ' + JSON.stringify(LOGO) + ';\nvar GUIDE_VER = ' + JSON.stringify(guideVer) + ';\n' + RUNTIME + '\n</script>\n' +
+    '<script>\nvar GUIDE = ' + json + ';\nvar LOGO = ' + JSON.stringify(LOGO) + ';\nvar GUIDE_VER = ' + JSON.stringify(guideVer) + ';\n' +
+    'var FAV_COLORS = ' + JSON.stringify(PALETTE.map((c) => c.value)) + ';\n' + RUNTIME + '\n</script>\n' +
     '</body>\n</html>';
 
   return html;
