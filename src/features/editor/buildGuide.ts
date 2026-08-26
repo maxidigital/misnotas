@@ -1,7 +1,7 @@
 import type { Project } from '@/types';
 import { bandColors } from './previewFolio';
 import { LOGO } from '@/logo';
-import { PALETTE } from '@/lib/palette';
+import { PALETTE_TEXT } from '@/lib/palette';
 
 /** Reader runtime (vanilla). Navigation via data-go / data-kind+data-id, plus a
  *  finger-following horizontal carousel (prev | current | next) for folios. */
@@ -303,9 +303,9 @@ function renderFav(){
     html += '<div class="hist-list">' + items.map(function(id, i){
       var r = findFolio(id);
       var color = favColor(id);
-      var dot = color ? '<span class="fav-dot" style="background:'+color+'"></span>' : '';
+      var style = color ? ' style="color:'+color+'"' : '';
       var row = '<div class="fav-row">'
-        + '<button class="hist-item'+(id===cur?' cur':'')+'" data-go="#/f/'+id+'">'+dot+esc(r.folio.title||'(sin t\\u00edtulo)')+'</button>'
+        + '<button class="hist-item'+(id===cur?' cur':'')+'"'+style+' data-go="#/f/'+id+'">'+esc(r.folio.title||'(sin t\\u00edtulo)')+'</button>'
         + '<button class="fav-menu-btn" data-menu-id="'+id+'" aria-label="Opciones">\\u22ef</button>'
         + '</div>';
       if(favMenuOpen===id) row += renderFavMenu(id, i, items.length);
@@ -1037,7 +1037,6 @@ function css(width: string): string {
      y color. */
   .fav-row { display: flex; align-items: stretch; gap: 2px; }
   .fav-row .hist-item { flex: 1; width: auto; min-width: 0; }
-  .fav-dot { display: inline-block; width: 8px; height: 8px; border-radius: 999px; margin-right: 7px; flex-shrink: 0; vertical-align: middle; }
   .fav-menu-btn {
     flex-shrink: 0; cursor: pointer; border: none; background: transparent; color: inherit;
     font-family: inherit; font-size: 1.1rem; line-height: 1; padding: 0 10px;
@@ -1327,7 +1326,7 @@ export function renderGuideHtml(project: Project): string {
     // Texto HTML (no JS): va literal, sin escapes \\uXXXX — la página declara charset utf-8.
     '<div class="ios-install" id="iosInstall" hidden><span class="ios-msg">Añade esta guía a tu pantalla de inicio: pulsa <b>Compartir</b> y luego <b>«Añadir a pantalla de inicio»</b>.</span><button class="ios-x" id="iosInstallClose" aria-label="Cerrar">✕</button></div>\n' +
     '<script>\nvar GUIDE = ' + json + ';\nvar LOGO = ' + JSON.stringify(LOGO) + ';\nvar GUIDE_VER = ' + JSON.stringify(guideVer) + ';\n' +
-    'var FAV_COLORS = ' + JSON.stringify(PALETTE.map((c) => c.value)) + ';\n' + RUNTIME + '\n</script>\n' +
+    'var FAV_COLORS = ' + JSON.stringify(PALETTE_TEXT.map((c) => c.value)) + ';\n' + RUNTIME + '\n</script>\n' +
     '</body>\n</html>';
 
   return html;
