@@ -559,15 +559,12 @@ var root = document.documentElement;
 var FZ = 1;
 function currentTheme(){ return root.getAttribute('data-theme') || 'auto'; }
 function currentMode(){ return root.getAttribute('data-mode')||'guiada'; }
-function currentVisual(){ return root.getAttribute('data-visual')==='nuevo' ? 'nuevo' : 'clasico'; }
 function syncSettings(){
   if(!settings) return;
   var t=currentTheme(), bs=settings.querySelectorAll('[data-theme]');
   for(var i=0;i<bs.length;i++){ bs[i].classList.toggle('active', bs[i].getAttribute('data-theme')===t); }
   var m=currentMode(), ms=settings.querySelectorAll('[data-mode]');
   for(var j=0;j<ms.length;j++){ ms[j].classList.toggle('active', ms[j].getAttribute('data-mode')===m); }
-  var vv=currentVisual(), vs=settings.querySelectorAll('[data-visual]');
-  for(var k=0;k<vs.length;k++){ vs[k].classList.toggle('active', vs[k].getAttribute('data-visual')===vv); }
 }
 function applyMode(m){
   if(m!=='limpia') m='guiada';
@@ -578,12 +575,6 @@ function applyMode(m){
 function applyTheme(t){
   if(t==='light'||t==='dark'){ root.setAttribute('data-theme', t); } else { root.removeAttribute('data-theme'); t='auto'; }
   try{ localStorage.setItem('reader.theme', t); }catch(e){}
-  syncSettings();
-}
-function applyVisual(v){
-  if(v!=='nuevo') v='clasico';
-  if(v==='nuevo'){ root.setAttribute('data-visual', 'nuevo'); } else { root.removeAttribute('data-visual'); }
-  try{ localStorage.setItem('reader.visual', v); }catch(e){}
   syncSettings();
 }
 function applyFZ(v){
@@ -601,7 +592,6 @@ if(settings) settings.addEventListener('click', function(e){
   var t=e.target.closest('[data-theme]'); if(t && settings.contains(t)){ applyTheme(t.getAttribute('data-theme')); return; }
   var f=e.target.closest('[data-fs]'); if(f && settings.contains(f)){ applyFZ(FZ + (f.getAttribute('data-fs')==='+'?0.1:-0.1)); return; }
   var md=e.target.closest('[data-mode]'); if(md && settings.contains(md)){ applyMode(md.getAttribute('data-mode')); return; }
-  var vd=e.target.closest('[data-visual]'); if(vd && settings.contains(vd)){ applyVisual(vd.getAttribute('data-visual')); return; }
 });
 /* listeners directos, a prueba de balas, para A- / A+ */
 var fzMinus=document.getElementById('fzMinus'), fzPlus=document.getElementById('fzPlus'), fzReset=document.getElementById('fzReset');
@@ -1087,10 +1077,9 @@ function css(width: string): string {
     background: var(--sheet); border: 1px solid var(--sheet-bd); border-radius: 8px;
     box-shadow: var(--sheet-sh);
   }
-  /* Folio en tema Nuevo: menos aire arriba que el resto de las pantallas (menú/
-     sección), para que el título quede más pegado al borde superior de la hoja.
-     En Clásico se deja el padding normal de .wrap, igual que estaba siempre. */
-  :root[data-visual="nuevo"] .wrap-folio { padding-top: 16px; }
+  /* Folio: menos aire arriba que el resto de las pantallas (menú/sección), para
+     que el título quede más pegado al borde superior de la hoja. */
+  .wrap-folio { padding-top: 16px; }
   .favstar {
     position: absolute; top: 8px; right: 10px; z-index: 3;
     pointer-events: none; color: #F5B301; font-size: 20px; line-height: 1;
@@ -1103,32 +1092,19 @@ function css(width: string): string {
   .home-help { text-align: center; margin-top: 26px; }
   .help-link { color: var(--link); font-size: .95rem; text-decoration: underline; text-underline-offset: 3px; }
 
-  /* Title band, tema Clásico (default): pantalla de sección (lista de folios). */
+  /* Título de sección: sin caja, centrado, cursiva, gris, línea del color de la
+     sección debajo. */
   h1.band {
-    font-size: calc(1.95rem * var(--fz, 1)); text-align: center; font-weight: 700; line-height: 1.2;
-    padding: .55em .9em; margin: 0 0 1.1em; border-radius: 16px;
-    background: var(--bbg, #ddd); color: var(--btxt, #333);
-  }
-  /* Título de sección, tema Nuevo: mismo lenguaje que el título del folio (sin caja,
-     centrado, cursiva, gris, línea del color de la sección debajo). */
-  :root[data-visual="nuevo"] h1.band {
     font-size: calc(1.8rem * var(--fz, 1)); font-weight: 700; font-style: italic; line-height: 1.25;
     text-align: center; color: var(--text-muted, var(--fg));
     background: none; border-radius: 0;
     padding: 0 0 .5em; margin: 0 0 1.1em;
     border-bottom: 3px solid var(--raw, var(--sheet-bd));
   }
-  /* Título del folio, tema Clásico (default): misma caja de color que la pantalla
-     de sección. */
+  /* Título del folio: sin caja, centrado, en cursiva y en gris, con una línea fina
+     del color de la sección debajo (el hex tal cual lo eligió el instructor, no la
+     variante recalculada de --btxt). */
   h1.folio-title {
-    font-size: calc(1.95rem * var(--fz, 1)); text-align: center; font-weight: 700; line-height: 1.2;
-    padding: .55em .9em; margin: 0 0 1.1em; border-radius: 16px;
-    background: var(--bbg, #ddd); color: var(--btxt, #333);
-  }
-  /* Título del folio, tema Nuevo: sin caja, centrado, en cursiva y en gris, con una
-     línea fina del color de la sección debajo (el hex tal cual lo eligió el
-     instructor, no la variante recalculada de --btxt). */
-  :root[data-visual="nuevo"] h1.folio-title {
     font-size: calc(1.6rem * var(--fz, 1)); font-weight: 700; font-style: italic; line-height: 1.25;
     text-align: center; color: var(--text-muted, var(--fg));
     background: none; border-radius: 0;
@@ -1210,11 +1186,9 @@ export function renderGuideHtml(project: Project): string {
         `.band-${s.id}{--bbg:${b.lightBg};--btxt:${b.lightText};--raw:${raw};}` +
         `@media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .band-${s.id}{--bbg:${b.darkBg};--btxt:${b.darkText};}}` +
         `:root[data-theme="dark"] .band-${s.id}{--bbg:${b.darkBg};--btxt:${b.darkText};}` +
-        // Clásico: si la sección tiene color propio, el botón del menú se rellena con ese color.
-        (b.colored ? `.scard.band-${s.id}{background:var(--bbg);color:var(--btxt);border-color:transparent;}` : '') +
-        // Nuevo: tarjeta neutra (como cualquier otra) con un borde de acento del color
-        // de la sección, en vez de rellenarse por completo.
-        `:root[data-visual="nuevo"] .scard.band-${s.id}{background:var(--card);color:inherit;border-color:var(--card-bd);border-left-color:${raw};border-left-width:4px;}`
+        // Tarjeta neutra (como cualquier otra) con un borde de acento del color de
+        // la sección, en vez de rellenarse por completo.
+        `.scard.band-${s.id}{background:var(--card);color:inherit;border-color:var(--card-bd);border-left-color:${raw};border-left-width:4px;}`
       );
     })
     .join('\n');
@@ -1248,7 +1222,6 @@ export function renderGuideHtml(project: Project): string {
     '<script>try{var r=document.documentElement,s=localStorage;' +
     "var m=s.getItem('reader.mode');r.setAttribute('data-mode',m==='limpia'?'limpia':'guiada');" +
     "var t=s.getItem('reader.theme');if(t==='light'||t==='dark')r.setAttribute('data-theme',t);" +
-    "var v=s.getItem('reader.visual');if(v==='nuevo')r.setAttribute('data-visual','nuevo');" +
     "var f=parseFloat(s.getItem('reader.fz'));if(f)r.style.setProperty('--fz',String(Math.max(0.8,Math.min(1.4,f))));" +
     "}catch(e){document.documentElement.setAttribute('data-mode','guiada');}</script>\n" +
     '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n' +
@@ -1271,11 +1244,6 @@ export function renderGuideHtml(project: Project): string {
           '<button data-theme="light">Claro</button>' +
           '<button data-theme="dark">Oscuro</button>' +
           '<button data-theme="auto">Auto</button>' +
-        '</div>' +
-        '<div class="set-label">Estilo</div>' +
-        '<div class="set-row">' +
-          '<button data-visual="clasico">Cl\\u00e1sico</button>' +
-          '<button data-visual="nuevo">Nuevo</button>' +
         '</div>' +
         '<div class="set-label">Texto</div>' +
         '<div class="set-row set-fs">' +
