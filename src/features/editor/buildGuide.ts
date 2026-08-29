@@ -723,6 +723,52 @@ window.addEventListener('appinstalled', function(){ if(installBtn) installBtn.hi
   if(x) x.addEventListener('click', function(){ iosEl.hidden=true; try{ localStorage.setItem('reader.iosInstall','1'); }catch(e){} });
 })();
 
+/* ---- pantalla de nombre + saludo (no atado a esta guía: sin sufijo de pathname) ---- */
+(function(){
+  var el = document.getElementById('welcome');
+  if(!el) return;
+  var form = document.getElementById('welcomeForm');
+  var input = document.getElementById('welcomeInput');
+  var hello = document.getElementById('welcomeHello');
+  var name = '';
+  try{ name = (localStorage.getItem('reader.username')||'').trim(); }catch(e){}
+
+  function track(n){
+    try{
+      fetch(location.pathname + '/track', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: n })
+      }).catch(function(){});
+    }catch(e){}
+  }
+
+  function showHello(n){
+    if(form) form.hidden = true;
+    if(hello){ hello.hidden = false; hello.textContent = '\\u00a1Hola, ' + n + '!'; }
+    track(n);
+    setTimeout(function(){
+      el.classList.add('out');
+      setTimeout(function(){ el.hidden = true; }, 500);
+    }, 1500);
+  }
+
+  if(name){
+    el.hidden = false;
+    showHello(name);
+  } else if(form && input){
+    el.hidden = false;
+    setTimeout(function(){ input.focus(); }, 50);
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+      var v = (input.value || '').trim();
+      if(!v) return;
+      try{ localStorage.setItem('reader.username', v); }catch(err){}
+      showHello(v);
+    });
+  }
+})();
+
 /* Versión publicada ahora mismo en el servidor ('' si no se pudo averiguar).
    Solo se consulta cuando el lector la pide a mano desde "Acerca de": nunca se le
    avisa por su cuenta de que hay una versión nueva. */
@@ -901,6 +947,31 @@ function css(width: string): string {
     font-size: 1.1rem; line-height: 1; padding: 4px 6px; opacity: .6;
   }
   @media (min-width: 560px) { .ios-install { left: 50%; right: auto; transform: translateX(-50%); max-width: 480px; } }
+  /* Pantalla de nombre + saludo, por encima de todo (incluso del splash inicial) */
+  .welcome {
+    position: fixed; inset: 0; z-index: 100; padding: 20px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--bg); transition: opacity .45s ease;
+  }
+  .welcome[hidden] { display: none; }
+  .welcome.out { opacity: 0; pointer-events: none; }
+  .welcome-card { width: 100%; max-width: 320px; display: flex; flex-direction: column; align-items: center; gap: 14px; text-align: center; }
+  .welcome-logo { width: 64px; height: 64px; border-radius: 16px; }
+  .welcome-form { display: flex; flex-direction: column; gap: 10px; width: 100%; }
+  .welcome-form[hidden] { display: none; }
+  .welcome-q { font-size: 1.1rem; font-weight: 600; color: var(--fg); }
+  .welcome-input {
+    width: 100%; box-sizing: border-box; border: 1px solid var(--btn-bd); background: var(--btn); color: inherit;
+    border-radius: 10px; padding: 12px 14px; font-family: inherit; font-size: 1rem; text-align: center;
+  }
+  .welcome-input:focus { outline: none; border-color: var(--selected); box-shadow: inset 0 0 0 1px var(--selected); }
+  .welcome-ok {
+    width: 100%; cursor: pointer; border: 1px solid var(--selected); background: var(--selected); color: #fff;
+    border-radius: 10px; padding: 12px 14px; font-family: inherit; font-size: 1rem; font-weight: 700;
+  }
+  .welcome-ok:disabled { opacity: .5; cursor: default; }
+  .welcome-hello[hidden] { display: none; }
+  .welcome-hello { font-size: 1.6rem; font-weight: 700; color: var(--fg); }
   .set-row.set-fs button { flex: 0 0 auto; width: 46px; font-size: 1.05rem; }
 
   /* Stage: panel de historial + viewport */
@@ -1293,6 +1364,17 @@ export function renderGuideHtml(project: Project): string {
     '</div>\n' +
     // Texto HTML (no JS): va literal, sin escapes \\uXXXX — la página declara charset utf-8.
     '<div class="ios-install" id="iosInstall" hidden><span class="ios-msg">Añade esta guía a tu pantalla de inicio: pulsa <b>Compartir</b> y luego <b>«Añadir a pantalla de inicio»</b>.</span><button class="ios-x" id="iosInstallClose" aria-label="Cerrar">✕</button></div>\n' +
+    '<div class="welcome" id="welcome" hidden>' +
+      '<div class="welcome-card">' +
+        '<img class="welcome-logo" src="' + LOGO + '" alt="">' +
+        '<form class="welcome-form" id="welcomeForm">' +
+          '<div class="welcome-q">¿Cómo te llamás?</div>' +
+          '<input class="welcome-input" id="welcomeInput" type="text" autocomplete="given-name" maxlength="60" placeholder="Tu nombre">' +
+          '<button class="welcome-ok" type="submit">Continuar</button>' +
+        '</form>' +
+        '<div class="welcome-hello" id="welcomeHello" hidden></div>' +
+      '</div>' +
+    '</div>\n' +
     '<script>\nvar GUIDE = ' + json + ';\nvar LOGO = ' + JSON.stringify(LOGO) + ';\nvar GUIDE_VER = ' + JSON.stringify(guideVer) + ';\n' +
     // Solo los 9 colores "en uso" de Underwater (no los 7 de la ampliación reservada).
     'var FAV_COLORS = ' +

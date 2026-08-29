@@ -1,5 +1,5 @@
 import express from 'express';
-import { readFile, writeFile, readdir, mkdir, rename, unlink } from 'node:fs/promises';
+import { readFile, writeFile, appendFile, readdir, mkdir, rename, unlink } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { timingSafeEqual } from 'node:crypto';
 import path from 'node:path';
@@ -159,6 +159,7 @@ async function writeGuide(id, project) {
 /* ---------- publicaciones (slug -> guía; HTML final en DATA_DIR/published/<slug>.html) ---------- */
 const pubFileFor = (slug) => path.join(PUBLISHED_DIR, slug + '.html');
 const PUBLICATIONS_FILE = path.join(DATA_DIR, '_publications.json');
+const ACCESS_LOG_FILE = path.join(DATA_DIR, 'access-log.jsonl');
 async function readPublications() {
   try {
     return JSON.parse(await readFile(PUBLICATIONS_FILE, 'utf8'));
@@ -438,6 +439,20 @@ app.get('/p/:slug/ver', async (req, res) => {
   } catch {
     res.status(404).type('text/plain').send('');
   }
+});
+
+/* Seguimiento de uso: quién abrió qué guía y cuándo. Público, sin auth (como el
+   resto de /p/*); body chico propio porque el express.json() global solo está
+   montado bajo /api. Nunca debe cortarle la experiencia al lector: siempre
+   responde ok, incluso si falla el guardado. */
+app.post('/p/:slug/track', express.json({ limit: '2kb' }), async (req, res) => {
+  if (!validId(req.params.slug)) return res.status(400).json({ error: 'bad slug' });
+  const name = typeof req.body?.name === 'string' ? req.body.name.trim().slice(0, 60) : '';
+  if (name) {
+    const entry = { ts: new Date().toISOString(), slug: req.params.slug, name };
+    appendFile(ACCESS_LOG_FILE, JSON.stringify(entry) + '\n', 'utf8').catch(() => {});
+  }
+  res.json({ ok: true });
 });
 
 /* ---------- publicación pública (sin auth): /p/<slug> ---------- */
