@@ -959,6 +959,7 @@ function css(width: string): string {
   .welcome-logo { width: 64px; height: 64px; border-radius: 16px; }
   .welcome-form { display: flex; flex-direction: column; gap: 10px; width: 100%; }
   .welcome-form[hidden] { display: none; }
+  .welcome-intro { font-size: .95rem; color: var(--fg); opacity: .75; line-height: 1.4; }
   .welcome-q { font-size: 1.1rem; font-weight: 600; color: var(--fg); }
   .welcome-input {
     width: 100%; box-sizing: border-box; border: 1px solid var(--btn-bd); background: var(--btn); color: inherit;
@@ -1368,6 +1369,7 @@ export function renderGuideHtml(project: Project): string {
       '<div class="welcome-card">' +
         '<img class="welcome-logo" src="' + LOGO + '" alt="">' +
         '<form class="welcome-form" id="welcomeForm">' +
+          '<div class="welcome-intro">¡Hola! Bienvenido/a a la guía para analistas de conciencia.</div>' +
           '<div class="welcome-q">¿Cómo te llamás?</div>' +
           '<input class="welcome-input" id="welcomeInput" type="text" autocomplete="given-name" maxlength="60" placeholder="Tu nombre">' +
           '<button class="welcome-ok" type="submit">Continuar</button>' +
