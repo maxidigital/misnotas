@@ -796,7 +796,7 @@ function css(width: string): string {
     --text-muted:#A6A1AD;
   }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-  html, body { height: 100%; margin: 0; }
+  html, body { height: 100%; margin: 0; touch-action: manipulation; }
   body {
     display: flex; flex-direction: column; height: 100vh; height: 100dvh; overflow: hidden;
     background: var(--bg); color: var(--fg);
@@ -1224,7 +1224,7 @@ export function renderGuideHtml(project: Project): string {
     "var t=s.getItem('reader.theme');if(t==='light'||t==='dark')r.setAttribute('data-theme',t);" +
     "var f=parseFloat(s.getItem('reader.fz'));if(f)r.style.setProperty('--fz',String(Math.max(0.8,Math.min(1.4,f))));" +
     "}catch(e){document.documentElement.setAttribute('data-mode','guiada');}</script>\n" +
-    '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n' +
+    '<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover">\n' +
     '<link rel="icon" href="' + LOGO + '">\n' +
     '<meta name="theme-color" content="#E3D8C4">\n' +
     '<meta name="mobile-web-app-capable" content="yes">\n' +
