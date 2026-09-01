@@ -131,6 +131,16 @@ function pathTo(folders: Folder[], id: string | null): Folder[] {
 
 const uid = () => (crypto.randomUUID ? crypto.randomUUID() : 'id-' + Math.random().toString(36).slice(2));
 
+/** Objeto { es?, en?, de?, ... } con traducciones: se conservan solo las claves con valor string. */
+function normalizeI18n(raw: unknown): Record<string, string> | undefined {
+  if (!raw || typeof raw !== 'object') return undefined;
+  const out: Record<string, string> = {};
+  for (const [k, v] of Object.entries(raw as Record<string, unknown>)) {
+    if (typeof v === 'string' && v) out[k] = v;
+  }
+  return Object.keys(out).length ? out : undefined;
+}
+
 /** Normaliza un JSON importado a la forma que espera el editor. Un archivo a medias
  *  (una sección sin `folios`, por ejemplo) rompía el editor con la guía ya creada. */
 function normalizeImported(raw: unknown): Partial<Project> {
@@ -142,17 +152,21 @@ function normalizeImported(raw: unknown): Partial<Project> {
     // Se conservan los ids: los enlaces dentro del guión apuntan por id y no se pueden remapear.
     id: typeof s?.id === 'string' && s.id ? s.id : uid(),
     name: typeof s?.name === 'string' ? s.name : 'Sección',
+    nameI18n: normalizeI18n(s?.nameI18n),
     type: s?.type === 'apendice' ? 'apendice' : 'flujo',
     titleBarColor: typeof s?.titleBarColor === 'string' ? s.titleBarColor : undefined,
     folios: (Array.isArray(s?.folios) ? s.folios : []).map(
       (f: any): Folio => ({
         id: typeof f?.id === 'string' && f.id ? f.id : uid(),
         title: typeof f?.title === 'string' ? f.title : '',
+        titleI18n: normalizeI18n(f?.titleI18n),
         guion: typeof f?.guion === 'string' ? f.guion : '',
+        guionI18n: normalizeI18n(f?.guionI18n),
         links: (Array.isArray(f?.links) ? f.links : []).map(
           (l: any): FolioLink => ({
             id: typeof l?.id === 'string' && l.id ? l.id : uid(),
             label: typeof l?.label === 'string' ? l.label : '',
+            labelI18n: normalizeI18n(l?.labelI18n),
             target:
               l?.target?.kind === 'section'
                 ? { kind: 'section', id: String(l.target.id ?? '') }
@@ -164,7 +178,11 @@ function normalizeImported(raw: unknown): Partial<Project> {
   }));
   return {
     name: typeof data.name === 'string' && data.name.trim() ? data.name : 'Guía importada',
+    nameI18n: normalizeI18n(data.nameI18n),
     maxChars: typeof data.maxChars === 'number' ? data.maxChars : undefined,
+    languages: Array.isArray(data.languages)
+      ? data.languages.filter((l: unknown): l is string => typeof l === 'string' && !!l)
+      : undefined,
     sections,
   };
 }
