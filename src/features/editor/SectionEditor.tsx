@@ -1,6 +1,8 @@
 import { useEditorStore } from '@/store/useEditorStore';
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { PALETTE } from '@/lib/palette';
+import { LangTabs } from './LangTabs';
 import { cn } from '@/lib/cn';
 import type { Section, SectionType } from '@/types';
 
@@ -11,11 +13,31 @@ const TYPES: { value: SectionType; label: string }[] = [
 
 export function SectionEditor({ section }: { section: Section }) {
   const update = useEditorStore((s) => s.updateSection);
+  const editingLang = useEditorStore((s) => s.editingLang);
+  const activeProject = useEditorStore((s) => s.projects.find((p) => p.id === s.activeProjectId));
+  const languages = activeProject?.languages?.length ? activeProject.languages : ['es'];
+  const lang = languages.includes(editingLang) ? editingLang : 'es';
+  const isTranslating = lang !== 'es';
+  const name = isTranslating ? section.nameI18n?.[lang] || '' : section.name;
+
   return (
     <div className="mx-auto max-w-3xl space-y-6 p-6 md:p-8">
+      <LangTabs languages={languages} />
+
       <div className="space-y-1.5">
-        <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Nombre de la sección</label>
-        <Input value={section.name} onChange={(e) => update(section.id, { name: e.target.value })} />
+        <div className="flex items-center justify-between">
+          <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Nombre de la sección</label>
+          {isTranslating && !name && (
+            <Button variant="outline" size="sm" onClick={() => update(section.id, { name: section.name }, lang)}>
+              Copiar del español
+            </Button>
+          )}
+        </div>
+        <Input
+          value={name}
+          onChange={(e) => update(section.id, { name: e.target.value }, lang)}
+          placeholder={isTranslating ? section.name : undefined}
+        />
       </div>
       <div className="space-y-1.5">
         <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Tipo</label>

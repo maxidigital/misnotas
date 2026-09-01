@@ -1,4 +1,5 @@
-import type { Folio, Section } from '@/types';
+import type { Folio, LangCode, Section } from '@/types';
+import { resolveI18n } from '@/types';
 import { resolveTarget } from './linkUtils';
 
 export function esc(s: string) {
@@ -72,18 +73,20 @@ export function openFolioPreview(
   folio: Folio,
   sections: Section[],
   maxChars?: number,
-  titleBarColor?: string
+  titleBarColor?: string,
+  lang: LangCode = 'es'
 ) {
   const width = maxChars && maxChars > 0 ? `${maxChars}ch` : '46rem';
   const band = bandColors(titleBarColor || '#4a4a4a');
-  const body = renderBody(folio.guion || '', sections);
+  const title = resolveI18n(lang, folio.title, folio.titleI18n);
+  const body = renderBody(resolveI18n(lang, folio.guion, folio.guionI18n) || '', sections);
 
   const html = `<!doctype html>
-<html lang="es">
+<html lang="${lang}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>${esc(folio.title || 'Folio')}</title>
+<title>${esc(title || 'Folio')}</title>
 <style>
   :root { color-scheme: light dark; }
   * { box-sizing: border-box; }
@@ -123,7 +126,7 @@ export function openFolioPreview(
 </head>
 <body>
   <div class="wrap">
-    <h1>${esc(folio.title || 'Folio')}</h1>
+    <h1>${esc(title || 'Folio')}</h1>
     ${body}
   </div>
 </body>

@@ -1,7 +1,9 @@
-import type { Project } from '@/types';
+import type { LangCode, Project } from '@/types';
 import { bandColors } from './previewFolio';
 import { LOGO } from '@/logo';
 import { PALETTE_TEXT } from '@/lib/palette';
+import { LANGUAGE_CATALOG } from '@/lib/languages';
+import { READER_STRINGS } from './readerStrings';
 
 /** Reader runtime (vanilla). Navigation via data-go / data-kind+data-id, plus a
  *  finger-following horizontal carousel (prev | current | next) for folios. */
@@ -26,6 +28,21 @@ var helpBtn = document.getElementById('helpBtn');
 var aboutDate = document.getElementById('aboutDate');
 var aboutMsg = document.getElementById('aboutMsg');
 var aboutAction = document.getElementById('aboutAction');
+var langBtn = document.getElementById('langBtn');
+var langList = document.getElementById('langList');
+/* ---- idioma activo del lector: STRINGS (chrome) y LANGS vienen embebidos aparte;
+   tr() resuelve contenido de folio/sección, S() resuelve texto fijo de la interfaz. */
+var LANG = (function(){
+  try{ var l=localStorage.getItem('reader.lang'); if(l && LANGS.indexOf(l)!==-1) return l; }catch(e){}
+  return LANGS[0] || 'es';
+})();
+function S(key){
+  var d = (typeof STRINGS!=='undefined' && STRINGS[LANG]) || {};
+  if(d[key]!==undefined) return d[key];
+  var es = (typeof STRINGS!=='undefined' && STRINGS.es) || {};
+  return es[key]!==undefined ? es[key] : key;
+}
+function tr(base, i18n){ return (LANG==='es') ? base : ((i18n && i18n[LANG]) || base); }
 function esc(t){ return (t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function sectionById(id){ for(var i=0;i<GUIDE.sections.length;i++){ if(GUIDE.sections[i].id===id) return GUIDE.sections[i]; } return null; }
 function findFolio(id){
@@ -40,17 +57,23 @@ var FLAT = [];
 GUIDE.sections.forEach(function(s){ s.folios.forEach(function(f){ FLAT.push({ s:s, f:f }); }); });
 function flatIndex(id){ for(var k=0;k<FLAT.length;k++){ if(FLAT[k].f.id===id) return k; } return -1; }
 
-/* ---- búsqueda: texto plano por folio (para snippet) + versión normalizada (para matchear) ---- */
+/* ---- búsqueda: texto plano por folio (para snippet) + versión normalizada (para matchear).
+   Se reconstruye cada vez que cambia el idioma activo, para buscar sobre el texto mostrado. ---- */
 function norm(t){ return (t||'').toLowerCase().normalize('NFD').replace(/[\\u0300-\\u036f]/g,''); }
 function stripHtml(html){ var d=document.createElement('div'); d.innerHTML=html||''; return d.textContent||''; }
-FLAT.forEach(function(item){
-  // normalize('NFC'): el texto de origen a veces trae acentos ya descompuestos (letra +
-  // marca combinante suelta, p.ej. copiado de otra fuente); sin esto, plain y plainNorm
-  // pueden quedar de distinta longitud y el resaltado del snippet se desalinea.
-  item.plain = ((item.f.title ? item.f.title+'. ' : '') + stripHtml(item.f.body)).normalize('NFC');
-  item.plainNorm = norm(item.plain);
-  item.fullSearch = norm(item.s.name) + ' ' + item.plainNorm;
-});
+function buildSearchIndex(){
+  FLAT.forEach(function(item){
+    var title = tr(item.f.title, item.f.titleI18n);
+    var body = tr(item.f.body, item.f.bodyI18n);
+    // normalize('NFC'): el texto de origen a veces trae acentos ya descompuestos (letra +
+    // marca combinante suelta, p.ej. copiado de otra fuente); sin esto, plain y plainNorm
+    // pueden quedar de distinta longitud y el resaltado del snippet se desalinea.
+    item.plain = ((title ? title+'. ' : '') + stripHtml(body)).normalize('NFC');
+    item.plainNorm = norm(item.plain);
+    item.fullSearch = norm(tr(item.s.name, item.s.nameI18n)) + ' ' + item.plainNorm;
+  });
+}
+buildSearchIndex();
 function currentFolioId(){ var p=(location.hash||'').replace(/^#/,'').split('/').filter(Boolean); return (p[0]==='f'&&p[1])?p[1]:null; }
 function goRel(delta){
   var id=currentFolioId(); if(!id) return;
@@ -66,9 +89,9 @@ function saveHist(){ try{ localStorage.setItem(histKey(), JSON.stringify(HIST));
 try{ var _hs=JSON.parse(localStorage.getItem(histKey())||'[]'); if(_hs && _hs.length) HIST=_hs.filter(function(x){ return typeof x==='string'; }); }catch(e){}
 function pageLabel(hash){
   var parts=(hash||'').replace(/^#/,'').split('/').filter(Boolean);
-  if(parts[0]==='f' && parts[1]){ var r=findFolio(parts[1]); return r ? (r.folio.title||'(sin t\\u00edtulo)') : 'Folio'; }
-  if(parts[0]==='s' && parts[1]){ var s=sectionById(parts[1]); return s ? s.name : 'Secci\\u00f3n'; }
-  return '\\u2302 Inicio';
+  if(parts[0]==='f' && parts[1]){ var r=findFolio(parts[1]); return r ? (tr(r.folio.title, r.folio.titleI18n)||S('untitled')) : S('folioFallback'); }
+  if(parts[0]==='s' && parts[1]){ var s=sectionById(parts[1]); return s ? tr(s.name, s.nameI18n) : S('sectionFallback'); }
+  return S('home');
 }
 function hashResolves(hash){
   var p=(hash||'').replace(/^#/,'').split('/').filter(Boolean);
@@ -89,11 +112,11 @@ function renderHistory(){
   if(!histPanel) return;
   var cur = location.hash || '#/';
   var items = HIST.filter(function(h){ return h.indexOf('#/f/')===0 && hashResolves(h); });
-  var html = '<div class="hist-title">Sesi\\u00f3n</div>';
+  var html = '<div class="hist-title">'+esc(S('session'))+'</div>';
   html += '<div class="hist-list">' + items.map(function(h){
     return '<button class="hist-item'+(h===cur?' cur':'')+'" data-go="'+h+'">'+esc(pageLabel(h))+'</button>';
   }).join('') + '</div>';
-  html += '<button class="hist-clear">Limpiar</button>';
+  html += '<button class="hist-clear">'+esc(S('clear'))+'</button>';
   histPanel.innerHTML = html;
 }
 /* ---- panel lateral: dos vistas (Índice / Sesión) ---- */
@@ -106,11 +129,11 @@ function buildTreeHtml(){
     var h = '<button class="tree-sec" data-sec="'+s.id+'">'
       + '<span class="tree-chevron">'+(open?'\\u25be':'\\u25b8')+'</span>'
       + '<span class="tree-dot band-'+s.id+'"></span>'
-      + '<span class="tree-name">'+esc(s.name)+'</span>'
+      + '<span class="tree-name">'+esc(tr(s.name, s.nameI18n))+'</span>'
       + '<span class="tree-count">'+s.folios.length+'</span></button>';
     if(open){
       h += s.folios.map(function(f){
-        return '<button class="tree-folio'+(cur===f.id?' cur':'')+'" data-go="#/f/'+f.id+'">'+esc(f.title||'(sin t\\u00edtulo)')+'</button>';
+        return '<button class="tree-folio'+(cur===f.id?' cur':'')+'" data-go="#/f/'+f.id+'">'+esc(tr(f.title, f.titleI18n)||S('untitled'))+'</button>';
       }).join('');
     }
     return h;
@@ -118,7 +141,7 @@ function buildTreeHtml(){
   var main = GUIDE.sections.filter(function(s){ return s.type!=='apendice'; });
   var apx = GUIDE.sections.filter(function(s){ return s.type==='apendice'; });
   var html = main.map(row).join('');
-  if(apx.length){ html += '<div class="tree-group">Ap\\u00e9ndices</div>' + apx.map(row).join(''); }
+  if(apx.length){ html += '<div class="tree-group">'+esc(S('appendices'))+'</div>' + apx.map(row).join(''); }
   return html;
 }
 /* ---- búsqueda dentro del panel Índice ---- */
@@ -128,7 +151,7 @@ function wordsOf(q){ return norm(q).split(/\\s+/).filter(function(w){ return w.l
 // el cuerpo del folio inundaría los resultados con casi cualquier folio de la guía.
 function bodyWords(words){ return words.filter(function(w){ return w.length>=3; }); }
 function titleScore(item, words){
-  var t = norm(item.f.title||'');
+  var t = norm(tr(item.f.title, item.f.titleI18n)||'');
   var n = 0;
   for(var i=0;i<words.length;i++){ if(t.indexOf(words[i])!==-1) n++; }
   return n;
@@ -154,7 +177,7 @@ function boundaryScore(text, w){
    (palabra entera > empieza la palabra > solo a mitad), 3) orden de la guía. */
 function matchScore(item, words){
   var bw = bodyWords(words);
-  var titleN = norm(item.f.title||'');
+  var titleN = norm(tr(item.f.title, item.f.titleI18n)||'');
   var t = 0, b = 0;
   for(var i=0;i<words.length;i++){ t += boundaryScore(titleN, words[i]); }
   for(var i=0;i<bw.length;i++){ b += boundaryScore(item.plainNorm, bw[i]); }
@@ -203,7 +226,7 @@ function snippetFor(item, words){
 function buildResultsHtml(words){
   var items = matchItems(words);
   if(!items.length){
-    return { title: 'Sin resultados', html: '<div class="fav-empty">No se encontr\\u00f3 nada con esas palabras.</div>' };
+    return { title: S('noResultsTitle'), html: '<div class="fav-empty">'+esc(S('noResultsBody'))+'</div>' };
   }
   // Título primero, después mejor calidad de match (palabra entera > prefijo > mitad
   // de palabra); el resto conserva el orden de la guía (sort es estable).
@@ -212,11 +235,11 @@ function buildResultsHtml(words){
   var html = items.map(function(item){
     var f = item.f, s = item.s;
     return '<button class="hist-item result'+(cur===f.id?' cur':'')+'" data-go="#/f/'+f.id+'">'
-      + '<b>'+esc(s.name)+'</b> \\u2014 '+esc(f.title||'(sin t\\u00edtulo)')
+      + '<b>'+esc(tr(s.name, s.nameI18n))+'</b> \\u2014 '+esc(tr(f.title, f.titleI18n)||S('untitled'))
       + '<br><small>'+snippetFor(item, words)+'</small></button>';
   }).join('');
   var n = items.length;
-  return { title: n+' resultado'+(n===1?'':'s'), html: html };
+  return { title: n+' '+(n===1?S('result'):S('results')), html: html };
 }
 function updateIndexResults(){
   var input = document.getElementById('idxSearch');
@@ -228,7 +251,7 @@ function updateIndexResults(){
   if(clearBtn) clearBtn.hidden = !idxQuery;
   var words = wordsOf(idxQuery);
   if(!words.length){
-    if(title) title.textContent = '\\u00cdndice';
+    if(title) title.textContent = S('index');
     results.innerHTML = buildTreeHtml();
     return;
   }
@@ -238,9 +261,9 @@ function updateIndexResults(){
 }
 function renderIndexPanel(){
   if(!histPanel) return;
-  histPanel.innerHTML = '<div class="hist-title" id="idxTitle">\\u00cdndice</div>'
-    + '<div class="idx-search"><input id="idxSearch" type="search" inputmode="search" autocomplete="off" placeholder="Buscar">'
-    + '<button class="idx-clear" id="idxClear" aria-label="Limpiar b\\u00fasqueda" title="Limpiar" hidden>\\u00d7</button></div>'
+  histPanel.innerHTML = '<div class="hist-title" id="idxTitle">'+esc(S('index'))+'</div>'
+    + '<div class="idx-search"><input id="idxSearch" type="search" inputmode="search" autocomplete="off" placeholder="'+esc(S('search'))+'">'
+    + '<button class="idx-clear" id="idxClear" aria-label="'+esc(S('clearSearch'))+'" title="'+esc(S('clear'))+'" hidden>\\u00d7</button></div>'
     + '<div class="hist-list" id="idxResults"></div>';
   var input = document.getElementById('idxSearch');
   if(input) input.value = idxQuery;
@@ -286,10 +309,10 @@ function renderFavMenu(id, idx, total){
     return '<button class="fav-swatch'+(c===color?' on':'')+'" data-set-color="'+c+'" data-id="'+id+'" style="background:'+c+'" aria-label="Color"></button>';
   }).join('');
   return '<div class="fav-menu">'
-    + '<button class="fav-menu-item" data-move="up" data-id="'+id+'"'+(idx===0?' disabled':'')+'>\\u2191 Mover arriba</button>'
-    + '<button class="fav-menu-item" data-move="down" data-id="'+id+'"'+(idx===total-1?' disabled':'')+'>\\u2193 Mover abajo</button>'
+    + '<button class="fav-menu-item" data-move="up" data-id="'+id+'"'+(idx===0?' disabled':'')+'>'+esc(S('moveUp'))+'</button>'
+    + '<button class="fav-menu-item" data-move="down" data-id="'+id+'"'+(idx===total-1?' disabled':'')+'>'+esc(S('moveDown'))+'</button>'
     + '<div class="fav-swatches">'
-      + '<button class="fav-swatch none'+(!color?' on':'')+'" data-set-color="" data-id="'+id+'" aria-label="Sin color">\\u2715</button>'
+      + '<button class="fav-swatch none'+(!color?' on':'')+'" data-set-color="" data-id="'+id+'" aria-label="'+esc(S('noColor'))+'">\\u2715</button>'
       + swatches
     + '</div>'
   + '</div>';
@@ -298,28 +321,28 @@ function renderFav(){
   if(!favPanel) return;
   var cur = currentFolioId();
   var items = FAV.filter(function(id){ return !!findFolio(id); });
-  var html = '<div class="hist-title">Favoritos</div>';
+  var html = '<div class="hist-title">'+esc(S('favorites'))+'</div>';
   if(items.length){
     html += '<div class="hist-list">' + items.map(function(id, i){
       var r = findFolio(id);
       var color = favColor(id);
       var style = color ? ' style="color:'+color+'"' : '';
       var row = '<div class="fav-row">'
-        + '<button class="hist-item'+(id===cur?' cur':'')+'"'+style+' data-go="#/f/'+id+'">'+esc(r.folio.title||'(sin t\\u00edtulo)')+'</button>'
-        + '<button class="fav-menu-btn" data-menu-id="'+id+'" aria-label="Opciones">\\u22ef</button>'
+        + '<button class="hist-item'+(id===cur?' cur':'')+'"'+style+' data-go="#/f/'+id+'">'+esc(tr(r.folio.title, r.folio.titleI18n)||S('untitled'))+'</button>'
+        + '<button class="fav-menu-btn" data-menu-id="'+id+'" aria-label="'+esc(S('options'))+'">\\u22ef</button>'
         + '</div>';
       if(favMenuOpen===id) row += renderFavMenu(id, i, items.length);
       return row;
     }).join('') + '</div>';
   } else if(cur){
-    html += '<div class="fav-empty">A\\u00fan no has marcado ning\\u00fan folio. Usa el bot\\u00f3n de abajo para a\\u00f1adir este.</div>';
+    html += '<div class="fav-empty">'+esc(S('favEmptyInFolio'))+'</div>';
   } else {
-    html += '<div class="fav-empty">A\\u00fan no has marcado ning\\u00fan folio. Entra en uno y usa el bot\\u00f3n de este panel.</div>';
+    html += '<div class="fav-empty">'+esc(S('favEmptyGeneral'))+'</div>';
   }
   // El alta/baja vive en el panel: solo tiene sentido estando en un folio.
   if(cur){
     var on = isFav(cur);
-    html += '<button class="fav-btn'+(on?' on':'')+'">'+(on?'\\u2605 Quitar de favoritos':'\\u2606 Marcar como favorito')+'</button>';
+    html += '<button class="fav-btn'+(on?' on':'')+'">'+(on?S('favRemove'):S('favAdd'))+'</button>';
   }
   favPanel.innerHTML = html;
 }
@@ -330,7 +353,7 @@ function updateStar(){
   var wrap = page ? page.querySelector('.wrap') : null; if(!wrap) return;
   var ex = wrap.querySelector('.favstar');
   if(isFav(cur)){
-    if(!ex){ var b=document.createElement('span'); b.className='favstar'; b.setAttribute('aria-hidden','true'); b.title='Favorito'; b.textContent='\\u2605'; wrap.appendChild(b); }
+    if(!ex){ var b=document.createElement('span'); b.className='favstar'; b.setAttribute('aria-hidden','true'); b.title=S('favorite'); b.textContent='\\u2605'; wrap.appendChild(b); }
   } else if(ex){ ex.remove(); }
 }
 function updateFavUI(){ updateStar(); renderFav(); }
@@ -351,7 +374,7 @@ function isTouch(){ return window.matchMedia('(hover: none) and (pointer: coarse
 /* ---- breadcrumb + card helpers ---- */
 function crumbLink(label, go){ return '<button class="crumb" data-go="'+go+'">'+esc(label)+'</button>'; }
 function crumbCur(label){ return '<span class="crumb cur">'+esc(label)+'</span>'; }
-function crumbHome(current){ return current ? '<span class="crumb cur">\\u2302 Inicio</span>' : '<button class="crumb" data-go="#/">\\u2302 Inicio</button>'; }
+function crumbHome(current){ return current ? '<span class="crumb cur">'+esc(S('home'))+'</span>' : '<button class="crumb" data-go="#/">'+esc(S('home'))+'</button>'; }
 function csep(){ return '<span class="csep">\\u203a</span>'; }
 function scard(go, label, sub, cls){
   return '<button class="scard '+(cls||'')+'" data-go="'+go+'"><span class="scard-main">'
@@ -360,23 +383,24 @@ function scard(go, label, sub, cls){
 }
 
 /* ---- content builders (return inner HTML of a .wrap sheet) ---- */
+function folioCount(n){ return n + ' ' + (n===1 ? S('folio') : S('folios')); }
 function menuInner(){
   var main = GUIDE.sections.filter(function(s){ return s.type!=='apendice'; });
   var apx = GUIDE.sections.filter(function(s){ return s.type==='apendice'; });
-  var html = '<div class="menuhead"><img class="menu-logo" src="'+LOGO+'" alt=""><div class="menu-title">'+esc(GUIDE.name||'Gu\\u00eda')+'</div></div>';
-  html += '<div class="grid">' + main.map(function(s){ return scard('#/s/'+s.id, s.name, s.folios.length+' folios', 'band-'+s.id); }).join('') + '</div>';
-  if(apx.length) html += '<div class="group">Ap\\u00e9ndices</div><div class="grid">' + apx.map(function(s){ return scard('#/s/'+s.id, s.name, s.folios.length+' folios', 'band-'+s.id); }).join('') + '</div>';
-  html += '<div class="home-help"><a class="help-link" href="/ayuda" target="_blank" rel="noopener">Ayuda</a></div>';
+  var html = '<div class="menuhead"><img class="menu-logo" src="'+LOGO+'" alt=""><div class="menu-title">'+esc(tr(GUIDE.name, GUIDE.nameI18n)||S('guideFallback'))+'</div></div>';
+  html += '<div class="grid">' + main.map(function(s){ return scard('#/s/'+s.id, tr(s.name, s.nameI18n), folioCount(s.folios.length), 'band-'+s.id); }).join('') + '</div>';
+  if(apx.length) html += '<div class="group">'+esc(S('appendices'))+'</div><div class="grid">' + apx.map(function(s){ return scard('#/s/'+s.id, tr(s.name, s.nameI18n), folioCount(s.folios.length), 'band-'+s.id); }).join('') + '</div>';
+  html += '<div class="home-help"><a class="help-link" href="/ayuda" target="_blank" rel="noopener">'+esc(S('help'))+'</a></div>';
   return html;
 }
 function sectionInner(s){
-  return '<h1 class="band band-'+s.id+'">'+esc(s.name)+'</h1>'
-    + '<div class="grid">' + s.folios.map(function(f){ return scard('#/f/'+f.id, f.title||'(sin t\\u00edtulo)'); }).join('') + '</div>';
+  return '<h1 class="band band-'+s.id+'">'+esc(tr(s.name, s.nameI18n))+'</h1>'
+    + '<div class="grid">' + s.folios.map(function(f){ return scard('#/f/'+f.id, tr(f.title, f.titleI18n)||S('untitled')); }).join('') + '</div>';
 }
 function folioInner(f, s){
-  var star = isFav(f.id) ? '<span class="favstar" title="Favorito" aria-hidden="true">\\u2605</span>' : '';
-  return star + '<h1 class="folio-title band-'+s.id+'">'+esc(f.title||'')+'</h1>'
-    + '<div class="body">'+(f.body||'')+'</div>';
+  var star = isFav(f.id) ? '<span class="favstar" title="'+esc(S('favorite'))+'" aria-hidden="true">\\u2605</span>' : '';
+  return star + '<h1 class="folio-title band-'+s.id+'">'+esc(tr(f.title, f.titleI18n)||'')+'</h1>'
+    + '<div class="body">'+(tr(f.body, f.bodyI18n)||'')+'</div>';
 }
 function pageFolio(item){ return '<div class="page">'+(item?'<div class="wrap wrap-folio">'+folioInner(item.f,item.s)+'</div>':'')+'</div>'; }
 
@@ -406,18 +430,18 @@ function renderSection(id){
 function renderFolio(id){
   var r = findFolio(id); if(!r) return renderMenu();
   var s = r.section, f = r.folio, gi = flatIndex(f.id);
-  crumbs.innerHTML = crumbHome(false)+csep()+crumbLink(s.name,'#/s/'+s.id);
+  crumbs.innerHTML = crumbHome(false)+csep()+crumbLink(tr(s.name, s.nameI18n),'#/s/'+s.id);
   setFolioTriple(gi);
   var prev = gi>0 ? FLAT[gi-1].f : null;
   var next = gi<FLAT.length-1 ? FLAT[gi+1].f : null;
   var chevL = '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>';
   var chevR = '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>';
-  var prevBtn = '<button class="nav-side" aria-label="Anterior" '+(prev?'data-go="#/f/'+prev.id+'"':'disabled')+'>'+chevL+'</button>';
-  var nextBtn = '<button class="nav-next" aria-label="Siguiente" '+(next?'data-go="#/f/'+next.id+'"':'disabled')+'>'+chevR+'</button>';
+  var prevBtn = '<button class="nav-side" aria-label="'+esc(S('prev'))+'" '+(prev?'data-go="#/f/'+prev.id+'"':'disabled')+'>'+chevL+'</button>';
+  var nextBtn = '<button class="nav-next" aria-label="'+esc(S('next'))+'" '+(next?'data-go="#/f/'+next.id+'"':'disabled')+'>'+chevR+'</button>';
   var links = (f.links||[]).slice(0,3);
   if(links.length){
     var acts = links.map(function(l){
-      return '<button class="linkbtn" data-kind="'+l.target.kind+'" data-id="'+l.target.id+'">'+esc(l.label||'Ir')+'</button>';
+      return '<button class="linkbtn" data-kind="'+l.target.kind+'" data-id="'+l.target.id+'">'+esc(tr(l.label, l.labelI18n)||S('linkGo'))+'</button>';
     }).join('');
     pagenav.className = 'pagenav has-acts';
     pagenav.innerHTML = prevBtn + '<div class="pageacts">'+acts+'</div>' + nextBtn;
@@ -586,7 +610,7 @@ function applyFZ(v){
    recupera FZ, que además de la variable CSS necesita el valor en memoria para A+/A-. */
 try{ var _f=parseFloat(localStorage.getItem('reader.fz')); if(_f) applyFZ(_f); }catch(e){}
 syncSettings();
-if(menuBtn) menuBtn.addEventListener('click', function(e){ e.stopPropagation(); if(settings){ settings.hidden=!settings.hidden; syncSettings(); } });
+if(menuBtn) menuBtn.addEventListener('click', function(e){ e.stopPropagation(); if(settings){ settings.hidden=!settings.hidden; syncSettings(); } if(langList){ langList.hidden=true; if(langBtn) langBtn.setAttribute('aria-expanded','false'); } });
 if(settings) settings.addEventListener('click', function(e){
   e.stopPropagation();
   var t=e.target.closest('[data-theme]'); if(t && settings.contains(t)){ applyTheme(t.getAttribute('data-theme')); return; }
@@ -599,14 +623,83 @@ if(fzMinus) fzMinus.addEventListener('click', function(e){ e.stopPropagation(); 
 if(fzPlus) fzPlus.addEventListener('click', function(e){ e.stopPropagation(); applyFZ(FZ+0.1); });
 if(fzReset) fzReset.addEventListener('click', function(e){ e.stopPropagation(); applyFZ(1); });
 document.addEventListener('click', function(e){
-  if(settings && !settings.hidden && !(menuBtn && menuBtn.contains(e.target)) && !settings.contains(e.target)) settings.hidden=true;
+  if(settings && !settings.hidden && !(menuBtn && menuBtn.contains(e.target)) && !settings.contains(e.target)){
+    settings.hidden=true;
+    if(langList){ langList.hidden=true; if(langBtn) langBtn.setAttribute('aria-expanded','false'); }
+  }
 });
+
+/* ---- idioma del lector: fila "Idioma" dentro del menú de ajustes (solo si la guía
+   tiene más de un idioma habilitado). LANGS/LANGUAGE_NAMES vienen embebidos aparte. ---- */
+function langName(code){ return (typeof LANGUAGE_NAMES!=='undefined' && LANGUAGE_NAMES[code]) || code; }
+function syncLangBtn(){ if(langBtn) langBtn.textContent = langName(LANG) + ' \\u25be'; }
+function renderLangList(){
+  if(!langList) return;
+  langList.innerHTML = LANGS.map(function(code){
+    return '<button class="set-lang-item'+(code===LANG?' active':'')+'" data-lang="'+code+'">'+esc(langName(code))+'</button>';
+  }).join('');
+}
+if(langBtn) langBtn.addEventListener('click', function(e){
+  e.stopPropagation();
+  if(!langList) return;
+  langList.hidden = !langList.hidden;
+  langBtn.setAttribute('aria-expanded', String(!langList.hidden));
+});
+if(langList) langList.addEventListener('click', function(e){
+  e.stopPropagation();
+  var b = e.target.closest('[data-lang]');
+  if(b){ applyLang(b.getAttribute('data-lang')); langList.hidden = true; if(langBtn) langBtn.setAttribute('aria-expanded','false'); }
+});
+/* Textos fijos de la interfaz que viven fuera de los paneles regenerados en cada
+   render() (settings/about/welcome/iOS banner): se actualizan por id, sin tocar el
+   resto del nodo, para no perder los listeners ya enganchados a esos botones. */
+var CHROME_TEXT_MAP = [
+  ['lblTheme','theme'], ['themeLightBtn','themeLight'], ['themeDarkBtn','themeDark'], ['themeAutoBtn','themeAuto'],
+  ['lblText','textSize'], ['lblVista','viewMode'], ['modeGuidedBtn','viewGuided'], ['modeCleanBtn','viewClean'],
+  ['lblLang','langLabel'], ['lblMisc','misc'], ['helpBtn','help'], ['aboutBtn','about'], ['installBtn','install'],
+  ['aboutTitle','aboutTitle'], ['aboutUpdatedLbl','aboutUpdated'], ['aboutName','__aboutName'],
+  ['welcomeIntro','welcomeIntro'], ['welcomeQ','welcomeQuestion'], ['welcomeOk','welcomeContinue']
+];
+function applyChromeStrings(){
+  CHROME_TEXT_MAP.forEach(function(pair){
+    var el = document.getElementById(pair[0]); if(!el) return;
+    el.textContent = pair[1]==='__aboutName' ? (tr(GUIDE.name, GUIDE.nameI18n) || S('guideFallback')) : S(pair[1]);
+  });
+  var mb = document.getElementById('menuBtn'); if(mb){ mb.setAttribute('aria-label', S('menu')); mb.setAttribute('title', S('menu')); }
+  [['togIndex','index'],['togSession','history'],['favTog','favorites']].forEach(function(pair){
+    var el = document.getElementById(pair[0]); if(!el) return;
+    el.setAttribute('aria-label', S(pair[1]));
+    var lbl = el.querySelector('.tog-label'); if(lbl) lbl.textContent = S(pair[1]);
+  });
+  var fzM = document.getElementById('fzMinus'); if(fzM) fzM.setAttribute('aria-label', S('shrink'));
+  var fzP = document.getElementById('fzPlus'); if(fzP) fzP.setAttribute('aria-label', S('grow'));
+  var fzR = document.getElementById('fzReset'); if(fzR){ fzR.setAttribute('aria-label', S('resetSize')); fzR.setAttribute('title', S('resetSize')); }
+  var wi = document.getElementById('welcomeInput'); if(wi) wi.placeholder = S('welcomeNamePlaceholder');
+  var iosMsg = document.querySelector('#iosInstall .ios-msg'); if(iosMsg) iosMsg.innerHTML = S('iosInstallMsg');
+  var iosClose = document.getElementById('iosInstallClose'); if(iosClose) iosClose.setAttribute('aria-label', S('iosInstallClose'));
+  document.title = tr(GUIDE.name, GUIDE.nameI18n) || S('guideFallback');
+  syncAbout();
+}
+function applyLang(code){
+  if(LANGS.indexOf(code)===-1) code = LANGS[0] || 'es';
+  LANG = code;
+  try{ localStorage.setItem('reader.lang', code); }catch(e){}
+  document.documentElement.setAttribute('lang', code);
+  buildSearchIndex();
+  applyChromeStrings();
+  syncLangBtn();
+  renderLangList();
+  render();
+}
+syncLangBtn();
+renderLangList();
+applyChromeStrings();
 
 /* ---- PWA: manifest dinámico (conoce la URL final), service worker e instalar ---- */
 try {
   var _mani = {
-    name: GUIDE.name || 'Gu\\u00eda',
-    short_name: (GUIDE.name || 'Gu\\u00eda').slice(0, 20),
+    name: tr(GUIDE.name, GUIDE.nameI18n) || S('guideFallback'),
+    short_name: (tr(GUIDE.name, GUIDE.nameI18n) || S('guideFallback')).slice(0, 20),
     start_url: location.pathname,
     scope: location.pathname,
     display: 'standalone',
@@ -652,7 +745,7 @@ function fmtBuilt(){
   try{
     var d = new Date(GUIDE_VER);
     if(isNaN(d.getTime())) return '\\u2014';
-    return d.toLocaleString('es-ES', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit', second:'2-digit' });
+    return d.toLocaleString(S('dateLocale'), { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit', second:'2-digit' });
   }catch(e){ return '\\u2014'; }
 }
 function aboutSay(t, ok){
@@ -662,14 +755,14 @@ function aboutSay(t, ok){
 }
 function syncAbout(){
   if(!aboutAction) return;
-  aboutAction.textContent = hayNueva ? 'Actualizar' : 'Comprobar actualizaciones';
+  aboutAction.textContent = hayNueva ? S('updateNow') : S('checkUpdates');
   aboutAction.classList.toggle('go', hayNueva);
 }
 function openAbout(){
   if(!about) return;
   if(settings) settings.hidden = true;
   if(aboutDate) aboutDate.textContent = fmtBuilt();
-  aboutSay(hayNueva ? 'Hay una versi\\u00f3n nueva.' : '', false);
+  aboutSay(hayNueva ? S('newVersionAvailable') : '', false);
   syncAbout();
   about.hidden = false;
 }
@@ -688,15 +781,15 @@ if(aboutAction) aboutAction.addEventListener('click', function(e){
   e.stopPropagation();
   if(hayNueva){ hardReload(); return; }
   aboutAction.disabled = true;
-  aboutSay('Comprobando\\u2026', false);
+  aboutSay(S('checking'), false);
   remoteVer().then(function(v){
     aboutAction.disabled = false;
-    if(!v){ aboutSay('No se pudo comprobar. \\u00bfEst\\u00e1s sin conexi\\u00f3n?', false); return; }
+    if(!v){ aboutSay(S('checkFailed'), false); return; }
     if(v !== GUIDE_VER){
       hayNueva = true;
-      aboutSay('Hay una versi\\u00f3n nueva.', false);
+      aboutSay(S('newVersionAvailable'), false);
     } else {
-      aboutSay('Ya tienes la \\u00faltima versi\\u00f3n.', true);
+      aboutSay(S('upToDate'), true);
     }
     syncAbout();
   });
@@ -745,7 +838,7 @@ window.addEventListener('appinstalled', function(){ if(installBtn) installBtn.hi
 
   function showHello(n){
     if(form) form.hidden = true;
-    if(hello){ hello.hidden = false; hello.textContent = '\\u00a1Hola, ' + n + '!'; }
+    if(hello){ hello.hidden = false; hello.textContent = S('welcomeHello').replace('{name}', n); }
     track(n);
     setTimeout(function(){
       el.classList.add('out');
@@ -904,6 +997,23 @@ function css(width: string): string {
   .settings button.active { border-color: var(--selected); box-shadow: inset 0 0 0 1px var(--selected); font-weight: 700; }
   .settings .set-install, .settings .set-about, .settings .set-help { flex: 0 0 auto; margin-top: 2px; }
   .set-install[hidden] { display: none; }
+  /* Selector de idioma: un botón que despliega una lista vertical con scroll, en vez de
+     una fila de botones — no se rompe aunque la guía tenga muchos idiomas habilitados. */
+  .set-lang { position: relative; }
+  .set-lang-btn { width: 100%; text-align: left; }
+  .set-lang-list {
+    position: absolute; z-index: 41; top: calc(100% + 4px); left: 0; right: 0;
+    max-height: 220px; overflow-y: auto; background: var(--bar); border: 1px solid var(--bar-bd);
+    border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,.25); padding: 4px;
+    display: flex; flex-direction: column; gap: 2px;
+  }
+  .set-lang-list[hidden] { display: none; }
+  .set-lang-item {
+    cursor: pointer; border: 1px solid transparent; background: transparent; color: inherit;
+    border-radius: 8px; padding: 8px 10px; font-family: inherit; font-size: .95rem; text-align: left;
+  }
+  .set-lang-item:hover { background: var(--hover); }
+  .set-lang-item.active { border-color: var(--selected); font-weight: 700; }
   /* Modal de "Acerca de" */
   .modal {
     position: fixed; inset: 0; z-index: 80; padding: 20px;
@@ -1265,16 +1375,28 @@ export function renderGuideHtml(project: Project): string {
     })
     .join('\n');
 
+  // Idiomas habilitados para el switcher publicado; español siempre es el primero e
+  // implícito (fallback de todo lo que no esté traducido).
+  const languages: LangCode[] = project.languages && project.languages.length ? project.languages : ['es'];
+  const buildLang = languages[0] || 'es';
+  const T = READER_STRINGS[buildLang] || READER_STRINGS.es;
+  const languageNames = Object.fromEntries(LANGUAGE_CATALOG.map((l) => [l.code, l.nativeName]));
+
   const data = {
     name: project.name,
+    nameI18n: project.nameI18n || {},
+    languages,
     sections: project.sections.map((s) => ({
       id: s.id,
       name: s.name,
+      nameI18n: s.nameI18n || {},
       type: s.type,
       folios: s.folios.map((f) => ({
         id: f.id,
         title: f.title,
+        titleI18n: f.titleI18n || {},
         body: f.guion || '',
+        bodyI18n: f.guionI18n || {},
         links: (f.links || []).filter((l) => l.target && l.target.id),
       })),
     })),
@@ -1287,15 +1409,16 @@ export function renderGuideHtml(project: Project): string {
 
   const nameEsc = (project.name || 'Guía').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   const html =
-    '<!doctype html>\n<html lang="es">\n<head>\n<meta charset="utf-8">\n' +
+    '<!doctype html>\n<html lang="' + buildLang + '">\n<head>\n<meta charset="utf-8">\n' +
     // Preferencias ANTES del primer pintado: si esto viviera en el script del final,
     // la primera pasada se dibujaría con los valores por defecto (parpadeo de las
-    // pestañas de los bordes, del tema y del tamaño de letra).
-    '<script>try{var r=document.documentElement,s=localStorage;' +
+    // pestañas de los bordes, del tema, del tamaño de letra y del idioma).
+    '<script>var LANGS=' + JSON.stringify(languages) + ';try{var r=document.documentElement,s=localStorage;' +
     "var m=s.getItem('reader.mode');r.setAttribute('data-mode',m==='limpia'?'limpia':'guiada');" +
     "var t=s.getItem('reader.theme');if(t==='light'||t==='dark')r.setAttribute('data-theme',t);" +
     "var f=parseFloat(s.getItem('reader.fz'));if(f)r.style.setProperty('--fz',String(Math.max(0.8,Math.min(1.4,f))));" +
-    "}catch(e){document.documentElement.setAttribute('data-mode','guiada');}</script>\n" +
+    "var l=s.getItem('reader.lang');if(!l||LANGS.indexOf(l)===-1)l=LANGS[0]||'es';r.setAttribute('lang',l);" +
+    "}catch(e){document.documentElement.setAttribute('data-mode','guiada');document.documentElement.setAttribute('lang',LANGS[0]||'es');}</script>\n" +
     '<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover">\n' +
     '<link rel="icon" href="' + LOGO + '">\n' +
     '<meta name="theme-color" content="#E3D8C4">\n' +
@@ -1311,41 +1434,48 @@ export function renderGuideHtml(project: Project): string {
       '</button>' +
       '<nav class="crumbs" id="crumbs"></nav>' +
       '<div class="settings" id="settings" hidden>' +
-        '<div class="set-label">Tema</div>' +
+        '<div class="set-label" id="lblTheme">' + T.theme + '</div>' +
         '<div class="set-row">' +
-          '<button data-theme="light">Claro</button>' +
-          '<button data-theme="dark">Oscuro</button>' +
-          '<button data-theme="auto">Auto</button>' +
+          '<button data-theme="light" id="themeLightBtn">' + T.themeLight + '</button>' +
+          '<button data-theme="dark" id="themeDarkBtn">' + T.themeDark + '</button>' +
+          '<button data-theme="auto" id="themeAutoBtn">' + T.themeAuto + '</button>' +
         '</div>' +
-        '<div class="set-label">Texto</div>' +
+        '<div class="set-label" id="lblText">' + T.textSize + '</div>' +
         '<div class="set-row set-fs">' +
-          '<button id="fzMinus" data-fs="-" aria-label="Achicar">A−</button>' +
-          '<button id="fzReset" aria-label="Tamaño normal" title="Tamaño normal">A</button>' +
-          '<button id="fzPlus" data-fs="+" aria-label="Agrandar">A+</button>' +
+          '<button id="fzMinus" data-fs="-" aria-label="' + T.shrink + '">A−</button>' +
+          '<button id="fzReset" aria-label="' + T.resetSize + '" title="' + T.resetSize + '">A</button>' +
+          '<button id="fzPlus" data-fs="+" aria-label="' + T.grow + '">A+</button>' +
         '</div>' +
-        '<div class="set-label set-vista">Vista</div>' +
+        '<div class="set-label set-vista" id="lblVista">' + T.viewMode + '</div>' +
         '<div class="set-row set-vista">' +
-          '<button data-mode="guiada">Guiada</button>' +
-          '<button data-mode="limpia">Limpia</button>' +
+          '<button data-mode="guiada" id="modeGuidedBtn">' + T.viewGuided + '</button>' +
+          '<button data-mode="limpia" id="modeCleanBtn">' + T.viewClean + '</button>' +
         '</div>' +
-        '<div class="set-label">Varios</div>' +
-        '<button class="set-help" id="helpBtn">Ayuda</button>' +
-        '<button class="set-about" id="aboutBtn">Acerca de…</button>' +
-        '<button class="set-install" id="installBtn" hidden>Instalar en el dispositivo</button>' +
+        (languages.length > 1
+          ? '<div class="set-label" id="lblLang">' + T.langLabel + '</div>' +
+            '<div class="set-lang">' +
+              '<button class="set-lang-btn" id="langBtn" aria-haspopup="listbox" aria-expanded="false">' + (languageNames[buildLang] || buildLang) + ' ▾</button>' +
+              '<div class="set-lang-list" id="langList" hidden></div>' +
+            '</div>'
+          : '') +
+        '<div class="set-label" id="lblMisc">' + T.misc + '</div>' +
+        '<button class="set-help" id="helpBtn">' + T.help + '</button>' +
+        '<button class="set-about" id="aboutBtn">' + T.about + '</button>' +
+        '<button class="set-install" id="installBtn" hidden>' + T.install + '</button>' +
       '</div>' +
     '</div>\n' +
     '<div class="stage">' +
       '<div class="histwrap" id="histWrap">' +
         '<aside class="history" id="history"></aside>' +
         '<div class="toggles">' +
-          '<button class="tog tog-index" id="togIndex" aria-label="Índice"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg><span class="tog-label">Índice</span></button>' +
-          '<button class="tog tog-session" id="togSession" aria-label="Historial"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg><span class="tog-label">Historial</span></button>' +
+          '<button class="tog tog-index" id="togIndex" aria-label="' + T.index + '"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg><span class="tog-label">' + T.index + '</span></button>' +
+          '<button class="tog tog-session" id="togSession" aria-label="' + T.history + '"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg><span class="tog-label">' + T.history + '</span></button>' +
         '</div>' +
       '</div>' +
       '<div class="viewport"><div class="track" id="track"></div></div>' +
       '<div class="favwrap" id="favWrap">' +
         '<div class="toggles fav-toggles">' +
-          '<button class="tog fav-tog" id="favTog" aria-label="Favoritos"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg><span class="tog-label">Favoritos</span></button>' +
+          '<button class="tog fav-tog" id="favTog" aria-label="' + T.favorites + '"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg><span class="tog-label">' + T.favorites + '</span></button>' +
         '</div>' +
         '<aside class="favpanel" id="favpanel"></aside>' +
       '</div>' +
@@ -1354,30 +1484,31 @@ export function renderGuideHtml(project: Project): string {
     '<div class="pagenav" id="pagenav"></div>\n' +
     '<div class="modal" id="about" hidden>' +
       '<div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="aboutTitle">' +
-        '<div class="modal-title" id="aboutTitle">Acerca de</div>' +
-        '<div class="about-name">' + nameEsc + '</div>' +
-        '<div class="about-row"><span>Última actualización</span><b id="aboutDate">—</b></div>' +
+        '<div class="modal-title" id="aboutTitle">' + T.aboutTitle + '</div>' +
+        '<div class="about-name" id="aboutName">' + nameEsc + '</div>' +
+        '<div class="about-row"><span id="aboutUpdatedLbl">' + T.aboutUpdated + '</span><b id="aboutDate">—</b></div>' +
         '<div class="about-msg" id="aboutMsg"></div>' +
         '<div class="modal-actions">' +
-          '<button class="modal-ok" id="aboutAction">Comprobar actualizaciones</button>' +
+          '<button class="modal-ok" id="aboutAction">' + T.checkUpdates + '</button>' +
         '</div>' +
       '</div>' +
     '</div>\n' +
     // Texto HTML (no JS): va literal, sin escapes \\uXXXX — la página declara charset utf-8.
-    '<div class="ios-install" id="iosInstall" hidden><span class="ios-msg">Añade esta guía a tu pantalla de inicio: pulsa <b>Compartir</b> y luego <b>«Añadir a pantalla de inicio»</b>.</span><button class="ios-x" id="iosInstallClose" aria-label="Cerrar">✕</button></div>\n' +
+    '<div class="ios-install" id="iosInstall" hidden><span class="ios-msg">' + T.iosInstallMsg + '</span><button class="ios-x" id="iosInstallClose" aria-label="' + T.iosInstallClose + '">✕</button></div>\n' +
     '<div class="welcome" id="welcome" hidden>' +
       '<div class="welcome-card">' +
         '<img class="welcome-logo" src="' + LOGO + '" alt="">' +
         '<form class="welcome-form" id="welcomeForm">' +
-          '<div class="welcome-intro">¡Hola! Bienvenido/a a la guía para analistas de conciencia.</div>' +
-          '<div class="welcome-q">¿Cómo te llamás?</div>' +
-          '<input class="welcome-input" id="welcomeInput" type="text" autocomplete="given-name" maxlength="60" placeholder="Tu nombre">' +
-          '<button class="welcome-ok" type="submit">Continuar</button>' +
+          '<div class="welcome-intro" id="welcomeIntro">' + T.welcomeIntro + '</div>' +
+          '<div class="welcome-q" id="welcomeQ">' + T.welcomeQuestion + '</div>' +
+          '<input class="welcome-input" id="welcomeInput" type="text" autocomplete="given-name" maxlength="60" placeholder="' + T.welcomeNamePlaceholder + '">' +
+          '<button class="welcome-ok" type="submit" id="welcomeOk">' + T.welcomeContinue + '</button>' +
         '</form>' +
         '<div class="welcome-hello" id="welcomeHello" hidden></div>' +
       '</div>' +
     '</div>\n' +
     '<script>\nvar GUIDE = ' + json + ';\nvar LOGO = ' + JSON.stringify(LOGO) + ';\nvar GUIDE_VER = ' + JSON.stringify(guideVer) + ';\n' +
+    'var STRINGS = ' + JSON.stringify(READER_STRINGS) + ';\nvar LANGUAGE_NAMES = ' + JSON.stringify(languageNames) + ';\n' +
     // Solo los 9 colores "en uso" de Underwater (no los 7 de la ampliación reservada).
     'var FAV_COLORS = ' +
       JSON.stringify(

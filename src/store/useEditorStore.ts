@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { Folio, FolioLink, Project, Section, SectionType, Selection } from '@/types';
+import type { Folio, FolioLink, LangCode, Project, Section, SectionType, Selection } from '@/types';
 
 const uid = () => (crypto.randomUUID ? crypto.randomUUID() : 'id-' + Math.random().toString(36).slice(2));
 const now = () => new Date().toISOString();
@@ -16,26 +16,41 @@ interface EditorState {
   activeProjectId: string | null;
   selection: Selection;
   openFolioIds: string[];
+  /** Language tab currently being authored in the editor (title/body/name/link fields). */
+  editingLang: LangCode;
 
   // derived
   getActiveProject: () => Project | undefined;
 
+  // languages
+  setEditingLang: (lang: LangCode) => void;
+  updateProjectLanguages: (languages: LangCode[]) => void;
+
   // section
   addSection: (name?: string) => void;
-  updateSection: (id: string, patch: Partial<Pick<Section, 'name' | 'type' | 'titleBarColor'>>) => void;
+  updateSection: (
+    id: string,
+    patch: Partial<Pick<Section, 'name' | 'type' | 'titleBarColor'>>,
+    lang?: LangCode
+  ) => void;
   deleteSection: (id: string) => void;
   reorderSections: (from: number, to: number) => void;
 
   // folio
   addFolio: (sectionId: string) => void;
-  updateFolio: (folioId: string, patch: Partial<Pick<Folio, 'title' | 'guion'>>) => void;
+  updateFolio: (folioId: string, patch: Partial<Pick<Folio, 'title' | 'guion'>>, lang?: LangCode) => void;
   deleteFolio: (folioId: string) => void;
   duplicateFolio: (folioId: string) => void;
   reorderFolios: (sectionId: string, from: number, to: number) => void;
 
   // links
   addLink: (folioId: string) => void;
-  updateLink: (folioId: string, linkId: string, patch: Partial<Pick<FolioLink, 'label' | 'target'>>) => void;
+  updateLink: (
+    folioId: string,
+    linkId: string,
+    patch: Partial<Pick<FolioLink, 'label' | 'target'>>,
+    lang?: LangCode
+  ) => void;
   deleteLink: (folioId: string, linkId: string) => void;
   reorderLink: (folioId: string, from: number, to: number) => void;
 
@@ -82,8 +97,13 @@ export const useEditorStore = create<EditorState>()((set, get) => {
         activeProjectId: null,
         selection: {},
         openFolioIds: [],
+        editingLang: 'es',
 
         getActiveProject: () => get().projects.find((p) => p.id === get().activeProjectId),
+
+        // ----- languages -----
+        setEditingLang: (lang) => set({ editingLang: lang }),
+        updateProjectLanguages: (languages) => mutateActive((p) => ({ ...p, languages })),
 
         // ----- section -----
         addSection: (name) => {
@@ -94,7 +114,18 @@ export const useEditorStore = create<EditorState>()((set, get) => {
           }));
           set({ selection: { sectionId: id } });
         },
-        updateSection: (id, patch) => mutateActive((p) => mapSection(p, id, (sec) => ({ ...sec, ...patch }))),
+        updateSection: (id, patch, lang = 'es') =>
+          mutateActive((p) =>
+            mapSection(p, id, (sec) => {
+              if (lang === 'es') return { ...sec, ...patch };
+              const { name, ...rest } = patch;
+              return {
+                ...sec,
+                ...rest,
+                ...(name !== undefined ? { nameI18n: { ...sec.nameI18n, [lang]: name } } : {}),
+              };
+            })
+          ),
         deleteSection: (id) => {
           mutateActive((p) => ({ ...p, sections: p.sections.filter((sec) => sec.id !== id) }));
           set((s) => (s.selection.sectionId === id ? { selection: {} } : s));
@@ -113,12 +144,20 @@ export const useEditorStore = create<EditorState>()((set, get) => {
           );
           set((s) => ({ selection: { sectionId, folioId: id }, openFolioIds: addTab(s.openFolioIds, id) }));
         },
-        updateFolio: (folioId, patch) =>
+        updateFolio: (folioId, patch, lang = 'es') =>
           mutateActive((p) => ({
             ...p,
             sections: p.sections.map((sec) => ({
               ...sec,
-              folios: sec.folios.map((f) => (f.id === folioId ? { ...f, ...patch } : f)),
+              folios: sec.folios.map((f) => {
+                if (f.id !== folioId) return f;
+                if (lang === 'es') return { ...f, ...patch };
+                return {
+                  ...f,
+                  ...(patch.title !== undefined ? { titleI18n: { ...f.titleI18n, [lang]: patch.title } } : {}),
+                  ...(patch.guion !== undefined ? { guionI18n: { ...f.guionI18n, [lang]: patch.guion } } : {}),
+                };
+              }),
             })),
           })),
         deleteFolio: (folioId) => {
@@ -164,11 +203,20 @@ export const useEditorStore = create<EditorState>()((set, get) => {
               links: [...f.links, { id: uid(), label: '', target: { kind: 'folio', id: '' } }],
             }))
           ),
-        updateLink: (folioId, linkId, patch) =>
+        updateLink: (folioId, linkId, patch, lang = 'es') =>
           mutateActive((p) =>
             mapFolio(p, folioId, (f) => ({
               ...f,
-              links: f.links.map((l) => (l.id === linkId ? { ...l, ...patch } : l)),
+              links: f.links.map((l) => {
+                if (l.id !== linkId) return l;
+                if (lang === 'es') return { ...l, ...patch };
+                const { label, ...rest } = patch;
+                return {
+                  ...l,
+                  ...rest,
+                  ...(label !== undefined ? { labelI18n: { ...l.labelI18n, [lang]: label } } : {}),
+                };
+              }),
             }))
           ),
         deleteLink: (folioId, linkId) =>

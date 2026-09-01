@@ -4,6 +4,7 @@ import { ThemeToggle } from '@/components/layout/ThemeToggle';
 import { SaveIndicator } from '@/components/layout/SaveIndicator';
 import { BuildButton } from '@/features/editor/BuildButton';
 import { PublishButton } from '@/features/editor/PublishButton';
+import { GuideLanguages } from '@/features/editor/GuideLanguages';
 import { Button } from '@/components/ui/button';
 
 export function TopBar() {
@@ -18,6 +19,7 @@ export function TopBar() {
       <div className="flex-1" />
       <SaveIndicator />
       <div className="mx-1 hidden h-6 w-px bg-border sm:block" />
+      <GuideLanguages />
       <BuildButton />
       <PublishButton />
       <ThemeToggle />
