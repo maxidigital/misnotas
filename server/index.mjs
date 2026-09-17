@@ -389,7 +389,7 @@ app.delete('/api/folders/:id', async (req, res) => {
 
 /* ---------- service worker de las guías (PWA / offline), scope /p/ ---------- */
 const SW_JS = `
-const CACHE = 'guia-v3';
+const CACHE = 'guia-v4';
 self.addEventListener('install', function(){ self.skipWaiting(); });
 self.addEventListener('activate', function(e){
   e.waitUntil(
@@ -413,11 +413,20 @@ self.addEventListener('fetch', function(e){
   // Network-first bypassing the HTTP cache (iOS standalone la cachea agresivamente);
   // la copia offline vive solo en CacheStorage. Se guarda bajo el pathname (sin query)
   // para que los reloads con ?v=... no dejen una entrada nueva cada vez.
+  var network = fetch(url.pathname, { cache: 'no-store', credentials: 'same-origin' }).then(function(res){
+    try { var copy = res.clone(); caches.open(CACHE).then(function(c){ c.put(url.pathname, copy); }); } catch(_){}
+    return res;
+  });
+  // Con conexión débil el fetch no llega a fallar: se queda esperando datos que
+  // nunca terminan de llegar. Si hay copia guardada, se le da a la red un margen
+  // corto y si no contestó a tiempo se sirve esa copia ya mismo (el fetch sigue
+  // solo, de fondo, y si al final llega actualiza igual el caché para la próxima).
   e.respondWith(
-    fetch(url.pathname, { cache: 'no-store', credentials: 'same-origin' }).then(function(res){
-      try { var copy = res.clone(); caches.open(CACHE).then(function(c){ c.put(url.pathname, copy); }); } catch(_){}
-      return res;
-    }).catch(function(){ return caches.match(url.pathname); })
+    caches.match(url.pathname).then(function(cached){
+      if(!cached) return network.catch(function(){ return caches.match(url.pathname); });
+      var timeout = new Promise(function(resolve){ setTimeout(function(){ resolve(cached); }, 2500); });
+      return Promise.race([network, timeout]).catch(function(){ return cached; });
+    })
   );
 });
 `;
