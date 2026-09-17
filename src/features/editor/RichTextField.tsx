@@ -83,7 +83,7 @@ const SIZES: { label: string; value: string | null }[] = [
   { label: 'Muy grande', value: '1.5em' },
 ];
 
-const MONO = "ui-monospace, SFMono-Regular, 'Roboto Mono', Menlo, Consolas, monospace";
+const MONO = "'Fira Code', ui-monospace, SFMono-Regular, 'Roboto Mono', Menlo, Consolas, monospace";
 
 interface Props {
   value: string;
