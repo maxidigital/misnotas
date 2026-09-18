@@ -605,12 +605,12 @@ function applyMode(m){
   syncSettings();
 }
 function applyTheme(t){
-  if(t==='light'||t==='dark'){ root.setAttribute('data-theme', t); } else { root.removeAttribute('data-theme'); t='auto'; }
+  if(t==='light'||t==='dark'||t==='green'||t==='gray'){ root.setAttribute('data-theme', t); } else { root.removeAttribute('data-theme'); t='auto'; }
   try{ localStorage.setItem('reader.theme', t); }catch(e){}
   syncSettings();
 }
 function applyFZ(v){
-  FZ = Math.max(0.8, Math.min(1.4, Math.round(v*10)/10));
+  FZ = Math.max(0.8, Math.min(1.9, Math.round(v*10)/10));
   root.style.setProperty('--fz', String(FZ));
   try{ localStorage.setItem('reader.fz', String(FZ)); }catch(e){}
 }
@@ -669,7 +669,7 @@ if(langList) langList.addEventListener('click', function(e){
    render() (settings/about/welcome/iOS banner): se actualizan por id, sin tocar el
    resto del nodo, para no perder los listeners ya enganchados a esos botones. */
 var CHROME_TEXT_MAP = [
-  ['lblTheme','theme'], ['themeLightBtn','themeLight'], ['themeDarkBtn','themeDark'], ['themeAutoBtn','themeAuto'],
+  ['lblTheme','theme'], ['themeLightBtn','themeLight'], ['themeGrayBtn','themeGray'], ['themeDarkBtn','themeDark'], ['themeGreenBtn','themeGreen'],
   ['lblText','textSize'], ['lblVista','viewMode'], ['modeGuidedBtn','viewGuided'], ['modeCleanBtn','viewClean'],
   ['lblLang','langLabel'], ['lblMisc','misc'], ['helpBtn','help'], ['aboutBtn','about'], ['installBtn','install'],
   ['aboutTitle','aboutTitle'], ['aboutUpdatedLbl','aboutUpdated'], ['aboutName','__aboutName'],
@@ -910,21 +910,23 @@ function css(width: string): string {
   return `
   :root {
     color-scheme: light dark;
-    /* Paleta Underwater (design/PALETTE.md en el repo underwater), acento Celeste. */
-    --bg:#F2F0F5; --fg:#17151D;
-    --bar:#FBFAFD; --bar-bd:#E4E1EA;
-    --hover:rgba(23,21,29,.15);
-    --sheet:#FBFAFD; --sheet-bd:#E4E1EA;
-    --sheet-sh:0 1px 2px rgba(23,21,29,.05), 0 10px 30px rgba(23,21,29,.07);
-    --card:#FBFAFD; --card-bd:#E4E1EA; --card-bd-h:rgba(23,21,29,.42);
-    --card-sh:0 4px 14px rgba(23,21,29,.10);
-    --btn:#FFFFFF; --btn-bd:#E4E1EA; --btn-bd-strong:rgba(23,21,29,.5);
+    /* Fondo inspirado en Solarized Light (Ethan Schoonover): base3/base2 crema en vez
+       del gris frío anterior. Texto en base02, más oscuro que el base00 original de
+       Solarized (ese daba 4.13:1, corto para leer en el celular); acento Celeste sin tocar. */
+    --bg:#EEE8D5; --fg:#073642;
+    --bar:#FDF6E3; --bar-bd:#DDD6C0;
+    --hover:rgba(7,54,66,.12);
+    --sheet:#FDF6E3; --sheet-bd:#DDD6C0;
+    --sheet-sh:0 1px 2px rgba(7,54,66,.05), 0 10px 30px rgba(7,54,66,.07);
+    --card:#FDF6E3; --card-bd:#DDD6C0; --card-bd-h:rgba(7,54,66,.42);
+    --card-sh:0 4px 14px rgba(7,54,66,.10);
+    --btn:#FFFCF0; --btn-bd:#DDD6C0; --btn-bd-strong:rgba(7,54,66,.5);
     --link:#0369A1; --ok:#2E7D4F; --logo-invert:0; --fz:1; --histw:min(80vw, 300px); --selected:#0369A1;
-    --text-muted:#6B6572;
+    --text-muted:#586E75;
   }
   /* variables de tema oscuro (reutilizadas por auto y por override manual) */
   @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
+    :root:not([data-theme="light"]):not([data-theme="green"]):not([data-theme="gray"]) {
       --bg:#09090B; --fg:#F5F3F7;
       --bar:#141318; --bar-bd:#2B2733;
       --hover:rgba(245,243,247,.09);
@@ -948,6 +950,33 @@ function css(width: string): string {
     --btn:#1D1A22; --btn-bd:#2B2733; --btn-bd-strong:rgba(245,243,247,.24);
     --link:#38BDF8; --ok:#5FBF87; --logo-invert:1;
     --text-muted:#A6A1AD;
+  }
+  /* Verde claro: fondo fresco tipo brote/menta, no un pastel apagado. El resto de los
+     temas queda intacto; --link/--ok/--selected se heredan del :root (acento Celeste). */
+  :root[data-theme="green"] {
+    --bg:#CDEFD7; --fg:#123723;
+    --bar:#E7FAEC; --bar-bd:#B9E4C4;
+    --hover:rgba(18,55,35,.12);
+    --sheet:#E7FAEC; --sheet-bd:#B9E4C4;
+    --sheet-sh:0 1px 2px rgba(18,55,35,.06), 0 10px 30px rgba(18,55,35,.08);
+    --card:#E7FAEC; --card-bd:#B9E4C4; --card-bd-h:rgba(18,55,35,.40);
+    --card-sh:0 4px 14px rgba(18,55,35,.10);
+    --btn:#FFFFFF; --btn-bd:#B9E4C4; --btn-bd-strong:rgba(18,55,35,.5);
+    --text-muted:#427059;
+  }
+  /* Gris: el mismo Oscuro pero atenuado ("dim"), como el modo Dim de Twitter/X o el
+     Dark Dimmed de GitHub — no un gris plano sin relación con el resto de los temas. */
+  :root[data-theme="gray"] {
+    --bg:#2A2730; --fg:#F0EDF2;
+    --bar:#34303C; --bar-bd:#4A4555;
+    --hover:rgba(240,237,242,.10);
+    --sheet:#34303C; --sheet-bd:#4A4555;
+    --sheet-sh:0 1px 2px rgba(0,0,0,.25), 0 10px 30px rgba(0,0,0,.22);
+    --card:#34303C; --card-bd:#4A4555; --card-bd-h:rgba(240,237,242,.24);
+    --card-sh:0 4px 14px rgba(0,0,0,.28);
+    --btn:#3E394A; --btn-bd:#4A4555; --btn-bd-strong:rgba(240,237,242,.28);
+    --link:#38BDF8; --ok:#5FBF87; --logo-invert:1;
+    --text-muted:#B5AFC0;
   }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body { height: 100%; margin: 0; touch-action: manipulation; }
@@ -1381,8 +1410,9 @@ export function renderGuideHtml(project: Project): string {
         // para la línea bajo el título del folio; --bbg/--btxt son variantes
         // recalculadas (saturación/luminosidad ajustadas) para fondo/texto legible.
         `.band-${s.id}{--bbg:${b.lightBg};--btxt:${b.lightText};--raw:${raw};}` +
-        `@media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .band-${s.id}{--bbg:${b.darkBg};--btxt:${b.darkText};}}` +
+        `@media(prefers-color-scheme:dark){:root:not([data-theme="light"]):not([data-theme="green"]):not([data-theme="gray"]) .band-${s.id}{--bbg:${b.darkBg};--btxt:${b.darkText};}}` +
         `:root[data-theme="dark"] .band-${s.id}{--bbg:${b.darkBg};--btxt:${b.darkText};}` +
+        `:root[data-theme="gray"] .band-${s.id}{--bbg:${b.darkBg};--btxt:${b.darkText};}` +
         // Tarjeta neutra (como cualquier otra) con un borde de acento del color de
         // la sección, en vez de rellenarse por completo.
         `.scard.band-${s.id}{background:var(--card);color:inherit;border-color:var(--card-bd);border-left-color:${raw};border-left-width:4px;}`
@@ -1430,8 +1460,8 @@ export function renderGuideHtml(project: Project): string {
     // pestañas de los bordes, del tema, del tamaño de letra y del idioma).
     '<script>var LANGS=' + JSON.stringify(languages) + ';try{var r=document.documentElement,s=localStorage;' +
     "var m=s.getItem('reader.mode');r.setAttribute('data-mode',m==='limpia'?'limpia':'guiada');" +
-    "var t=s.getItem('reader.theme');if(t==='light'||t==='dark')r.setAttribute('data-theme',t);" +
-    "var f=parseFloat(s.getItem('reader.fz'));if(f)r.style.setProperty('--fz',String(Math.max(0.8,Math.min(1.4,f))));" +
+    "var t=s.getItem('reader.theme');if(t==='light'||t==='dark'||t==='green'||t==='gray')r.setAttribute('data-theme',t);" +
+    "var f=parseFloat(s.getItem('reader.fz'));if(f)r.style.setProperty('--fz',String(Math.max(0.8,Math.min(1.9,f))));" +
     "var l=s.getItem('reader.lang');if(!l||LANGS.indexOf(l)===-1)l=LANGS[0]||'es';r.setAttribute('lang',l);" +
     "}catch(e){document.documentElement.setAttribute('data-mode','guiada');document.documentElement.setAttribute('lang',LANGS[0]||'es');}</script>\n" +
     '<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover">\n' +
@@ -1452,8 +1482,9 @@ export function renderGuideHtml(project: Project): string {
         '<div class="set-label" id="lblTheme">' + T.theme + '</div>' +
         '<div class="set-row">' +
           '<button data-theme="light" id="themeLightBtn">' + T.themeLight + '</button>' +
+          '<button data-theme="gray" id="themeGrayBtn">' + T.themeGray + '</button>' +
           '<button data-theme="dark" id="themeDarkBtn">' + T.themeDark + '</button>' +
-          '<button data-theme="auto" id="themeAutoBtn">' + T.themeAuto + '</button>' +
+          '<button data-theme="green" id="themeGreenBtn">' + T.themeGreen + '</button>' +
         '</div>' +
         '<div class="set-label" id="lblText">' + T.textSize + '</div>' +
         '<div class="set-row set-fs">' +
