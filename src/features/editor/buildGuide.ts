@@ -604,8 +604,10 @@ function applyMode(m){
   try{ localStorage.setItem('reader.mode', m); }catch(e){}
   syncSettings();
 }
+/* Orden en que se muestran los "colorcitos" de tema en el menú. */
+var THEMES = ['light','pink','green','blue','gray','dark'];
 function applyTheme(t){
-  if(t==='light'||t==='dark'||t==='green'||t==='gray'){ root.setAttribute('data-theme', t); } else { root.removeAttribute('data-theme'); t='auto'; }
+  if(THEMES.indexOf(t)!==-1){ root.setAttribute('data-theme', t); } else { root.removeAttribute('data-theme'); t='auto'; }
   try{ localStorage.setItem('reader.theme', t); }catch(e){}
   syncSettings();
 }
@@ -669,7 +671,7 @@ if(langList) langList.addEventListener('click', function(e){
    render() (settings/about/welcome/iOS banner): se actualizan por id, sin tocar el
    resto del nodo, para no perder los listeners ya enganchados a esos botones. */
 var CHROME_TEXT_MAP = [
-  ['lblTheme','theme'], ['themeLightBtn','themeLight'], ['themeGrayBtn','themeGray'], ['themeDarkBtn','themeDark'], ['themeGreenBtn','themeGreen'],
+  ['lblTheme','theme'],
   ['lblText','textSize'], ['lblVista','viewMode'], ['modeGuidedBtn','viewGuided'], ['modeCleanBtn','viewClean'],
   ['lblLang','langLabel'], ['lblMisc','misc'], ['helpBtn','help'], ['aboutBtn','about'], ['installBtn','install'],
   ['aboutTitle','aboutTitle'], ['aboutUpdatedLbl','aboutUpdated'], ['aboutName','__aboutName'],
@@ -681,6 +683,11 @@ function applyChromeStrings(){
     el.textContent = pair[1]==='__aboutName' ? (tr(GUIDE.name, GUIDE.nameI18n) || S('guideFallback')) : S(pair[1]);
   });
   var mb = document.getElementById('menuBtn'); if(mb){ mb.setAttribute('aria-label', S('menu')); mb.setAttribute('title', S('menu')); }
+  THEMES.forEach(function(t){
+    var el = document.getElementById('theme' + t.charAt(0).toUpperCase() + t.slice(1) + 'Btn'); if(!el) return;
+    var label = S('theme' + t.charAt(0).toUpperCase() + t.slice(1));
+    el.setAttribute('aria-label', label); el.setAttribute('title', label);
+  });
   [['togIndex','index'],['togSession','history'],['favTog','favorites']].forEach(function(pair){
     var el = document.getElementById(pair[0]); if(!el) return;
     el.setAttribute('aria-label', S(pair[1]));
@@ -926,7 +933,7 @@ function css(width: string): string {
   }
   /* variables de tema oscuro (reutilizadas por auto y por override manual) */
   @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]):not([data-theme="green"]):not([data-theme="gray"]) {
+    :root:not([data-theme="light"]):not([data-theme="green"]):not([data-theme="gray"]):not([data-theme="pink"]):not([data-theme="blue"]) {
       --bg:#09090B; --fg:#F5F3F7;
       --bar:#141318; --bar-bd:#2B2733;
       --hover:rgba(245,243,247,.09);
@@ -963,6 +970,30 @@ function css(width: string): string {
     --card-sh:0 4px 14px rgba(18,55,35,.10);
     --btn:#FFFFFF; --btn-bd:#B9E4C4; --btn-bd-strong:rgba(18,55,35,.5);
     --text-muted:#427059;
+  }
+  /* Rosa claro. */
+  :root[data-theme="pink"] {
+    --bg:#F6D9E4; --fg:#3A1420;
+    --bar:#FDF0F5; --bar-bd:#E9C3D2;
+    --hover:rgba(58,20,32,.12);
+    --sheet:#FDF0F5; --sheet-bd:#E9C3D2;
+    --sheet-sh:0 1px 2px rgba(58,20,32,.05), 0 10px 30px rgba(58,20,32,.07);
+    --card:#FDF0F5; --card-bd:#E9C3D2; --card-bd-h:rgba(58,20,32,.40);
+    --card-sh:0 4px 14px rgba(58,20,32,.10);
+    --btn:#FFFFFF; --btn-bd:#E9C3D2; --btn-bd-strong:rgba(58,20,32,.5);
+    --text-muted:#7A4356;
+  }
+  /* Azul claro. */
+  :root[data-theme="blue"] {
+    --bg:#CFE7F7; --fg:#0B2E4A;
+    --bar:#EAF6FE; --bar-bd:#B9DCF0;
+    --hover:rgba(11,46,74,.12);
+    --sheet:#EAF6FE; --sheet-bd:#B9DCF0;
+    --sheet-sh:0 1px 2px rgba(11,46,74,.05), 0 10px 30px rgba(11,46,74,.07);
+    --card:#EAF6FE; --card-bd:#B9DCF0; --card-bd-h:rgba(11,46,74,.40);
+    --card-sh:0 4px 14px rgba(11,46,74,.10);
+    --btn:#FFFFFF; --btn-bd:#B9DCF0; --btn-bd-strong:rgba(11,46,74,.5);
+    --text-muted:#3E6E8E;
   }
   /* Gris: el mismo Oscuro pero atenuado ("dim"), como el modo Dim de Twitter/X o el
      Dark Dimmed de GitHub — no un gris plano sin relación con el resto de los temas. */
@@ -1033,13 +1064,27 @@ function css(width: string): string {
   }
   .settings[hidden] { display: none; }
   .set-label { opacity: .55; font-size: .72rem; text-transform: uppercase; letter-spacing: .5px; margin: 2px 4px 0; }
-  .set-row { display: flex; align-items: center; gap: 6px; }
+  .set-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
   .settings button {
     cursor: pointer; border: 1px solid var(--btn-bd); background: var(--btn); color: inherit;
     border-radius: 8px; padding: 8px 10px; font-family: inherit; font-size: .95rem; flex: 1;
   }
   .settings button.active { border-color: var(--selected); box-shadow: inset 0 0 0 1px var(--selected); font-weight: 700; }
   .settings .set-install, .settings .set-about, .settings .set-help { flex: 0 0 auto; margin-top: 2px; }
+  /* "Colorcitos" de tema: un swatch por tema en vez de un botón con texto (accesible
+     igual, vía aria-label/title). Colores fijos acá, en paralelo a las variables de
+     cada :root[data-theme] de más arriba — son la muestra, no el tema en sí. */
+  .settings .theme-swatch {
+    flex: 0 0 auto; width: 28px; height: 28px; padding: 0; border-radius: 50%;
+    border: 1px solid var(--btn-bd);
+  }
+  .settings .theme-swatch.active { border-color: transparent; box-shadow: 0 0 0 2px var(--bar), 0 0 0 4px var(--selected); }
+  .theme-swatch[data-theme="light"] { background: #FDF6E3; border-color: #DDD6C0; }
+  .theme-swatch[data-theme="pink"]  { background: #FDF0F5; border-color: #E9C3D2; }
+  .theme-swatch[data-theme="green"] { background: #E7FAEC; border-color: #B9E4C4; }
+  .theme-swatch[data-theme="blue"]  { background: #EAF6FE; border-color: #B9DCF0; }
+  .theme-swatch[data-theme="gray"]  { background: #34303C; border-color: #4A4555; }
+  .theme-swatch[data-theme="dark"]  { background: #141318; border-color: #2B2733; }
   .set-install[hidden] { display: none; }
   /* Selector de idioma: un botón que despliega una lista vertical con scroll, en vez de
      una fila de botones — no se rompe aunque la guía tenga muchos idiomas habilitados. */
@@ -1410,7 +1455,7 @@ export function renderGuideHtml(project: Project): string {
         // para la línea bajo el título del folio; --bbg/--btxt son variantes
         // recalculadas (saturación/luminosidad ajustadas) para fondo/texto legible.
         `.band-${s.id}{--bbg:${b.lightBg};--btxt:${b.lightText};--raw:${raw};}` +
-        `@media(prefers-color-scheme:dark){:root:not([data-theme="light"]):not([data-theme="green"]):not([data-theme="gray"]) .band-${s.id}{--bbg:${b.darkBg};--btxt:${b.darkText};}}` +
+        `@media(prefers-color-scheme:dark){:root:not([data-theme="light"]):not([data-theme="green"]):not([data-theme="gray"]):not([data-theme="pink"]):not([data-theme="blue"]) .band-${s.id}{--bbg:${b.darkBg};--btxt:${b.darkText};}}` +
         `:root[data-theme="dark"] .band-${s.id}{--bbg:${b.darkBg};--btxt:${b.darkText};}` +
         `:root[data-theme="gray"] .band-${s.id}{--bbg:${b.darkBg};--btxt:${b.darkText};}` +
         // Tarjeta neutra (como cualquier otra) con un borde de acento del color de
@@ -1460,7 +1505,7 @@ export function renderGuideHtml(project: Project): string {
     // pestañas de los bordes, del tema, del tamaño de letra y del idioma).
     '<script>var LANGS=' + JSON.stringify(languages) + ';try{var r=document.documentElement,s=localStorage;' +
     "var m=s.getItem('reader.mode');r.setAttribute('data-mode',m==='limpia'?'limpia':'guiada');" +
-    "var t=s.getItem('reader.theme');if(t==='light'||t==='dark'||t==='green'||t==='gray')r.setAttribute('data-theme',t);" +
+    "var t=s.getItem('reader.theme');if(['light','pink','green','blue','gray','dark'].indexOf(t)!==-1)r.setAttribute('data-theme',t);" +
     "var f=parseFloat(s.getItem('reader.fz'));if(f)r.style.setProperty('--fz',String(Math.max(0.8,Math.min(1.9,f))));" +
     "var l=s.getItem('reader.lang');if(!l||LANGS.indexOf(l)===-1)l=LANGS[0]||'es';r.setAttribute('lang',l);" +
     "}catch(e){document.documentElement.setAttribute('data-mode','guiada');document.documentElement.setAttribute('lang',LANGS[0]||'es');}</script>\n" +
@@ -1481,10 +1526,12 @@ export function renderGuideHtml(project: Project): string {
       '<div class="settings" id="settings" hidden>' +
         '<div class="set-label" id="lblTheme">' + T.theme + '</div>' +
         '<div class="set-row">' +
-          '<button data-theme="light" id="themeLightBtn">' + T.themeLight + '</button>' +
-          '<button data-theme="gray" id="themeGrayBtn">' + T.themeGray + '</button>' +
-          '<button data-theme="dark" id="themeDarkBtn">' + T.themeDark + '</button>' +
-          '<button data-theme="green" id="themeGreenBtn">' + T.themeGreen + '</button>' +
+          '<button class="theme-swatch" data-theme="light" id="themeLightBtn" aria-label="' + T.themeLight + '" title="' + T.themeLight + '"></button>' +
+          '<button class="theme-swatch" data-theme="pink" id="themePinkBtn" aria-label="' + T.themePink + '" title="' + T.themePink + '"></button>' +
+          '<button class="theme-swatch" data-theme="green" id="themeGreenBtn" aria-label="' + T.themeGreen + '" title="' + T.themeGreen + '"></button>' +
+          '<button class="theme-swatch" data-theme="blue" id="themeBlueBtn" aria-label="' + T.themeBlue + '" title="' + T.themeBlue + '"></button>' +
+          '<button class="theme-swatch" data-theme="gray" id="themeGrayBtn" aria-label="' + T.themeGray + '" title="' + T.themeGray + '"></button>' +
+          '<button class="theme-swatch" data-theme="dark" id="themeDarkBtn" aria-label="' + T.themeDark + '" title="' + T.themeDark + '"></button>' +
         '</div>' +
         '<div class="set-label" id="lblText">' + T.textSize + '</div>' +
         '<div class="set-row set-fs">' +
