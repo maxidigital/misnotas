@@ -816,7 +816,7 @@ if(aboutAction) aboutAction.addEventListener('click', function(e){
     syncAbout();
   });
 });
-/* ---- registro de uso (POST /p/<slug>/track): ingresos e instalación de la app. El
+/* ---- registro de uso (POST /p/<slug>/track): ingresos, tiempo e instalación de la app. El
    dispositivo lo deduce el servidor del User-Agent; de acá solo van las dos cosas que
    el servidor no puede ver: si se abrió como app instalada y si la pantalla es táctil
    (un iPad se presenta como Mac). Nunca debe molestar al lector: falla en silencio. ---- */
@@ -830,10 +830,42 @@ function track(ev, n){
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       keepalive: true,
-      body: JSON.stringify({ name: n || '', ev: ev, app: isStandalone(), touch: (navigator.maxTouchPoints || 0) > 0 })
+      body: JSON.stringify({ name: n || '', ev: ev, sid: SID, app: isStandalone(), touch: (navigator.maxTouchPoints || 0) > 0 })
     }).catch(function(){});
+    if(ev === 'open') sessionOpen = true;
   }catch(e){}
 }
+
+/* ---- tiempo a la vista de cada ingreso. El navegador no avisa "cerraron la página",
+   solo que dejó de verse (cerrar, cambiar de app o de pestaña, bloquear el teléfono),
+   así que en vez de un "cerró" se manda el tiempo acumulado cada vez que se oculta; si
+   vuelven, se sigue sumando al mismo ingreso (SID). Solo cuenta con la página visible
+   y con actividad reciente, para no sumar horas de una pestaña olvidada. ---- */
+var SID = Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
+var sessionOpen = false, seenSecs = 0, sentSecs = 0, lastActivity = Date.now();
+var SEEN_TICK = 5, SEEN_IDLE_MS = 5 * 60 * 1000;
+['pointerdown','keydown','scroll','touchstart','wheel'].forEach(function(t){
+  window.addEventListener(t, function(){ lastActivity = Date.now(); }, { passive:true, capture:true });
+});
+setInterval(function(){
+  if(document.visibilityState === 'visible' && Date.now() - lastActivity < SEEN_IDLE_MS) seenSecs += SEEN_TICK;
+}, SEEN_TICK * 1000);
+function flushSeen(){
+  if(!sessionOpen || seenSecs === sentSecs) return;
+  sentSecs = seenSecs;
+  var body = JSON.stringify({ ev: 'time', sid: SID, secs: seenSecs });
+  /* sendBeacon es lo único que llega con seguridad mientras la página se va. */
+  try{
+    if(navigator.sendBeacon && navigator.sendBeacon(location.pathname + '/track', new Blob([body], { type: 'application/json' }))) return;
+  }catch(e){}
+  try{
+    fetch(location.pathname + '/track', { method: 'POST', headers: { 'Content-Type': 'application/json' }, keepalive: true, body: body }).catch(function(){});
+  }catch(e){}
+}
+document.addEventListener('visibilitychange', function(){
+  if(document.visibilityState === 'hidden') flushSeen(); else lastActivity = Date.now();
+});
+window.addEventListener('pagehide', flushSeen);
 var deferredPrompt=null, installBtn=document.getElementById('installBtn');
 window.addEventListener('beforeinstallprompt', function(e){ e.preventDefault(); deferredPrompt=e; if(installBtn) installBtn.hidden=false; });
 if(installBtn) installBtn.addEventListener('click', function(e){

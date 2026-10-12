@@ -484,17 +484,28 @@ function describeDevice(ua, touch) {
   return { device, os, browser };
 }
 
-const TRACK_EVENTS = ['open', 'install'];
+const TRACK_EVENTS = ['open', 'install', 'time'];
+const validSid = (v) => typeof v === 'string' && /^[a-z0-9]{6,24}$/.test(v);
 
 /* Seguimiento de uso: quién abrió qué guía, cuándo, desde qué dispositivo y si fue
    desde la app instalada (app: true) o el navegador; además de cuándo la instalan
-   (ev). Público, sin auth (como el resto de /p/*); body chico propio
+   (ev: 'install') y cuánto tiempo la tuvieron a la vista (ev: 'time': el lector manda
+   el acumulado del ingreso `sid` cada vez que la página se oculta; vale el mayor). Público, sin auth (como el resto de /p/*); body chico propio
    porque el express.json() global solo está montado bajo /api. Nunca debe cortarle
    la experiencia al lector: siempre responde ok, incluso si falla el guardado. */
 app.post('/p/:slug/track', express.json({ limit: '2kb' }), async (req, res) => {
   if (!validId(req.params.slug)) return res.status(400).json({ error: 'bad slug' });
   const name = typeof req.body?.name === 'string' ? req.body.name.trim().slice(0, 60) : '';
   const ev = TRACK_EVENTS.includes(req.body?.ev) ? req.body.ev : 'open';
+  const sid = validSid(req.body?.sid) ? req.body.sid : '';
+  if (ev === 'time') {
+    const secs = req.body?.secs;
+    if (sid && Number.isInteger(secs) && secs > 0) {
+      const entry = { ts: new Date().toISOString(), slug: req.params.slug, ev, sid, secs: Math.min(secs, 86400) };
+      appendFile(ACCESS_LOG_FILE, JSON.stringify(entry) + '\n', 'utf8').catch(() => {});
+    }
+    return res.json({ ok: true });
+  }
   // Instalar puede pasar antes de que el lector haya dicho su nombre.
   if (name || ev !== 'open') {
     const ua = String(req.get('user-agent') || '').slice(0, 300);
@@ -508,6 +519,7 @@ app.post('/p/:slug/track', express.json({ limit: '2kb' }), async (req, res) => {
     };
     // Un lector viejo (guía cacheada) no manda `app`: mejor sin dato que un "navegador" falso.
     if (typeof req.body?.app === 'boolean') entry.app = req.body.app;
+    if (sid) entry.sid = sid;
     appendFile(ACCESS_LOG_FILE, JSON.stringify(entry) + '\n', 'utf8').catch(() => {});
   }
   res.json({ ok: true });
