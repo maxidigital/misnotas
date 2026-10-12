@@ -450,15 +450,64 @@ app.get('/p/:slug/ver', async (req, res) => {
   }
 });
 
-/* Seguimiento de uso: quién abrió qué guía y cuándo. Público, sin auth (como el
-   resto de /p/*); body chico propio porque el express.json() global solo está
-   montado bajo /api. Nunca debe cortarle la experiencia al lector: siempre
-   responde ok, incluso si falla el guardado. */
+/** Dispositivo, sistema y navegador a partir del User-Agent. `touch` lo manda el lector
+ *  porque un iPad se presenta como Mac y solo se distingue por la pantalla táctil.
+ *  Orientativo: el cliente puede falsear las dos cosas. */
+function describeDevice(ua, touch) {
+  const ipad = /iPad/.test(ua) || (/Macintosh/.test(ua) && touch);
+  const iphone = /iPhone|iPod/.test(ua);
+  const android = /Android/.test(ua);
+
+  let os = '?';
+  if (ipad) os = 'iPadOS';
+  else if (iphone) os = 'iOS';
+  else if (android) os = 'Android';
+  else if (/Windows/.test(ua)) os = 'Windows';
+  else if (/CrOS/.test(ua)) os = 'ChromeOS';
+  else if (/Macintosh|Mac OS X/.test(ua)) os = 'macOS';
+  else if (/Linux/.test(ua)) os = 'Linux';
+
+  let device = 'pc';
+  if (ipad) device = 'tablet';
+  else if (iphone) device = 'phone';
+  else if (android) device = /Mobile/.test(ua) ? 'phone' : 'tablet';
+
+  // El orden importa: Edge, Opera y Samsung también dicen "Chrome", y Chrome dice "Safari".
+  let browser = '?';
+  if (/Edg(e|A|iOS)?\//.test(ua)) browser = 'Edge';
+  else if (/OPR\/|Opera/.test(ua)) browser = 'Opera';
+  else if (/SamsungBrowser/.test(ua)) browser = 'Samsung Internet';
+  else if (/Firefox|FxiOS/.test(ua)) browser = 'Firefox';
+  else if (/Chrome|CriOS/.test(ua)) browser = 'Chrome';
+  else if (/Safari/.test(ua)) browser = 'Safari';
+
+  return { device, os, browser };
+}
+
+const TRACK_EVENTS = ['open', 'install'];
+
+/* Seguimiento de uso: quién abrió qué guía, cuándo, desde qué dispositivo y si fue
+   desde la app instalada (app: true) o el navegador; además de cuándo la instalan
+   (ev). Público, sin auth (como el resto de /p/*); body chico propio
+   porque el express.json() global solo está montado bajo /api. Nunca debe cortarle
+   la experiencia al lector: siempre responde ok, incluso si falla el guardado. */
 app.post('/p/:slug/track', express.json({ limit: '2kb' }), async (req, res) => {
   if (!validId(req.params.slug)) return res.status(400).json({ error: 'bad slug' });
   const name = typeof req.body?.name === 'string' ? req.body.name.trim().slice(0, 60) : '';
-  if (name) {
-    const entry = { ts: new Date().toISOString(), slug: req.params.slug, name };
+  const ev = TRACK_EVENTS.includes(req.body?.ev) ? req.body.ev : 'open';
+  // Instalar puede pasar antes de que el lector haya dicho su nombre.
+  if (name || ev !== 'open') {
+    const ua = String(req.get('user-agent') || '').slice(0, 300);
+    const entry = {
+      ts: new Date().toISOString(),
+      slug: req.params.slug,
+      name: name || '?',
+      ev,
+      ...describeDevice(ua, req.body?.touch === true),
+      ua,
+    };
+    // Un lector viejo (guía cacheada) no manda `app`: mejor sin dato que un "navegador" falso.
+    if (typeof req.body?.app === 'boolean') entry.app = req.body.app;
     appendFile(ACCESS_LOG_FILE, JSON.stringify(entry) + '\n', 'utf8').catch(() => {});
   }
   res.json({ ok: true });
