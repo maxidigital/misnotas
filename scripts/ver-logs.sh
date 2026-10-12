@@ -9,7 +9,6 @@ set -euo pipefail
 railway ssh cat /data/access-log.jsonl | python3 -c '
 import json, sys
 
-EVENTOS = {"open": "entró", "install": "INSTALÓ"}
 for linea in sys.stdin:
     linea = linea.strip()
     if not linea:
@@ -18,7 +17,11 @@ for linea in sys.stdin:
         d = json.loads(linea)
     except ValueError:
         continue
-    modo = "-" if "app" not in d else ("app" if d["app"] else "navegador")
+    modo = "-" if "app" not in d else ("app instalada" if d["app"] else "navegador")
     equipo = " ".join(d.get(k, "-") for k in ("device", "os", "browser"))
-    print(d["ts"], d["slug"], d["name"], EVENTOS.get(d.get("ev", "open"), d.get("ev")), modo, equipo, sep="\t")
+    # Cada línea es un ingreso salvo que diga otra cosa al final (INSTALÓ).
+    campos = [d["ts"], d["slug"], d["name"], modo, equipo]
+    if d.get("ev", "open") != "open":
+        campos.append("INSTALÓ" if d["ev"] == "install" else d["ev"])
+    print(*campos, sep="\t")
 '
