@@ -823,7 +823,7 @@ if(aboutAction) aboutAction.addEventListener('click', function(e){
 function isStandalone(){
   try{ return (navigator.standalone === true) || (!!window.matchMedia && window.matchMedia('(display-mode: standalone)').matches); }catch(e){ return false; }
 }
-function track(ev, n){
+function trackUse(ev, n){
   try{
     if(!n){ try{ n = (localStorage.getItem('reader.username')||'').trim(); }catch(e){} }
     fetch(location.pathname + '/track', {
@@ -874,7 +874,7 @@ if(installBtn) installBtn.addEventListener('click', function(e){
 });
 window.addEventListener('appinstalled', function(){
   if(installBtn) installBtn.hidden=true;
-  track('install');
+  trackUse('install');
 });
 
 /* ---- aviso "Añadir a inicio" en iOS (Safari no dispara beforeinstallprompt) ---- */
@@ -904,11 +904,11 @@ window.addEventListener('appinstalled', function(){
   function showHello(n){
     if(form) form.hidden = true;
     if(hello){ hello.hidden = false; hello.textContent = S('welcomeHello').replace('{name}', n); }
-    track('open', n);
     setTimeout(function(){
       el.classList.add('out');
       setTimeout(function(){ el.hidden = true; }, 500);
     }, 1500);
+    trackUse('open', n);
   }
 
   if(name){
